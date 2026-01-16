@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CharterPro - Create Investor-Grade Project Charters in Minutes</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1a365d;
+            --primary-light: #2c5282;
+            --primary-dark: #0f2744;
+            --accent: #c6a052;
+            --accent-light: #d4af61;
+            --accent-glow: rgba(198, 160, 82, 0.3);
+            --success: #38a169;
+            --bg: #0a0f1a;
+            --bg-card: #111827;
+            --bg-card-hover: #1a2332;
+            --text: #f7fafc;
+            --text-muted: #a0aec0;
+            --text-dim: #718096;
+            --border: #2d3748;
+            --gradient-gold: linear-gradient(135deg, #c6a052 0%, #d4af61 50%, #c6a052 100%);
+            --gradient-dark: linear-gradient(180deg, #0a0f1a 0%, #111827 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1rem 2rem;
+            background: rgba(10, 15, 26, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+
+        .nav-logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-gold);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .nav-logo-text {
+            font-family: 'Fraunces', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .platform-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 8px;
+            color: #a5b4fc;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .platform-link:hover {
+            background: rgba(99, 102, 241, 0.25);
+            color: #c7d2fe;
+        }
+
+        .nav-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover {
+            color: var(--text);
+        }
+
+        .nav-cta {
+            background: var(--gradient-gold);
+            color: var(--primary-dark);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .nav-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px var(--accent-glow);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8rem 2rem 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 20%, rgba(198, 160, 82, 0.08) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 80%, rgba(26, 54, 93, 0.15) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-2%, 2%); }
+        }
+
+        .hero-content {
+            max-width: 900px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(198, 160, 82, 0.1);
+            border: 1px solid var(--accent);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            color: var(--accent);
+            margin-bottom: 2rem;
+        }
+
+        .hero-badge-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .hero h1 {
+            font-family: 'Fraunces', serif;
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--text) 0%, var(--text-muted) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero h1 span {
+            background: var(--gradient-gold);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto 2.5rem;
+            line-height: 1.8;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--gradient-gold);
+            color: var(--primary-dark);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px var(--accent-glow);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text);
+            border: 2px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent);
+            background: rgba(198, 160, 82, 0.1);
+        }
+
+        .hero-note {
+            margin-top: 1.5rem;
+            font-size: 0.875rem;
+            color: var(--text-dim);
+        }
+
+        /* Logos / Social Proof */
+        .social-proof {
+            padding: 4rem 2rem;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .social-proof-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .social-proof p {
+            color: var(--text-dim);
+            margin-bottom: 2rem;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .social-proof-logos {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 3rem;
+            flex-wrap: wrap;
+            opacity: 0.6;
+        }
+
+        .social-proof-logo {
+            font-family: 'Fraunces', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 6rem 2rem;
+        }
+
+        .features-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-label {
+            display: inline-block;
+            color: var(--accent);
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-family: 'Fraunces', serif;
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .section-subtitle {
+            color: var(--text-muted);
+            font-size: 1.125rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--accent);
+            transform: translateY(-4px);
+        }
+
+        .feature-number {
+            font-family: 'Fraunces', serif;
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--accent);
+            opacity: 0.3;
+            margin-bottom: 1rem;
+        }
+
+        .feature-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .feature-desc {
+            color: var(--text-muted);
+            line-height: 1.7;
+        }
+
+        /* How It Works */
+        .how-it-works {
+            padding: 6rem 2rem;
+            background: var(--bg-card);
+        }
+
+        .how-it-works-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .steps-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .step {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .step-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--gradient-gold);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 1.5rem;
+        }
+
+        .step-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .step-desc {
+            color: var(--text-muted);
+        }
+
+        /* Benefits Section */
+        .benefits {
+            padding: 6rem 2rem;
+        }
+
+        .benefits-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            margin-top: 3rem;
+        }
+
+        .benefits-list {
+            list-style: none;
+        }
+
+        .benefits-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .benefit-icon {
+            width: 24px;
+            height: 24px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-dark);
+            font-size: 0.75rem;
+            flex-shrink: 0;
+            margin-top: 0.25rem;
+        }
+
+        .benefit-text strong {
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .benefit-text span {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .benefits-image {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .benefits-image img {
+            max-width: 100%;
+            border-radius: 8px;
+        }
+
+        .mockup-placeholder {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: 12px;
+            padding: 3rem;
+            color: var(--text);
+        }
+
+        .mockup-placeholder h3 {
+            font-family: 'Fraunces', serif;
+            margin-bottom: 1rem;
+        }
+
+        /* Pricing Section */
+        .pricing {
+            padding: 6rem 2rem;
+            background: var(--bg-card);
+        }
+
+        .pricing-content {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .pricing-toggle {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .pricing-toggle span {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .pricing-toggle span.active {
+            color: var(--text);
+        }
+
+        .toggle-switch {
+            width: 60px;
+            height: 32px;
+            background: var(--border);
+            border-radius: 50px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle-switch.yearly {
+            background: var(--accent);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            top: 4px;
+            left: 4px;
+            transition: transform 0.3s;
+        }
+
+        .toggle-switch.yearly::after {
+            transform: translateX(28px);
+        }
+
+        .save-badge {
+            background: var(--success);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .pricing-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .pricing-card {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2.5rem;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .pricing-card:hover {
+            border-color: var(--accent);
+        }
+
+        .pricing-card.featured {
+            border: 2px solid var(--accent);
+            transform: scale(1.02);
+        }
+
+        .pricing-card.featured::before {
+            content: 'Most Popular';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--gradient-gold);
+            color: var(--primary-dark);
+            padding: 0.375rem 1rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .pricing-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .pricing-desc {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .pricing-price {
+            margin-bottom: 1.5rem;
+        }
+
+        .pricing-amount {
+            font-family: 'Fraunces', serif;
+            font-size: 3rem;
+            font-weight: 700;
+        }
+
+        .pricing-period {
+            color: var(--text-muted);
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .pricing-features li {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 0;
+            color: var(--text-muted);
+        }
+
+        .pricing-features li::before {
+            content: '✓';
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .pricing-card .btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+        /* Testimonials */
+        .testimonials {
+            padding: 6rem 2rem;
+        }
+
+        .testimonials-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .testimonial-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+        }
+
+        .testimonial-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+            color: var(--text-muted);
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .testimonial-avatar {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+
+        .testimonial-name {
+            font-weight: 600;
+        }
+
+        .testimonial-role {
+            font-size: 0.875rem;
+            color: var(--text-dim);
+        }
+
+        /* CTA Section */
+        .cta {
+            padding: 6rem 2rem;
+            background: var(--bg-card);
+            text-align: center;
+        }
+
+        .cta-content {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .cta h2 {
+            font-family: 'Fraunces', serif;
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .cta p {
+            color: var(--text-muted);
+            font-size: 1.125rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Footer */
+        .footer {
+            padding: 3rem 2rem;
+            border-top: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer p {
+            color: var(--text-dim);
+            font-size: 0.875rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .benefits-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pricing-card.featured {
+                transform: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-content">
+            <a href="#" class="nav-logo">
+                <div class="nav-logo-icon">📋</div>
+                <span class="nav-logo-text">CharterPro</span>
+            </a>
+            <div class="nav-links">
+                <a href="/" class="platform-link">← Platform Home</a>
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#how-it-works" class="nav-link">How It Works</a>
+                <a href="#pricing" class="nav-link">Pricing</a>
+                <a href="examples.html" class="nav-link">Examples</a>
+                <a href="login.html" class="nav-cta" id="navCta">Sign In</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="hero-badge-dot"></span>
+                Now Live • Start Creating Today
+            </div>
+            <h1>Create <span>Investor-Grade</span> Project Charters in Minutes</h1>
+            <p class="hero-subtitle">
+                Stop struggling with blank documents. CharterPro guides you through a proven framework to build compelling project charters that answer the only question that matters: <strong>"Why should we invest in this?"</strong>
+            </p>
+            <div class="hero-cta">
+                <a href="pricing.html" class="btn btn-primary">Get Started →</a>
+                <a href="examples.html" class="btn btn-secondary">See Example Charters</a>
+            </div>
+            <p class="hero-note">Cancel anytime • 30-day money-back guarantee</p>
+        </div>
+    </section>
+
+    <!-- Social Proof -->
+    <section class="social-proof">
+        <div class="social-proof-content">
+            <p>Trusted by project managers at</p>
+            <div class="social-proof-logos">
+                <span class="social-proof-logo">TechCorp</span>
+                <span class="social-proof-logo">BuildRight</span>
+                <span class="social-proof-logo">InnovateCo</span>
+                <span class="social-proof-logo">ScaleUp</span>
+                <span class="social-proof-logo">Ventures+</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="features-content">
+            <div class="section-header">
+                <span class="section-label">Features</span>
+                <h2 class="section-title">Everything you need to justify your project</h2>
+                <p class="section-subtitle">From problem statement to ROI calculation, CharterPro handles it all</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-number">01</div>
+                    <h3 class="feature-title">Guided Questionnaire</h3>
+                    <p class="feature-desc">Step-by-step prompts help you articulate your project's value proposition, even if you've never written a charter before.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-number">02</div>
+                    <h3 class="feature-title">Smart Templates</h3>
+                    <p class="feature-desc">Industry-specific templates for Construction, Software, Creative, and Business projects with tailored examples and language.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-number">03</div>
+                    <h3 class="feature-title">Risk Assessment Matrix</h3>
+                    <p class="feature-desc">Built-in probability × impact scoring with color-coded visualization helps stakeholders understand project risks at a glance.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-number">04</div>
+                    <h3 class="feature-title">Auto-Generated Gantt Charts</h3>
+                    <p class="feature-desc">Enter your phases and durations, and watch a professional timeline visualization appear automatically.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-number">05</div>
+                    <h3 class="feature-title">ROI Calculator</h3>
+                    <p class="feature-desc">3-year return projections, payback period calculations, and clear financial metrics that speak to decision-makers.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-number">06</div>
+                    <h3 class="feature-title">Professional PDF Export</h3>
+                    <p class="feature-desc">One-click export to a beautifully formatted PDF ready for board meetings, investor pitches, or stakeholder reviews.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="how-it-works-content">
+            <div class="section-header">
+                <span class="section-label">How It Works</span>
+                <h2 class="section-title">From blank page to boardroom-ready in 4 steps</h2>
+            </div>
+            <div class="steps-container">
+                <div class="step">
+                    <div class="step-icon">📝</div>
+                    <h3 class="step-title">1. Define Your Project</h3>
+                    <p class="step-desc">Select your project type and fill in the basics. Our smart prompts guide you through each section.</p>
+                </div>
+                <div class="step">
+                    <div class="step-icon">📊</div>
+                    <h3 class="step-title">2. Add the Details</h3>
+                    <p class="step-desc">Document benefits, constraints, risks, and timeline using our structured tables with built-in examples.</p>
+                </div>
+                <div class="step">
+                    <div class="step-icon">💰</div>
+                    <h3 class="step-title">3. Calculate ROI</h3>
+                    <p class="step-desc">Enter your budget and projected returns. We'll calculate ROI, payback period, and net benefit automatically.</p>
+                </div>
+                <div class="step">
+                    <div class="step-icon">📄</div>
+                    <h3 class="step-title">4. Export & Present</h3>
+                    <p class="step-desc">Generate a professional PDF with your Gantt chart, financials, and approval signatures ready to go.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section class="benefits">
+        <div class="benefits-content">
+            <div class="section-header">
+                <span class="section-label">Why CharterPro</span>
+                <h2 class="section-title">Stop wasting time on document formatting</h2>
+            </div>
+            <div class="benefits-grid">
+                <ul class="benefits-list">
+                    <li>
+                        <span class="benefit-icon">✓</span>
+                        <div class="benefit-text">
+                            <strong>Save 5+ hours per charter</strong>
+                            <span>No more starting from scratch or copying old templates that don't quite fit.</span>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="benefit-icon">✓</span>
+                        <div class="benefit-text">
+                            <strong>Get approvals faster</strong>
+                            <span>Clear structure and professional presentation means fewer revision requests.</span>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="benefit-icon">✓</span>
+                        <div class="benefit-text">
+                            <strong>Never miss critical sections</strong>
+                            <span>Our guided process ensures you cover everything stakeholders need to see.</span>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="benefit-icon">✓</span>
+                        <div class="benefit-text">
+                            <strong>Impress decision-makers</strong>
+                            <span>Professional formatting and clear ROI metrics show you mean business.</span>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="benefit-icon">✓</span>
+                        <div class="benefit-text">
+                            <strong>Works for any project type</strong>
+                            <span>Construction, software, creative, or business transformation – we've got you covered.</span>
+                        </div>
+                    </li>
+                </ul>
+                <div class="benefits-image">
+                    <div class="mockup-placeholder">
+                        <h3>📋 Project Charter</h3>
+                        <p>Customer Portal 2.0</p>
+                        <p style="font-size: 2rem; margin-top: 1rem;">ROI: 127.5%</p>
+                        <p style="opacity: 0.7; font-size: 0.9rem;">3-Year Payback: 1.8 years</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing" id="pricing">
+        <div class="pricing-content">
+            <div class="section-header">
+                <span class="section-label">Pricing</span>
+                <h2 class="section-title">Simple, transparent pricing</h2>
+                <p class="section-subtitle">Start free, upgrade when you're ready</p>
+            </div>
+            <div class="pricing-toggle">
+                <span id="monthlyLabel" class="active">Monthly</span>
+                <div class="toggle-switch" id="pricingToggle" onclick="togglePricing()"></div>
+                <span id="yearlyLabel">Yearly</span>
+                <span class="save-badge">Save 20%</span>
+            </div>
+            <div class="pricing-cards">
+                <div class="pricing-card">
+                    <h3 class="pricing-name">Starter</h3>
+                    <p class="pricing-desc">For individuals and small teams</p>
+                    <div class="pricing-price">
+                        <span class="pricing-amount" id="starterPrice">$19</span>
+                        <span class="pricing-period">/ month</span>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>Up to 5 charters per month</li>
+                        <li>All project types</li>
+                        <li>PDF export</li>
+                        <li>Email support</li>
+                    </ul>
+                    <a href="pricing.html?plan=starter" class="btn btn-secondary">Get Started</a>
+                </div>
+                <div class="pricing-card featured">
+                    <h3 class="pricing-name">Professional</h3>
+                    <p class="pricing-desc">For growing teams and agencies</p>
+                    <div class="pricing-price">
+                        <span class="pricing-amount" id="proPrice">$49</span>
+                        <span class="pricing-period">/ month</span>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>Unlimited charters</li>
+                        <li>Custom branding</li>
+                        <li>Team collaboration</li>
+                        <li>Priority support</li>
+                        <li>Charter templates library</li>
+                    </ul>
+                    <a href="pricing.html?plan=pro" class="btn btn-primary">Get Started</a>
+                </div>
+                <div class="pricing-card">
+                    <h3 class="pricing-name">Enterprise</h3>
+                    <p class="pricing-desc">For large organizations</p>
+                    <div class="pricing-price">
+                        <span class="pricing-amount">Custom</span>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>Everything in Professional</li>
+                        <li>SSO / SAML integration</li>
+                        <li>Custom integrations</li>
+                        <li>Dedicated account manager</li>
+                        <li>SLA guarantee</li>
+                    </ul>
+                    <a href="mailto:sales@charterpro.com" class="btn btn-secondary">Contact Sales</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="testimonials">
+        <div class="testimonials-content">
+            <div class="section-header">
+                <span class="section-label">Testimonials</span>
+                <h2 class="section-title">Loved by project managers everywhere</h2>
+            </div>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"CharterPro cut my charter creation time from 2 days to 2 hours. The ROI calculator alone has helped me secure funding for 3 major initiatives."</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">SK</div>
+                        <div>
+                            <div class="testimonial-name">Sarah Kim</div>
+                            <div class="testimonial-role">Senior PM, TechCorp</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"The guided questionnaire is genius. I never forget to include critical information anymore, and my charters are actually getting read by executives."</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">MR</div>
+                        <div>
+                            <div class="testimonial-name">Michael Rodriguez</div>
+                            <div class="testimonial-role">Director of Operations, BuildRight</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"We've standardized on CharterPro across all our project teams. The consistency in our documentation has dramatically improved our approval rates."</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">JL</div>
+                        <div>
+                            <div class="testimonial-name">Jennifer Lee</div>
+                            <div class="testimonial-role">PMO Lead, InnovateCo</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="cta-content">
+            <h2>Ready to create your first charter?</h2>
+            <p>Join thousands of project managers who've already streamlined their charter creation process.</p>
+            <a href="pricing.html" class="btn btn-primary">Start Your Free Trial →</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>© 2025 CharterPro. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        let isYearly = false;
+
+        function togglePricing() {
+            isYearly = !isYearly;
+            const toggle = document.getElementById('pricingToggle');
+            const monthlyLabel = document.getElementById('monthlyLabel');
+            const yearlyLabel = document.getElementById('yearlyLabel');
+            const starterPrice = document.getElementById('starterPrice');
+            const proPrice = document.getElementById('proPrice');
+
+            if (isYearly) {
+                toggle.classList.add('yearly');
+                monthlyLabel.classList.remove('active');
+                yearlyLabel.classList.add('active');
+                starterPrice.textContent = '$15';
+                proPrice.textContent = '$39';
+            } else {
+                toggle.classList.remove('yearly');
+                monthlyLabel.classList.add('active');
+                yearlyLabel.classList.remove('active');
+                starterPrice.textContent = '$19';
+                proPrice.textContent = '$49';
+            }
+        }
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Check auth state for nav
+        document.addEventListener('DOMContentLoaded', function() {
+            const user = JSON.parse(localStorage.getItem('charterpro_user'));
+            const navCta = document.getElementById('navCta');
+            if (user) {
+                navCta.href = 'dashboard.html';
+                navCta.textContent = 'Dashboard';
+            }
+        });
+    </script>
+</body>
+</html>

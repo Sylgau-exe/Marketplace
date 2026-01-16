@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - CharterPro</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1a365d;
+            --primary-light: #2c5282;
+            --primary-dark: #0f2744;
+            --accent: #c6a052;
+            --accent-light: #d4af61;
+            --accent-glow: rgba(198, 160, 82, 0.3);
+            --success: #38a169;
+            --success-bg: rgba(56, 161, 105, 0.1);
+            --warning: #d69e2e;
+            --warning-bg: rgba(214, 158, 46, 0.1);
+            --error: #e53e3e;
+            --error-bg: rgba(229, 62, 62, 0.1);
+            --info: #4299e1;
+            --info-bg: rgba(66, 153, 225, 0.1);
+            --bg: #0a0f1a;
+            --bg-card: #111827;
+            --bg-card-hover: #1a2332;
+            --bg-sidebar: #0d1117;
+            --text: #f7fafc;
+            --text-muted: #a0aec0;
+            --text-dim: #718096;
+            --border: #2d3748;
+            --gradient-gold: linear-gradient(135deg, #c6a052 0%, #d4af61 50%, #c6a052 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Layout */
+        .settings-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border);
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+
+        .sidebar-logo-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--gradient-gold);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .sidebar-logo-text {
+            font-family: 'Fraunces', serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .sidebar-nav {
+            padding: 1rem 0;
+        }
+
+        .nav-section {
+            padding: 0.5rem 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .nav-section:first-child {
+            margin-top: 0;
+        }
+
+        .nav-section-title {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.5rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-card);
+            color: var(--text);
+        }
+
+        .nav-item.active {
+            background: var(--bg-card);
+            color: var(--accent);
+            border-left-color: var(--accent);
+        }
+
+        .nav-item.platform-home {
+            background: rgba(99, 102, 241, 0.1);
+            color: #a5b4fc;
+            border-left-color: rgba(99, 102, 241, 0.5);
+            margin-bottom: 1rem;
+        }
+
+        .nav-item.platform-home:hover {
+            background: rgba(99, 102, 241, 0.2);
+            color: #c7d2fe;
+        }
+
+        .nav-item-icon {
+            font-size: 1.1rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .sidebar-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border);
+            margin-top: auto;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            min-height: 100vh;
+        }
+
+        /* Top Bar */
+        .topbar {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .topbar-title {
+            font-family: 'Fraunces', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .topbar-user {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .topbar-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--gradient-gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--primary-dark);
+        }
+
+        .topbar-user-info {
+            text-align: right;
+        }
+
+        .topbar-user-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .topbar-user-plan {
+            font-size: 0.75rem;
+            color: var(--accent);
+        }
+
+        /* Content Area */
+        .content-area {
+            padding: 2rem;
+            max-width: 900px;
+        }
+
+        /* Settings Sections */
+        .settings-section {
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+
+        .section-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-icon {
+            font-size: 1.25rem;
+        }
+
+        .section-title {
+            font-family: 'Fraunces', serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .section-body {
+            padding: 1.5rem;
+        }
+
+        /* Form Elements */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-row.single {
+            grid-template-columns: 1fr;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        .form-control:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .form-hint {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            margin-top: 0.35rem;
+        }
+
+        /* Profile Avatar */
+        .profile-avatar-section {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--gradient-gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .profile-avatar-info h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .profile-avatar-info p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--gradient-gold);
+            color: var(--primary-dark);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px var(--accent-glow);
+        }
+
+        .btn-secondary {
+            background: var(--bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--text-dim);
+        }
+
+        .btn-danger {
+            background: var(--error-bg);
+            color: var(--error);
+            border: 1px solid var(--error);
+        }
+
+        .btn-danger:hover {
+            background: var(--error);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+
+        .section-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        /* Toggle Switch */
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .toggle-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .toggle-row:first-child {
+            padding-top: 0;
+        }
+
+        .toggle-info h4 {
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .toggle-info p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .toggle-switch {
+            width: 48px;
+            height: 26px;
+            background: var(--border);
+            border-radius: 13px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: var(--text);
+            border-radius: 50%;
+            top: 3px;
+            left: 3px;
+            transition: all 0.2s;
+        }
+
+        .toggle-switch.active {
+            background: var(--accent);
+        }
+
+        .toggle-switch.active::after {
+            left: 25px;
+        }
+
+        /* Subscription Card */
+        .subscription-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .subscription-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .subscription-plan {
+            font-family: 'Fraunces', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .subscription-badge {
+            background: var(--accent);
+            color: var(--primary-dark);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .subscription-price {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .subscription-price span {
+            font-size: 1rem;
+            font-weight: 400;
+            opacity: 0.8;
+        }
+
+        .subscription-details {
+            display: flex;
+            gap: 2rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .subscription-detail {
+            font-size: 0.85rem;
+        }
+
+        .subscription-detail-label {
+            opacity: 0.7;
+            margin-bottom: 0.25rem;
+        }
+
+        .subscription-detail-value {
+            font-weight: 600;
+        }
+
+        .free-plan-card {
+            background: var(--bg);
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .free-plan-card h3 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .free-plan-card p {
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        /* Danger Zone */
+        .danger-zone {
+            border-color: var(--error);
+        }
+
+        .danger-zone .section-header {
+            background: var(--error-bg);
+            border-bottom-color: var(--error);
+        }
+
+        .danger-zone .section-title {
+            color: var(--error);
+        }
+
+        .danger-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .danger-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .danger-item:first-child {
+            padding-top: 0;
+        }
+
+        .danger-item-info h4 {
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .danger-item-info p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Alert Messages */
+        .alert {
+            padding: 1rem 1.25rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .alert-success {
+            background: var(--success-bg);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+
+        .alert-error {
+            background: var(--error-bg);
+            border: 1px solid var(--error);
+            color: var(--error);
+        }
+
+        .alert-icon {
+            font-size: 1.25rem;
+        }
+
+        #alertContainer {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        #alertContainer .alert {
+            margin-bottom: 0;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .subscription-details {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="settings-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="index.html" class="sidebar-logo">
+                    <div class="sidebar-logo-icon">📋</div>
+                    <span class="sidebar-logo-text">CharterPro</span>
+                </a>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="/" class="nav-item platform-home">
+                    <span class="nav-item-icon">🏠</span>
+                    <span>← Platform Home</span>
+                </a>
+                <div class="nav-section">
+                    <div class="nav-section-title">Navigation</div>
+                </div>
+                <a href="dashboard.html" class="nav-item">
+                    <span class="nav-item-icon">📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="charter.html" class="nav-item">
+                    <span class="nav-item-icon">📝</span>
+                    <span>New Charter</span>
+                </a>
+                <div class="nav-section">
+                    <div class="nav-section-title">Account</div>
+                </div>
+                <a href="settings.html" class="nav-item active">
+                    <span class="nav-item-icon">⚙️</span>
+                    <span>Settings</span>
+                </a>
+                <a href="#" class="nav-item" onclick="logout()">
+                    <span class="nav-item-icon">🚪</span>
+                    <span>Logout</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="topbar">
+                <h1 class="topbar-title">Settings</h1>
+                <div class="topbar-user">
+                    <div class="topbar-user-info">
+                        <div class="topbar-user-name" id="topbarUserName">Loading...</div>
+                        <div class="topbar-user-plan" id="topbarUserPlan">Free Plan</div>
+                    </div>
+                    <div class="topbar-avatar" id="topbarAvatar">?</div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Alert Container -->
+                <div id="alertContainer"></div>
+
+                <!-- Profile Section -->
+                <section class="settings-section">
+                    <div class="section-header">
+                        <span class="section-icon">👤</span>
+                        <h2 class="section-title">Profile Information</h2>
+                    </div>
+                    <div class="section-body">
+                        <div class="profile-avatar-section">
+                            <div class="profile-avatar" id="profileAvatar">?</div>
+                            <div class="profile-avatar-info">
+                                <h3 id="profileName">Loading...</h3>
+                                <p id="profileEmail">Loading...</p>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">First Name</label>
+                                <input type="text" class="form-control" id="firstName" placeholder="Enter first name">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Last Name</label>
+                                <input type="text" class="form-control" id="lastName" placeholder="Enter last name">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="email" placeholder="Enter email">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Company / Organization</label>
+                            <input type="text" class="form-control" id="company" placeholder="Enter company name (optional)">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Job Title</label>
+                            <input type="text" class="form-control" id="jobTitle" placeholder="e.g., Project Manager">
+                        </div>
+                        <div class="section-actions">
+                            <button class="btn btn-primary" onclick="saveProfile()">Save Changes</button>
+                            <button class="btn btn-secondary" onclick="loadProfile()">Cancel</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Security Section -->
+                <section class="settings-section">
+                    <div class="section-header">
+                        <span class="section-icon">🔐</span>
+                        <h2 class="section-title">Security</h2>
+                    </div>
+                    <div class="section-body">
+                        <div class="form-group">
+                            <label class="form-label">Current Password</label>
+                            <input type="password" class="form-control" id="currentPassword" placeholder="Enter current password">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">New Password</label>
+                                <input type="password" class="form-control" id="newPassword" placeholder="Enter new password">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Confirm New Password</label>
+                                <input type="password" class="form-control" id="confirmPassword" placeholder="Confirm new password">
+                            </div>
+                        </div>
+                        <p class="form-hint">Password must be at least 8 characters long.</p>
+                        <div class="section-actions">
+                            <button class="btn btn-primary" onclick="changePassword()">Update Password</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Subscription Section -->
+                <section class="settings-section">
+                    <div class="section-header">
+                        <span class="section-icon">💳</span>
+                        <h2 class="section-title">Subscription</h2>
+                    </div>
+                    <div class="section-body">
+                        <div id="subscriptionContent">
+                            <!-- Populated by JavaScript -->
+                        </div>
+                        <div class="section-actions">
+                            <a href="pricing.html" class="btn btn-primary" id="upgradeBtn">Upgrade Plan</a>
+                            <button class="btn btn-secondary" id="manageBillingBtn" style="display: none;">Manage Billing</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Notifications Section -->
+                <section class="settings-section">
+                    <div class="section-header">
+                        <span class="section-icon">🔔</span>
+                        <h2 class="section-title">Notifications</h2>
+                    </div>
+                    <div class="section-body">
+                        <div class="toggle-row">
+                            <div class="toggle-info">
+                                <h4>Email Notifications</h4>
+                                <p>Receive updates about your charters and account</p>
+                            </div>
+                            <div class="toggle-switch active" id="toggleEmail" onclick="toggleSetting('email')"></div>
+                        </div>
+                        <div class="toggle-row">
+                            <div class="toggle-info">
+                                <h4>Product Updates</h4>
+                                <p>Get notified about new features and improvements</p>
+                            </div>
+                            <div class="toggle-switch active" id="toggleUpdates" onclick="toggleSetting('updates')"></div>
+                        </div>
+                        <div class="toggle-row">
+                            <div class="toggle-info">
+                                <h4>Tips & Tutorials</h4>
+                                <p>Receive helpful tips to create better project charters</p>
+                            </div>
+                            <div class="toggle-switch" id="toggleTips" onclick="toggleSetting('tips')"></div>
+                        </div>
+                        <div class="toggle-row">
+                            <div class="toggle-info">
+                                <h4>Marketing Emails</h4>
+                                <p>Promotional offers and partnership announcements</p>
+                            </div>
+                            <div class="toggle-switch" id="toggleMarketing" onclick="toggleSetting('marketing')"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Preferences Section -->
+                <section class="settings-section">
+                    <div class="section-header">
+                        <span class="section-icon">🎨</span>
+                        <h2 class="section-title">Preferences</h2>
+                    </div>
+                    <div class="section-body">
+                        <div class="form-group">
+                            <label class="form-label">Default Currency</label>
+                            <select class="form-control" id="currency">
+                                <option value="USD">USD ($)</option>
+                                <option value="EUR">EUR (€)</option>
+                                <option value="GBP">GBP (£)</option>
+                                <option value="CAD">CAD ($)</option>
+                                <option value="AUD">AUD ($)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Date Format</label>
+                            <select class="form-control" id="dateFormat">
+                                <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                                <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                                <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                            </select>
+                        </div>
+                        <div class="toggle-row">
+                            <div class="toggle-info">
+                                <h4>Auto-save Charters</h4>
+                                <p>Automatically save your work as you type</p>
+                            </div>
+                            <div class="toggle-switch active" id="toggleAutosave" onclick="toggleSetting('autosave')"></div>
+                        </div>
+                        <div class="section-actions">
+                            <button class="btn btn-primary" onclick="savePreferences()">Save Preferences</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Data & Privacy Section -->
+                <section class="settings-section">
+                    <div class="section-header">
+                        <span class="section-icon">📦</span>
+                        <h2 class="section-title">Data & Privacy</h2>
+                    </div>
+                    <div class="section-body">
+                        <div class="toggle-row">
+                            <div class="toggle-info">
+                                <h4>Export Your Data</h4>
+                                <p>Download all your charters and account data</p>
+                            </div>
+                            <button class="btn btn-secondary btn-sm" onclick="exportData()">Export Data</button>
+                        </div>
+                        <div class="toggle-row">
+                            <div class="toggle-info">
+                                <h4>Usage Analytics</h4>
+                                <p>Help us improve by sharing anonymous usage data</p>
+                            </div>
+                            <div class="toggle-switch active" id="toggleAnalytics" onclick="toggleSetting('analytics')"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Danger Zone -->
+                <section class="settings-section danger-zone">
+                    <div class="section-header">
+                        <span class="section-icon">⚠️</span>
+                        <h2 class="section-title">Danger Zone</h2>
+                    </div>
+                    <div class="section-body">
+                        <div class="danger-item">
+                            <div class="danger-item-info">
+                                <h4>Delete All Charters</h4>
+                                <p>Permanently delete all your project charters</p>
+                            </div>
+                            <button class="btn btn-danger btn-sm" onclick="deleteAllCharters()">Delete Charters</button>
+                        </div>
+                        <div class="danger-item">
+                            <div class="danger-item-info">
+                                <h4>Delete Account</h4>
+                                <p>Permanently delete your account and all associated data</p>
+                            </div>
+                            <button class="btn btn-danger btn-sm" onclick="deleteAccount()">Delete Account</button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Check authentication
+        document.addEventListener('DOMContentLoaded', function() {
+            const user = JSON.parse(localStorage.getItem('charterpro_user'));
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            loadProfile();
+            loadSubscription();
+            loadPreferences();
+        });
+
+        // Load profile data
+        function loadProfile() {
+            const user = JSON.parse(localStorage.getItem('charterpro_user'));
+            if (!user) return;
+
+            // Update header
+            const initials = (user.firstName?.[0] || '') + (user.lastName?.[0] || '');
+            document.getElementById('topbarUserName').textContent = user.firstName + ' ' + user.lastName;
+            document.getElementById('topbarAvatar').textContent = initials || '?';
+            
+            // Update profile section
+            document.getElementById('profileAvatar').textContent = initials || '?';
+            document.getElementById('profileName').textContent = user.firstName + ' ' + user.lastName;
+            document.getElementById('profileEmail').textContent = user.email;
+
+            // Update subscription display
+            if (user.subscription && user.subscription.status === 'active') {
+                const planNames = {
+                    'pro_monthly': 'Pro Monthly',
+                    'pro_yearly': 'Pro Yearly',
+                    'starter_monthly': 'Starter Monthly',
+                    'starter_yearly': 'Starter Yearly'
+                };
+                document.getElementById('topbarUserPlan').textContent = planNames[user.subscription.plan] || 'Pro';
+            }
+
+            // Fill form fields
+            document.getElementById('firstName').value = user.firstName || '';
+            document.getElementById('lastName').value = user.lastName || '';
+            document.getElementById('email').value = user.email || '';
+            document.getElementById('company').value = user.company || '';
+            document.getElementById('jobTitle').value = user.jobTitle || '';
+        }
+
+        // Save profile
+        function saveProfile() {
+            const user = JSON.parse(localStorage.getItem('charterpro_user'));
+            if (!user) return;
+
+            user.firstName = document.getElementById('firstName').value.trim();
+            user.lastName = document.getElementById('lastName').value.trim();
+            user.email = document.getElementById('email').value.trim();
+            user.company = document.getElementById('company').value.trim();
+            user.jobTitle = document.getElementById('jobTitle').value.trim();
+
+            if (!user.firstName || !user.lastName || !user.email) {
+                showAlert('error', 'Please fill in all required fields');
+                return;
+            }
+
+            localStorage.setItem('charterpro_user', JSON.stringify(user));
+
+            // Also update in users list if it exists
+            const users = JSON.parse(localStorage.getItem('charterpro_users') || '[]');
+            const index = users.findIndex(function(u) { return u.id === user.id; });
+            if (index >= 0) {
+                users[index] = { ...users[index], ...user };
+                localStorage.setItem('charterpro_users', JSON.stringify(users));
+            }
+
+            loadProfile();
+            showAlert('success', 'Profile updated successfully');
+        }
+
+        // Change password
+        function changePassword() {
+            const user = JSON.parse(localStorage.getItem('charterpro_user'));
+            if (!user) return;
+
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (!currentPassword || !newPassword || !confirmPassword) {
+                showAlert('error', 'Please fill in all password fields');
+                return;
+            }
+
+            if (currentPassword !== user.password) {
+                showAlert('error', 'Current password is incorrect');
+                return;
+            }
+
+            if (newPassword.length < 8) {
+                showAlert('error', 'New password must be at least 8 characters');
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                showAlert('error', 'New passwords do not match');
+                return;
+            }
+
+            user.password = newPassword;
+            localStorage.setItem('charterpro_user', JSON.stringify(user));
+
+            // Update in users list
+            const users = JSON.parse(localStorage.getItem('charterpro_users') || '[]');
+            const index = users.findIndex(function(u) { return u.id === user.id; });
+            if (index >= 0) {
+                users[index].password = newPassword;
+                localStorage.setItem('charterpro_users', JSON.stringify(users));
+            }
+
+            document.getElementById('currentPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+
+            showAlert('success', 'Password updated successfully');
+        }
+
+        // Load subscription
+        function loadSubscription() {
+            const user = JSON.parse(localStorage.getItem('charterpro_user'));
+            const container = document.getElementById('subscriptionContent');
+            
+            if (user && user.subscription && user.subscription.status === 'active') {
+                const plan = user.subscription.plan;
+                const planInfo = {
+                    'pro_monthly': { name: 'Pro', price: '$49', period: 'month' },
+                    'pro_yearly': { name: 'Pro', price: '$39', period: 'month (billed yearly)' },
+                    'starter_monthly': { name: 'Starter', price: '$19', period: 'month' },
+                    'starter_yearly': { name: 'Starter', price: '$15', period: 'month (billed yearly)' }
+                };
+                const info = planInfo[plan] || { name: 'Pro', price: '$49', period: 'month' };
+                const startDate = new Date(user.subscription.startedAt);
+                const nextBilling = new Date(startDate);
+                nextBilling.setMonth(nextBilling.getMonth() + (plan.includes('yearly') ? 12 : 1));
+
+                container.innerHTML = `
+                    <div class="subscription-card">
+                        <div class="subscription-header">
+                            <div class="subscription-plan">${info.name} Plan</div>
+                            <span class="subscription-badge">Active</span>
+                        </div>
+                        <div class="subscription-price">${info.price}<span>/${info.period}</span></div>
+                        <div class="subscription-details">
+                            <div class="subscription-detail">
+                                <div class="subscription-detail-label">Started</div>
+                                <div class="subscription-detail-value">${startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</div>
+                            </div>
+                            <div class="subscription-detail">
+                                <div class="subscription-detail-label">Next Billing</div>
+                                <div class="subscription-detail-value">${nextBilling.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('upgradeBtn').textContent = 'Change Plan';
+                document.getElementById('manageBillingBtn').style.display = 'inline-flex';
+            } else {
+                container.innerHTML = `
+                    <div class="free-plan-card">
+                        <h3>Free Plan</h3>
+                        <p>You're currently on the free plan with limited features.</p>
+                        <p style="color: var(--accent);">Upgrade to unlock unlimited charters, PDF exports, and more!</p>
+                    </div>
+                `;
+                document.getElementById('upgradeBtn').textContent = 'Upgrade Plan';
+                document.getElementById('manageBillingBtn').style.display = 'none';
+            }
+        }
+
+        // Load preferences
+        function loadPreferences() {
+            const prefs = JSON.parse(localStorage.getItem('charterpro_preferences') || '{}');
+            
+            // Currency
+            if (prefs.currency) {
+                document.getElementById('currency').value = prefs.currency;
+            }
+            
+            // Date format
+            if (prefs.dateFormat) {
+                document.getElementById('dateFormat').value = prefs.dateFormat;
+            }
+
+            // Toggles
+            const toggles = ['email', 'updates', 'tips', 'marketing', 'autosave', 'analytics'];
+            toggles.forEach(function(key) {
+                const toggle = document.getElementById('toggle' + key.charAt(0).toUpperCase() + key.slice(1));
+                if (toggle && prefs[key] !== undefined) {
+                    toggle.classList.toggle('active', prefs[key]);
+                }
+            });
+        }
+
+        // Save preferences
+        function savePreferences() {
+            const prefs = JSON.parse(localStorage.getItem('charterpro_preferences') || '{}');
+            
+            prefs.currency = document.getElementById('currency').value;
+            prefs.dateFormat = document.getElementById('dateFormat').value;
+            
+            localStorage.setItem('charterpro_preferences', JSON.stringify(prefs));
+            showAlert('success', 'Preferences saved');
+        }
+
+        // Toggle setting
+        function toggleSetting(setting) {
+            const key = 'toggle' + setting.charAt(0).toUpperCase() + setting.slice(1);
+            const toggle = document.getElementById(key);
+            if (!toggle) return;
+            
+            toggle.classList.toggle('active');
+            
+            const prefs = JSON.parse(localStorage.getItem('charterpro_preferences') || '{}');
+            prefs[setting] = toggle.classList.contains('active');
+            localStorage.setItem('charterpro_preferences', JSON.stringify(prefs));
+        }
+
+        // Export data
+        function exportData() {
+            const user = JSON.parse(localStorage.getItem('charterpro_user'));
+            const charters = JSON.parse(localStorage.getItem('charterpro_charters') || '[]');
+            const userCharters = charters.filter(function(c) { return c.userId === user.id; });
+            
+            const exportData = {
+                exportDate: new Date().toISOString(),
+                profile: {
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    email: user.email,
+                    company: user.company,
+                    jobTitle: user.jobTitle
+                },
+                subscription: user.subscription,
+                charters: userCharters,
+                preferences: JSON.parse(localStorage.getItem('charterpro_preferences') || '{}')
+            };
+
+            const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'charterpro-data-' + new Date().toISOString().split('T')[0] + '.json';
+            a.click();
+            URL.revokeObjectURL(url);
+
+            showAlert('success', 'Data exported successfully');
+        }
+
+        // Delete all charters
+        function deleteAllCharters() {
+            if (!confirm('Are you sure you want to delete ALL your charters? This cannot be undone.')) {
+                return;
+            }
+
+            const user = JSON.parse(localStorage.getItem('charterpro_user'));
+            let charters = JSON.parse(localStorage.getItem('charterpro_charters') || '[]');
+            charters = charters.filter(function(c) { return c.userId !== user.id; });
+            localStorage.setItem('charterpro_charters', JSON.stringify(charters));
+
+            showAlert('success', 'All charters deleted');
+        }
+
+        // Delete account
+        function deleteAccount() {
+            if (!confirm('Are you sure you want to delete your account? This action is permanent and cannot be undone.')) {
+                return;
+            }
+            if (!confirm('This will delete all your data including charters and settings. Type "DELETE" to confirm.')) {
+                return;
+            }
+
+            const user = JSON.parse(localStorage.getItem('charterpro_user'));
+            
+            // Remove user from users list
+            let users = JSON.parse(localStorage.getItem('charterpro_users') || '[]');
+            users = users.filter(function(u) { return u.id !== user.id; });
+            localStorage.setItem('charterpro_users', JSON.stringify(users));
+
+            // Remove user's charters
+            let charters = JSON.parse(localStorage.getItem('charterpro_charters') || '[]');
+            charters = charters.filter(function(c) { return c.userId !== user.id; });
+            localStorage.setItem('charterpro_charters', JSON.stringify(charters));
+
+            // Clear current user
+            localStorage.removeItem('charterpro_user');
+            localStorage.removeItem('charterpro_preferences');
+
+            alert('Your account has been deleted.');
+            window.location.href = 'index.html';
+        }
+
+        // Logout
+        function logout() {
+            localStorage.removeItem('charterpro_user');
+            window.location.href = 'index.html';
+        }
+
+        // Show alert
+        function showAlert(type, message) {
+            const container = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-' + type;
+            alert.innerHTML = '<span class="alert-icon">' + (type === 'success' ? '✓' : '✕') + '</span>' + message;
+            container.appendChild(alert);
+            setTimeout(function() { alert.remove(); }, 4000);
+        }
+    </script>
+</body>
+</html>

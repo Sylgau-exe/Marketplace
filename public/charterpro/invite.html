@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beta Access - CharterPro</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1a365d;
+            --primary-light: #2c5282;
+            --primary-dark: #0f2744;
+            --accent: #c6a052;
+            --accent-light: #d4af61;
+            --accent-glow: rgba(198, 160, 82, 0.3);
+            --success: #38a169;
+            --success-bg: rgba(56, 161, 105, 0.1);
+            --error: #e53e3e;
+            --error-bg: rgba(229, 62, 62, 0.1);
+            --bg: #0a0f1a;
+            --bg-card: #111827;
+            --text: #f7fafc;
+            --text-muted: #a0aec0;
+            --text-dim: #718096;
+            --border: #2d3748;
+            --gradient-gold: linear-gradient(135deg, #c6a052 0%, #d4af61 50%, #c6a052 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .invite-container {
+            width: 100%;
+            max-width: 440px;
+        }
+
+        .invite-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .invite-badge {
+            display: inline-block;
+            background: var(--accent);
+            color: var(--primary-dark);
+            padding: 0.375rem 1rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+        }
+
+        .invite-header h1 {
+            font-family: 'Fraunces', serif;
+            font-size: 2.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .invite-header p {
+            color: var(--text-muted);
+        }
+
+        .invite-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2rem;
+        }
+
+        .step {
+            display: none;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            background: var(--bg);
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-dim);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--gradient-gold);
+            color: var(--primary-dark);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px var(--accent-glow);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-loading {
+            position: relative;
+            color: transparent;
+        }
+
+        .btn-loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--primary-dark);
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .message {
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .message.error {
+            background: var(--error-bg);
+            border: 1px solid var(--error);
+            color: var(--error);
+        }
+
+        .message.success {
+            background: var(--success-bg);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        .perks {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .perks-title {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .perks-list {
+            list-style: none;
+            display: grid;
+            gap: 0.5rem;
+        }
+
+        .perks-list li {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .perks-list li::before {
+            content: '✓';
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 1.5rem;
+            color: var(--text-dim);
+            font-size: 0.875rem;
+        }
+
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            cursor: pointer;
+        }
+
+        .success-icon {
+            font-size: 4rem;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .success-text {
+            text-align: center;
+        }
+
+        .success-text h2 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .success-text p {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 480px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav style="position: fixed; top: 0; left: 0; right: 0; padding: 1rem 2rem; background: rgba(10, 15, 26, 0.95); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); z-index: 1000; display: flex; justify-content: space-between; align-items: center;">
+        <a href="index.html" style="display: flex; align-items: center; gap: 0.75rem; text-decoration: none;">
+            <div style="width: 40px; height: 40px; background: var(--gradient-gold); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">📋</div>
+            <span style="font-family: 'Fraunces', serif; font-size: 1.5rem; font-weight: 700; color: var(--text);">CharterPro</span>
+        </a>
+        <a href="/" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 8px; color: #a5b4fc; text-decoration: none; font-size: 0.85rem; font-weight: 500;">← Platform Home</a>
+    </nav>
+    <main class="main" style="padding-top: 70px;">
+        <div class="invite-container">
+            <div class="invite-header">
+                <span class="invite-badge">🔒 Private Beta</span>
+                <h1>You're Invited!</h1>
+                <p>Enter your invite code to get free access</p>
+            </div>
+
+            <div class="invite-card">
+                <!-- Step 1: Enter Invite Code -->
+                <div class="step active" id="step1">
+                    <div class="message error" id="codeError"></div>
+                    
+                    <form onsubmit="verifyCode(event)">
+                        <div class="form-group">
+                            <label class="form-label">Invite Code</label>
+                            <input type="password" class="form-input" id="inviteCode" placeholder="Enter your secret code" required autofocus>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" id="verifyBtn">
+                            Verify Code →
+                        </button>
+                    </form>
+
+                    <div class="perks">
+                        <div class="perks-title">Beta testers get:</div>
+                        <ul class="perks-list">
+                            <li>Full Pro access (normally $49/mo)</li>
+                            <li>Unlimited project charters</li>
+                            <li>All premium features</li>
+                            <li>Priority support</li>
+                            <li>No credit card required</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Step 2: Create Account -->
+                <div class="step" id="step2">
+                    <div class="message error" id="signupError"></div>
+                    <div class="message success" id="signupSuccess"></div>
+
+                    <form onsubmit="createBetaAccount(event)">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">First Name</label>
+                                <input type="text" class="form-input" id="firstName" placeholder="John" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Last Name</label>
+                                <input type="text" class="form-input" id="lastName" placeholder="Doe" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-input" id="email" placeholder="you@example.com" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Password</label>
+                            <div class="password-wrapper">
+                                <input type="password" class="form-input" id="password" placeholder="Min. 8 characters" minlength="8" required>
+                                <button type="button" class="password-toggle" onclick="togglePassword()">👁️</button>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" id="createBtn">
+                            Create Free Account →
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Step 3: Success -->
+                <div class="step" id="step3">
+                    <div class="success-icon">🎉</div>
+                    <div class="success-text">
+                        <h2>Welcome to the Beta!</h2>
+                        <p>Your Pro account is ready. You have full access to all features.</p>
+                    </div>
+                    <a href="dashboard.html" class="btn btn-primary">Go to Dashboard →</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>CharterPro Beta • <a href="index.html">Back to Home</a></p>
+    </footer>
+
+    <script>
+        // ⚠️ CHANGE THIS SECRET CODE!
+        const INVITE_CODE = 'BETATESTER2025';
+
+        // Check if already logged in with beta access
+        document.addEventListener('DOMContentLoaded', function() {
+            const user = JSON.parse(localStorage.getItem('charterpro_user'));
+            if (user && user.subscription && user.subscription.status === 'active') {
+                window.location.href = 'dashboard.html';
+            }
+        });
+
+        function verifyCode(e) {
+            e.preventDefault();
+            const code = document.getElementById('inviteCode').value.trim().toUpperCase();
+            const errorDiv = document.getElementById('codeError');
+            const btn = document.getElementById('verifyBtn');
+
+            errorDiv.classList.remove('show');
+            btn.classList.add('btn-loading');
+            btn.disabled = true;
+
+            setTimeout(function() {
+                if (code === INVITE_CODE) {
+                    // Code valid, show signup form
+                    document.getElementById('step1').classList.remove('active');
+                    document.getElementById('step2').classList.add('active');
+                } else {
+                    errorDiv.textContent = 'Invalid invite code. Please check and try again.';
+                    errorDiv.classList.add('show');
+                }
+                btn.classList.remove('btn-loading');
+                btn.disabled = false;
+            }, 800);
+        }
+
+        function createBetaAccount(e) {
+            e.preventDefault();
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('signupError');
+            const btn = document.getElementById('createBtn');
+
+            errorDiv.classList.remove('show');
+
+            if (password.length < 8) {
+                errorDiv.textContent = 'Password must be at least 8 characters.';
+                errorDiv.classList.add('show');
+                return;
+            }
+
+            btn.classList.add('btn-loading');
+            btn.disabled = true;
+
+            setTimeout(function() {
+                // Get existing users
+                const users = JSON.parse(localStorage.getItem('charterpro_users') || '[]');
+
+                // Check if email exists
+                const existingUser = users.find(function(u) { return u.email === email; });
+                
+                if (existingUser) {
+                    // Upgrade existing user to beta
+                    existingUser.subscription = {
+                        plan: 'pro_monthly',
+                        status: 'active',
+                        type: 'beta',
+                        startedAt: new Date().toISOString()
+                    };
+                    localStorage.setItem('charterpro_users', JSON.stringify(users));
+
+                    // Set session
+                    const sessionUser = {
+                        id: existingUser.id,
+                        email: existingUser.email,
+                        firstName: existingUser.firstName,
+                        lastName: existingUser.lastName,
+                        subscription: existingUser.subscription,
+                        createdAt: existingUser.createdAt
+                    };
+                    localStorage.setItem('charterpro_user', JSON.stringify(sessionUser));
+                } else {
+                    // Create new beta user
+                    const newUser = {
+                        id: 'beta_' + Date.now(),
+                        firstName: firstName,
+                        lastName: lastName,
+                        email: email,
+                        password: password,
+                        subscription: {
+                            plan: 'pro_monthly',
+                            status: 'active',
+                            type: 'beta',
+                            startedAt: new Date().toISOString()
+                        },
+                        createdAt: new Date().toISOString()
+                    };
+
+                    users.push(newUser);
+                    localStorage.setItem('charterpro_users', JSON.stringify(users));
+
+                    // Set session
+                    const sessionUser = {
+                        id: newUser.id,
+                        email: newUser.email,
+                        firstName: newUser.firstName,
+                        lastName: newUser.lastName,
+                        subscription: newUser.subscription,
+                        createdAt: newUser.createdAt
+                    };
+                    localStorage.setItem('charterpro_user', JSON.stringify(sessionUser));
+                }
+
+                // Log activity
+                const activity = JSON.parse(localStorage.getItem('charterpro_activity') || '[]');
+                activity.unshift({
+                    type: 'signup',
+                    user: firstName + ' ' + lastName + ' (Beta)',
+                    time: new Date().toISOString()
+                });
+                localStorage.setItem('charterpro_activity', JSON.stringify(activity));
+
+                // Show success
+                document.getElementById('step2').classList.remove('active');
+                document.getElementById('step3').classList.add('active');
+
+            }, 1000);
+        }
+
+        function togglePassword() {
+            const input = document.getElementById('password');
+            const btn = document.querySelector('.password-toggle');
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                btn.textContent = '👁️';
+            }
+        }
+    </script>
+</body>
+</html>

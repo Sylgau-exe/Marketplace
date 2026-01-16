@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help Center - CharterPro</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="shared-styles.css">
+    <style>
+        .help-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .help-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+        
+        .help-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.2s;
+        }
+        
+        .help-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+        
+        .help-card-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(198, 160, 82, 0.15);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .help-card h3 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .help-card p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        
+        .faq-section {
+            margin-top: 3rem;
+        }
+        
+        .faq-section h2 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.75rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        
+        .faq-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+        }
+        
+        .faq-question {
+            width: 100%;
+            padding: 1.25rem 1.5rem;
+            background: transparent;
+            border: none;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+        }
+        
+        .faq-question:hover {
+            background: var(--bg-card-hover);
+        }
+        
+        .faq-question span {
+            transition: transform 0.2s;
+        }
+        
+        .faq-item.active .faq-question span {
+            transform: rotate(180deg);
+        }
+        
+        .faq-answer {
+            padding: 0 1.5rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .faq-item.active .faq-answer {
+            padding: 0 1.5rem 1.5rem;
+            max-height: 500px;
+        }
+        
+        .faq-answer p {
+            color: var(--text-muted);
+            line-height: 1.7;
+        }
+        
+        .contact-section {
+            margin-top: 4rem;
+            text-align: center;
+            padding: 3rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+        }
+        
+        .contact-section h2 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .contact-section p {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+        
+        .contact-email {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--accent);
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        
+        .contact-email:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-content">
+            <a href="index.html" class="nav-logo">
+                <div class="nav-logo-icon">📋</div>
+                <span class="nav-logo-text">CharterPro</span>
+            </a>
+            <div class="nav-links">
+                <a href="/" class="platform-link">← Platform Home</a>
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="examples.html" class="nav-link">Examples</a>
+                <a href="pricing.html" class="nav-link">Pricing</a>
+                <a href="login.html" class="nav-link">Sign In</a>
+            </div>
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+        </div>
+    </nav>
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="/">← Platform Home</a>
+        <a href="index.html">Home</a>
+        <a href="examples.html">Examples</a>
+        <a href="pricing.html">Pricing</a>
+        <a href="login.html">Sign In</a>
+    </div>
+
+    <main class="page-header">
+        <h1>Help Center</h1>
+        <p>Find answers to common questions and learn how to get the most out of CharterPro.</p>
+    </main>
+
+    <div class="help-container">
+        <!-- Quick Help Cards -->
+        <div class="help-grid">
+            <div class="help-card">
+                <div class="help-card-icon">🚀</div>
+                <h3>Getting Started</h3>
+                <p>New to CharterPro? Learn how to create your first project charter in minutes with our step-by-step guide.</p>
+            </div>
+            <div class="help-card">
+                <div class="help-card-icon">📝</div>
+                <h3>Creating Charters</h3>
+                <p>Understand each section of the charter, from project basics to financial projections and risk assessment.</p>
+            </div>
+            <div class="help-card">
+                <div class="help-card-icon">📄</div>
+                <h3>Exporting & Sharing</h3>
+                <p>Learn how to export your charters as professional PDFs and share them with stakeholders.</p>
+            </div>
+            <div class="help-card">
+                <div class="help-card-icon">💾</div>
+                <h3>Saving Your Work</h3>
+                <p>Understand how auto-save works and best practices for backing up your important charter data.</p>
+            </div>
+            <div class="help-card">
+                <div class="help-card-icon">🎨</div>
+                <h3>Templates</h3>
+                <p>Explore industry-specific templates for software, construction, marketing, and business process projects.</p>
+            </div>
+            <div class="help-card">
+                <div class="help-card-icon">⚙️</div>
+                <h3>Account Settings</h3>
+                <p>Manage your profile, subscription, and preferences from the settings page.</p>
+            </div>
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="faq-section">
+            <h2>Frequently Asked Questions</h2>
+            
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    How is my charter data stored?
+                    <span>▼</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Your charter data is stored locally in your browser using localStorage technology. This means your data stays on your device and is not uploaded to our servers. For security, we recommend regularly exporting important charters as PDFs. Note that clearing your browser data will remove your saved charters.</p>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    Can I access my charters on different devices?
+                    <span>▼</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Since data is stored locally in your browser, charters created on one device won't automatically appear on another. To transfer charters between devices, export them as PDFs or use the data export feature in Settings. We're working on cloud sync for a future update.</p>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    What's included in the free plan?
+                    <span>▼</span>
+                </button>
+                <div class="faq-answer">
+                    <p>The free plan includes access to the charter creation tool with the ability to create up to 3 charters. You get access to basic templates and PDF export. Upgrade to a paid plan for unlimited charters, all templates, and premium features.</p>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    How do I export my charter as a PDF?
+                    <span>▼</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Once you've completed your charter, click the "Export PDF" button in the top right corner. You can also access this from the Preview section (Step 10). The PDF will be formatted professionally with your project branding and all sections properly organized.</p>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    Can I edit a charter after exporting it?
+                    <span>▼</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Yes! Your charter remains editable in CharterPro even after exporting. Simply go to your Dashboard, find the charter, and click "Edit". Make your changes and export a new PDF. The exported PDF itself cannot be edited, but your source charter can always be modified.</p>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    What project types does CharterPro support?
+                    <span>▼</span>
+                </button>
+                <div class="faq-answer">
+                    <p>CharterPro supports four main project types: Software/IT Projects, Construction Projects, Creative/Marketing Projects, and Business Process Projects. Each type comes with tailored templates, relevant fields, and industry-specific examples to help you create the most effective charter for your project.</p>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    How do I cancel my subscription?
+                    <span>▼</span>
+                </button>
+                <div class="faq-answer">
+                    <p>You can cancel your subscription anytime from Settings > Subscription. Click "Cancel Subscription" and follow the prompts. You'll retain access until the end of your current billing period. Your existing charters will remain accessible, but you'll be limited to the free plan features after cancellation.</p>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    Is CharterPro suitable for Agile projects?
+                    <span>▼</span>
+                </button>
+                <div class="faq-answer">
+                    <p>While CharterPro is designed primarily for traditional project charters, it can be adapted for Agile projects. Use it to create a lightweight project charter or "project vision" document that outlines high-level objectives, stakeholders, and initial scope. The flexible format allows you to focus on the sections most relevant to your Agile approach.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Section -->
+        <div class="contact-section">
+            <h2>Still Need Help?</h2>
+            <p>Our support team is here to assist you with any questions or issues.</p>
+            <a href="mailto:support@projectmanagertool.com" class="contact-email">
+                ✉️ support@projectmanagertool.com
+            </a>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <a href="index.html" class="nav-logo">
+                <div class="nav-logo-icon">📋</div>
+                <span class="nav-logo-text">CharterPro</span>
+            </a>
+            <div class="footer-links">
+                <a href="privacy.html" class="footer-link">Privacy</a>
+                <a href="terms.html" class="footer-link">Terms</a>
+                <a href="help.html" class="footer-link">Help</a>
+            </div>
+            <span class="footer-copy">© 2025 CharterPro. All rights reserved.</span>
+        </div>
+    </footer>
+
+    <script>
+        function toggleMobileMenu() {
+            document.getElementById('mobileMenu').classList.toggle('active');
+        }
+        
+        function toggleFaq(button) {
+            const faqItem = button.parentElement;
+            faqItem.classList.toggle('active');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCO Calculator - Total Cost of Ownership Analysis</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #5b21b6;
+            --accent: #8b5cf6;
+            --accent-light: #a78bfa;
+            --accent-glow: rgba(139, 92, 246, 0.3);
+            --bg: #0a0f1a;
+            --bg-card: #111827;
+            --text: #f7fafc;
+            --text-muted: #a0aec0;
+            --border: #2d3748;
+            --gradient-purple: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 50%, #8b5cf6 100%);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+
+        .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 1rem 2rem; background: rgba(10, 15, 26, 0.95); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+        .nav-content { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .nav-logo { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; }
+        .nav-logo-icon { width: 40px; height: 40px; background: var(--gradient-purple); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
+        .nav-logo-text { font-family: 'Fraunces', serif; font-size: 1.5rem; font-weight: 700; color: var(--text); }
+        .nav-links { display: flex; align-items: center; gap: 2rem; }
+        .platform-link { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 8px; color: #a5b4fc; text-decoration: none; font-size: 0.85rem; font-weight: 500; }
+        .nav-link { color: var(--text-muted); text-decoration: none; font-weight: 500; }
+        .nav-cta { background: var(--gradient-purple); color: white; padding: 0.75rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.2s; }
+        .nav-cta:hover { transform: translateY(-2px); box-shadow: 0 4px 20px var(--accent-glow); }
+
+        .hero { padding: 10rem 2rem 6rem; text-align: center; background: radial-gradient(ellipse at top, rgba(139, 92, 246, 0.1) 0%, transparent 60%); }
+        .hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: rgba(139, 92, 246, 0.15); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 50px; font-size: 0.85rem; margin-bottom: 2rem; }
+        .hero-badge-dot { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .hero h1 { font-family: 'Fraunces', serif; font-size: 3.5rem; font-weight: 800; line-height: 1.1; margin-bottom: 1.5rem; max-width: 900px; margin-left: auto; margin-right: auto; }
+        .hero h1 span { background: var(--gradient-purple); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .hero-subtitle { font-size: 1.25rem; color: var(--text-muted); max-width: 700px; margin: 0 auto 2.5rem; }
+        .hero-cta { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+        .btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 1rem 2rem; border-radius: 10px; font-weight: 600; text-decoration: none; transition: all 0.2s; font-size: 1rem; }
+        .btn-primary { background: var(--gradient-purple); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 20px var(--accent-glow); }
+        .btn-secondary { background: transparent; color: var(--text); border: 2px solid var(--border); }
+
+        .cost-section { padding: 4rem 2rem; max-width: 1200px; margin: 0 auto; }
+        .section-title { font-family: 'Fraunces', serif; font-size: 2.5rem; text-align: center; margin-bottom: 1rem; }
+        .section-subtitle { text-align: center; color: var(--text-muted); max-width: 600px; margin: 0 auto 3rem; }
+        .cost-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+        .cost-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; text-align: center; transition: all 0.3s; }
+        .cost-card:hover { border-color: var(--accent); transform: translateY(-4px); }
+        .cost-icon { width: 60px; height: 60px; background: rgba(139, 92, 246, 0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin: 0 auto 1rem; }
+        .cost-card h3 { font-size: 1.1rem; margin-bottom: 0.5rem; }
+        .cost-card p { font-size: 0.9rem; color: var(--text-muted); }
+        .cost-items { text-align: left; margin-top: 1rem; font-size: 0.85rem; color: var(--text-dim); }
+
+        .features-section { padding: 6rem 2rem; background: var(--bg-card); }
+        .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; max-width: 1200px; margin: 0 auto; }
+        .feature-card { padding: 2rem; }
+        .feature-icon { width: 50px; height: 50px; background: rgba(139, 92, 246, 0.15); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 1rem; }
+        .feature-card h3 { font-size: 1.1rem; margin-bottom: 0.5rem; }
+        .feature-card p { color: var(--text-muted); font-size: 0.95rem; }
+
+        .cta-section { padding: 6rem 2rem; text-align: center; }
+        .cta-box { max-width: 600px; margin: 0 auto; background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 3rem; }
+        .cta-box h2 { font-family: 'Fraunces', serif; font-size: 2rem; margin-bottom: 1rem; }
+        .cta-box p { color: var(--text-muted); margin-bottom: 2rem; }
+
+        .footer { background: var(--bg-card); border-top: 1px solid var(--border); padding: 2rem; }
+        .footer-content { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .footer-links { display: flex; gap: 2rem; }
+        .footer-link { color: var(--text-muted); text-decoration: none; }
+        .footer-copy { color: var(--text-dim); font-size: 0.875rem; }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hero h1 { font-size: 2.5rem; }
+            .cost-grid, .features-grid { grid-template-columns: 1fr; }
+            .footer-content { flex-direction: column; gap: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-content">
+            <a href="index.html" class="nav-logo">
+                <div class="nav-logo-icon">🧮</div>
+                <span class="nav-logo-text">TCO Calculator</span>
+            </a>
+            <div class="nav-links">
+                <a href="/" class="platform-link">← Platform Home</a>
+                <a href="#costs" class="nav-link">Cost Categories</a>
+                <a href="#features" class="nav-link">Features</a>
+                <a href="calculator.html" class="nav-cta">Start Analysis →</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-badge">
+            <span class="hero-badge-dot"></span>
+            Financial Analysis • Lifecycle Costing
+        </div>
+        <h1>Calculate <span>Total Cost of Ownership</span> for Any Asset</h1>
+        <p class="hero-subtitle">
+            Go beyond purchase price. Understand the true cost of ownership including acquisition, operation, and end-of-life expenses over the entire lifecycle.
+        </p>
+        <div class="hero-cta">
+            <a href="calculator.html" class="btn btn-primary">Start TCO Analysis →</a>
+            <a href="#costs" class="btn btn-secondary">View Cost Categories</a>
+        </div>
+    </section>
+
+    <section class="cost-section" id="costs">
+        <h2 class="section-title">Complete Cost Coverage</h2>
+        <p class="section-subtitle">Capture every cost across the entire asset lifecycle.</p>
+        
+        <div class="cost-grid">
+            <div class="cost-card">
+                <div class="cost-icon">💰</div>
+                <h3>Acquisition Costs</h3>
+                <p>One-time costs to purchase and deploy</p>
+                <div class="cost-items">Hardware • Software • Implementation • Training</div>
+            </div>
+            <div class="cost-card">
+                <div class="cost-icon">⚙️</div>
+                <h3>Operating Costs</h3>
+                <p>Ongoing annual expenses to run and maintain</p>
+                <div class="cost-items">Maintenance • Labor • Power • Subscriptions</div>
+            </div>
+            <div class="cost-card">
+                <div class="cost-icon">🔄</div>
+                <h3>End-of-Life Costs</h3>
+                <p>Disposal, migration, and replacement</p>
+                <div class="cost-items">Decommission • Migration • Disposal • Downtime</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="features-section" id="features">
+        <h2 class="section-title">Powerful Features</h2>
+        <p class="section-subtitle">Everything you need for comprehensive TCO analysis.</p>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Visual Breakdowns</h3>
+                <p>See cost distribution with interactive charts and category breakdowns.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📅</div>
+                <h3>Multi-Year Projections</h3>
+                <p>Project costs over 1-10 years with annual escalation factors.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔢</div>
+                <h3>Per-Unit Costs</h3>
+                <p>Calculate TCO per unit, per month, and per year for easy comparison.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📄</div>
+                <h3>PDF Export</h3>
+                <p>Generate professional reports for procurement and budget requests.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💾</div>
+                <h3>Auto-Save</h3>
+                <p>Your analysis is saved automatically as you work.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🏷️</div>
+                <h3>Hidden Costs</h3>
+                <p>Don't miss downtime, opportunity costs, and other often-overlooked expenses.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section">
+        <div class="cta-box">
+            <h2>Know the True Cost</h2>
+            <p>Start your TCO analysis now and make informed procurement decisions.</p>
+            <a href="calculator.html" class="btn btn-primary">Create TCO Analysis →</a>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <a href="index.html" class="nav-logo">
+                <div class="nav-logo-icon">🧮</div>
+                <span class="nav-logo-text">TCO Calculator</span>
+            </a>
+            <div class="footer-links">
+                <a href="/" class="footer-link">Platform Home</a>
+                <a href="calculator.html" class="footer-link">Start Analysis</a>
+            </div>
+            <span class="footer-copy">© 2025 ProjectManagerTool. All rights reserved.</span>
+        </div>
+    </footer>
+</body>
+</html>

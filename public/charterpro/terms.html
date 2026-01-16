@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms of Service - CharterPro</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="shared-styles.css">
+    <style>
+        .content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .content h2 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.5rem;
+            color: var(--accent);
+            margin: 2rem 0 1rem;
+        }
+        
+        .content h3 {
+            font-size: 1.1rem;
+            margin: 1.5rem 0 0.75rem;
+        }
+        
+        .content p, .content li {
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            line-height: 1.8;
+        }
+        
+        .content ul, .content ol {
+            padding-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .content li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .highlight-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .highlight-box p {
+            margin-bottom: 0;
+        }
+        
+        .last-updated {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-content">
+            <a href="index.html" class="nav-logo">
+                <div class="nav-logo-icon">📋</div>
+                <span class="nav-logo-text">CharterPro</span>
+            </a>
+            <div class="nav-links">
+                <a href="/" class="platform-link">← Platform Home</a>
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="examples.html" class="nav-link">Examples</a>
+                <a href="pricing.html" class="nav-link">Pricing</a>
+                <a href="login.html" class="nav-link">Sign In</a>
+            </div>
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+        </div>
+    </nav>
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="/">← Platform Home</a>
+        <a href="index.html">Home</a>
+        <a href="examples.html">Examples</a>
+        <a href="pricing.html">Pricing</a>
+        <a href="login.html">Sign In</a>
+    </div>
+
+    <main class="page-header" style="padding-bottom: 0;">
+        <h1>Terms of Service</h1>
+        <p>Please read these terms carefully before using CharterPro.</p>
+    </main>
+
+    <div class="content">
+        <div class="highlight-box">
+            <p><strong>Summary:</strong> By using CharterPro, you agree to these terms. Use our service responsibly, respect intellectual property, and understand that your charter data is stored locally in your browser.</p>
+        </div>
+
+        <h2>1. Acceptance of Terms</h2>
+        <p>By accessing or using CharterPro ("Service"), you agree to be bound by these Terms of Service ("Terms"). If you disagree with any part of these terms, you may not access the Service.</p>
+
+        <h2>2. Description of Service</h2>
+        <p>CharterPro is a web-based tool that helps users create professional project charters. The Service includes:</p>
+        <ul>
+            <li>Project charter creation and editing tools</li>
+            <li>Industry-specific templates</li>
+            <li>PDF export functionality</li>
+            <li>Example charter library</li>
+            <li>Local data storage in your browser</li>
+        </ul>
+
+        <h2>3. User Accounts</h2>
+        <h3>3.1 Registration</h3>
+        <p>To access certain features, you may need to create an account. You agree to provide accurate, current, and complete information during registration.</p>
+        
+        <h3>3.2 Account Security</h3>
+        <p>You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account.</p>
+        
+        <h3>3.3 Account Termination</h3>
+        <p>We reserve the right to suspend or terminate accounts that violate these Terms or for any other reason at our discretion.</p>
+
+        <h2>4. Subscription and Payments</h2>
+        <h3>4.1 Free Tier</h3>
+        <p>The free tier allows limited charter creation. Features and limits may change at our discretion.</p>
+        
+        <h3>4.2 Paid Subscriptions</h3>
+        <p>Paid plans are billed according to the selected billing cycle. All fees are non-refundable except as required by law or as explicitly stated.</p>
+        
+        <h3>4.3 Cancellation</h3>
+        <p>You may cancel your subscription at any time. Access continues until the end of the current billing period.</p>
+
+        <h2>5. User Content</h2>
+        <h3>5.1 Ownership</h3>
+        <p>You retain all rights to the content you create using CharterPro. Your charters belong to you.</p>
+        
+        <h3>5.2 Local Storage</h3>
+        <p>Charter data is stored locally in your browser. We recommend regularly exporting important charters as PDFs. We are not responsible for data loss due to browser clearing or device issues.</p>
+        
+        <h3>5.3 Responsibility</h3>
+        <p>You are solely responsible for the content of your charters and ensuring it does not violate any laws or third-party rights.</p>
+
+        <h2>6. Intellectual Property</h2>
+        <h3>6.1 Our Property</h3>
+        <p>The Service, including its design, features, templates, and code, is owned by ProjectManagerTool and protected by intellectual property laws.</p>
+        
+        <h3>6.2 License</h3>
+        <p>We grant you a limited, non-exclusive, non-transferable license to use the Service for its intended purpose.</p>
+        
+        <h3>6.3 Restrictions</h3>
+        <p>You may not:</p>
+        <ul>
+            <li>Copy, modify, or distribute the Service</li>
+            <li>Reverse engineer or attempt to extract source code</li>
+            <li>Use the Service for any unlawful purpose</li>
+            <li>Resell or sublicense the Service</li>
+        </ul>
+
+        <h2>7. Prohibited Uses</h2>
+        <p>You agree not to use the Service to:</p>
+        <ul>
+            <li>Create content that is illegal, harmful, or offensive</li>
+            <li>Infringe on intellectual property rights</li>
+            <li>Transmit malware or other harmful code</li>
+            <li>Attempt to gain unauthorized access to our systems</li>
+            <li>Interfere with other users' use of the Service</li>
+            <li>Scrape or harvest data from the Service</li>
+        </ul>
+
+        <h2>8. Disclaimer of Warranties</h2>
+        <div class="highlight-box">
+            <p>THE SERVICE IS PROVIDED "AS IS" WITHOUT WARRANTIES OF ANY KIND, EXPRESS OR IMPLIED. WE DO NOT WARRANT THAT THE SERVICE WILL BE UNINTERRUPTED, ERROR-FREE, OR COMPLETELY SECURE.</p>
+        </div>
+
+        <h2>9. Limitation of Liability</h2>
+        <p>TO THE MAXIMUM EXTENT PERMITTED BY LAW, WE SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING LOSS OF PROFITS, DATA, OR BUSINESS OPPORTUNITIES.</p>
+
+        <h2>10. Indemnification</h2>
+        <p>You agree to indemnify and hold harmless ProjectManagerTool and its affiliates from any claims, damages, or expenses arising from your use of the Service or violation of these Terms.</p>
+
+        <h2>11. Changes to Terms</h2>
+        <p>We may modify these Terms at any time. We will notify users of significant changes via email or through the Service. Continued use after changes constitutes acceptance of the new Terms.</p>
+
+        <h2>12. Governing Law</h2>
+        <p>These Terms shall be governed by and construed in accordance with the laws of the jurisdiction in which ProjectManagerTool operates, without regard to conflict of law principles.</p>
+
+        <h2>13. Contact Information</h2>
+        <p>For questions about these Terms, please contact us at:</p>
+        <p><strong>Email:</strong> legal@projectmanagertool.com</p>
+
+        <p class="last-updated">Last Updated: January 2025</p>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <a href="index.html" class="nav-logo">
+                <div class="nav-logo-icon">📋</div>
+                <span class="nav-logo-text">CharterPro</span>
+            </a>
+            <div class="footer-links">
+                <a href="privacy.html" class="footer-link">Privacy</a>
+                <a href="terms.html" class="footer-link">Terms</a>
+                <a href="help.html" class="footer-link">Help</a>
+            </div>
+            <span class="footer-copy">© 2025 CharterPro. All rights reserved.</span>
+        </div>
+    </footer>
+
+    <script>
+        function toggleMobileMenu() {
+            document.getElementById('mobileMenu').classList.toggle('active');
+        }
+    </script>
+</body>
+</html>

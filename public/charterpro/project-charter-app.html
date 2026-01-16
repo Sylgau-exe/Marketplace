@@ -1,0 +1,1451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Charter Creator</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1a365d;
+            --primary-light: #2c5282;
+            --accent: #c6a052;
+            --accent-light: #d4af61;
+            --success: #276749;
+            --success-bg: #c6f6d5;
+            --warning: #975a16;
+            --warning-bg: #fefcbf;
+            --danger: #9b2c2c;
+            --danger-bg: #fed7d7;
+            --bg: #f8f7f4;
+            --card-bg: #ffffff;
+            --text: #1a202c;
+            --text-muted: #718096;
+            --border: #e2e8f0;
+            --shadow: 0 4px 24px rgba(26, 54, 93, 0.08);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+        .header { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); padding: 2rem 2rem 3rem; }
+        .header-content { max-width: 1200px; margin: 0 auto; }
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .back-to-dashboard { color: rgba(255, 255, 255, 0.8); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+        .back-to-dashboard:hover { color: white; }
+        .logo { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; }
+        .logo-icon { width: 48px; height: 48px; background: var(--accent); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+        .logo-text { font-family: 'Fraunces', serif; font-size: 1.5rem; font-weight: 700; color: white; }
+        .header h1 { font-family: 'Fraunces', serif; font-size: 2.5rem; font-weight: 700; color: white; margin-bottom: 0.5rem; }
+        .header p { color: rgba(255, 255, 255, 0.8); font-size: 1.1rem; }
+        .main-container { max-width: 1200px; margin: -2rem auto 2rem; padding: 0 1.5rem; position: relative; z-index: 2; }
+        .progress-container { background: var(--card-bg); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: var(--shadow); }
+        .progress-steps { display: flex; justify-content: space-between; position: relative; }
+        .progress-steps::before { content: ''; position: absolute; top: 20px; left: 40px; right: 40px; height: 3px; background: var(--border); }
+        .progress-line { position: absolute; top: 20px; left: 40px; height: 3px; background: var(--accent); z-index: 1; transition: width 0.5s ease; }
+        .progress-step { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; position: relative; z-index: 2; cursor: pointer; }
+        .step-number { width: 40px; height: 40px; border-radius: 50%; background: var(--border); color: var(--text-muted); display: flex; align-items: center; justify-content: center; font-weight: 600; transition: all 0.3s ease; }
+        .progress-step.active .step-number { background: var(--accent); color: white; transform: scale(1.1); }
+        .progress-step.completed .step-number { background: var(--success); color: white; }
+        .step-label { font-size: 0.75rem; color: var(--text-muted); text-align: center; max-width: 80px; }
+        .progress-step.active .step-label, .progress-step.completed .step-label { color: var(--text); font-weight: 500; }
+        .card { background: var(--card-bg); border-radius: 16px; padding: 2rem; margin-bottom: 1.5rem; box-shadow: var(--shadow); }
+        .card-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid var(--border); }
+        .card-icon { width: 48px; height: 48px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; color: white; }
+        .card-title { font-family: 'Fraunces', serif; font-size: 1.5rem; font-weight: 600; color: var(--primary); }
+        .card-subtitle { font-size: 0.875rem; color: var(--text-muted); }
+        .form-group { margin-bottom: 1.5rem; }
+        .form-label { display: block; font-weight: 600; margin-bottom: 0.5rem; }
+        .form-hint { font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem; }
+        .form-input, .form-select, .form-textarea { width: 100%; padding: 0.875rem 1rem; border: 2px solid var(--border); border-radius: 10px; font-family: inherit; font-size: 1rem; transition: all 0.2s ease; background: white; }
+        .form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px rgba(198, 160, 82, 0.15); }
+        .form-textarea { min-height: 120px; resize: vertical; }
+        .type-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+        .type-card { border: 2px solid var(--border); border-radius: 12px; padding: 1.25rem; cursor: pointer; transition: all 0.2s ease; background: white; }
+        .type-card:hover { border-color: var(--accent-light); transform: translateY(-2px); }
+        .type-card.selected { border-color: var(--accent); background: linear-gradient(135deg, rgba(198, 160, 82, 0.08) 0%, rgba(198, 160, 82, 0.02) 100%); }
+        .type-card-icon { font-size: 2rem; margin-bottom: 0.75rem; }
+        .type-card-title { font-weight: 600; margin-bottom: 0.25rem; }
+        .type-card-desc { font-size: 0.875rem; color: var(--text-muted); }
+        .subtype-container { background: var(--bg); border-radius: 12px; padding: 1.25rem; margin-top: 1rem; display: none; }
+        .subtype-container.visible { display: block; }
+        .subtype-label { font-weight: 600; margin-bottom: 0.75rem; display: block; }
+        .subtype-options { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+        .subtype-option { padding: 0.5rem 1rem; border: 2px solid var(--border); border-radius: 8px; cursor: pointer; transition: all 0.2s ease; font-size: 0.875rem; background: white; }
+        .subtype-option:hover { border-color: var(--accent-light); }
+        .subtype-option.selected { border-color: var(--accent); background: var(--accent); color: white; }
+        .table-container { overflow-x: auto; margin-top: 1rem; }
+        .dynamic-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        .dynamic-table th { background: var(--primary); color: white; padding: 0.875rem; text-align: left; font-weight: 600; }
+        .dynamic-table th:first-child { border-radius: 8px 0 0 0; }
+        .dynamic-table th:last-child { border-radius: 0 8px 0 0; }
+        .dynamic-table td { padding: 0.75rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+        .dynamic-table tbody tr:hover { background: rgba(198, 160, 82, 0.05); }
+        .table-input { width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: 6px; font-family: inherit; font-size: 0.875rem; }
+        .table-input:focus { outline: none; border-color: var(--accent); }
+        .table-select { padding: 0.5rem; border: 1px solid var(--border); border-radius: 6px; font-family: inherit; font-size: 0.875rem; min-width: 100px; }
+        .assessment-high { background: var(--success-bg) !important; color: var(--success); }
+        .assessment-medium { background: var(--warning-bg) !important; color: var(--warning); }
+        .assessment-low { background: var(--danger-bg) !important; color: var(--danger); }
+        .add-row-btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.625rem 1rem; background: white; border: 2px dashed var(--border); border-radius: 8px; color: var(--text-muted); cursor: pointer; font-family: inherit; font-size: 0.875rem; margin-top: 0.75rem; transition: all 0.2s ease; }
+        .add-row-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(198, 160, 82, 0.05); }
+        .remove-row-btn { width: 28px; height: 28px; border: none; background: var(--danger-bg); color: var(--danger); border-radius: 6px; cursor: pointer; font-size: 1rem; transition: all 0.2s ease; }
+        .remove-row-btn:hover { background: var(--danger); color: white; }
+        .gantt-container { margin-top: 1.5rem; overflow-x: auto; }
+        .gantt-chart { min-width: 600px; }
+        .gantt-header { display: flex; background: var(--primary); color: white; padding: 0.75rem; border-radius: 8px 8px 0 0; font-weight: 600; font-size: 0.875rem; }
+        .gantt-task-col { width: 200px; flex-shrink: 0; }
+        .gantt-timeline-col { flex: 1; display: flex; }
+        .gantt-month { flex: 1; text-align: center; padding: 0.25rem; border-left: 1px solid rgba(255, 255, 255, 0.2); }
+        .gantt-row { display: flex; border-bottom: 1px solid var(--border); min-height: 44px; align-items: center; }
+        .gantt-task-name { width: 200px; flex-shrink: 0; padding: 0.5rem 0.75rem; font-size: 0.875rem; font-weight: 500; }
+        .gantt-bar-container { flex: 1; display: flex; position: relative; height: 100%; }
+        .gantt-cell { flex: 1; border-left: 1px solid var(--border); }
+        .gantt-bar { position: absolute; height: 24px; top: 50%; transform: translateY(-50%); background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%); border-radius: 4px; font-size: 0.75rem; color: white; display: flex; align-items: center; justify-content: center; font-weight: 500; }
+        .financial-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+        .currency-input { display: flex; align-items: center; }
+        .currency-symbol { padding: 0.875rem; background: var(--border); border: 2px solid var(--border); border-right: none; border-radius: 10px 0 0 10px; font-weight: 600; color: var(--text-muted); }
+        .currency-input .form-input { border-radius: 0 10px 10px 0; }
+        .roi-display { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); border-radius: 16px; padding: 2rem; color: white; text-align: center; margin-top: 1.5rem; }
+        .roi-label { font-size: 1rem; opacity: 0.9; margin-bottom: 0.5rem; }
+        .roi-value { font-family: 'Fraunces', serif; font-size: 3rem; font-weight: 700; }
+        .roi-breakdown { display: flex; justify-content: center; gap: 2rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255, 255, 255, 0.2); flex-wrap: wrap; }
+        .roi-item { text-align: center; }
+        .roi-item-label { font-size: 0.875rem; opacity: 0.8; }
+        .roi-item-value { font-size: 1.25rem; font-weight: 600; }
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 2rem; padding-top: 1.5rem; border-top: 2px solid var(--border); }
+        .btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.875rem 1.5rem; border-radius: 10px; font-family: inherit; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; border: none; }
+        .btn-secondary { background: var(--bg); color: var(--text); border: 2px solid var(--border); }
+        .btn-secondary:hover { border-color: var(--accent); background: white; }
+        .btn-primary { background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(198, 160, 82, 0.3); }
+        .btn-export { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: white; }
+        .btn-export:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(26, 54, 93, 0.3); }
+        .section { display: none; }
+        .section.active { display: block; }
+        .preview-container { background: white; padding: 3rem; max-width: 900px; margin: 0 auto; }
+        .preview-header { text-align: center; margin-bottom: 2.5rem; padding-bottom: 2rem; border-bottom: 3px solid var(--primary); }
+        .preview-logo { font-size: 0.875rem; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 1rem; font-weight: 600; }
+        .preview-title { font-family: 'Fraunces', serif; font-size: 2rem; color: var(--primary); margin-bottom: 0.5rem; }
+        .preview-subtitle { color: var(--text-muted); }
+        .preview-section { margin-bottom: 2rem; }
+        .preview-section-title { font-family: 'Fraunces', serif; font-size: 1.25rem; color: var(--primary); margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--accent); }
+        .preview-content { color: var(--text); line-height: 1.8; margin-bottom: 0.5rem; }
+        .preview-table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; font-size: 0.9rem; }
+        .preview-table th { background: var(--primary); color: white; padding: 0.75rem; text-align: left; }
+        .preview-table td { padding: 0.75rem; border-bottom: 1px solid var(--border); }
+        .preview-table tr:nth-child(even) { background: var(--bg); }
+        .example-btn { display: inline-block; padding: 0.375rem 0.75rem; background: rgba(198, 160, 82, 0.1); color: var(--accent); border: 1px solid var(--accent); border-radius: 6px; font-size: 0.75rem; cursor: pointer; margin-top: 0.5rem; transition: all 0.2s ease; }
+        .example-btn:hover { background: var(--accent); color: white; }
+        @media (max-width: 768px) {
+            .header h1 { font-size: 1.75rem; }
+            .step-label { display: none; }
+            .type-grid { grid-template-columns: 1fr; }
+            .nav-buttons { flex-direction: column; gap: 1rem; }
+            .btn { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="header-top">
+                <div class="logo">
+                    <div class="logo-icon">📋</div>
+                    <span class="logo-text">CharterPro</span>
+                </div>
+                <a href="dashboard.html" class="back-to-dashboard">← Back to Dashboard</a>
+            </div>
+            <h1>Project Charter Creator</h1>
+            <p>Build investor-grade project documentation that answers: "Why should we invest?"</p>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="progress-container">
+            <div class="progress-steps">
+                <div class="progress-line" id="progressLine"></div>
+                <div class="progress-step active" data-step="1"><div class="step-number">1</div><span class="step-label">Basics</span></div>
+                <div class="progress-step" data-step="2"><div class="step-number">2</div><span class="step-label">Problem</span></div>
+                <div class="progress-step" data-step="3"><div class="step-number">3</div><span class="step-label">Solution</span></div>
+                <div class="progress-step" data-step="4"><div class="step-number">4</div><span class="step-label">Benefits</span></div>
+                <div class="progress-step" data-step="5"><div class="step-number">5</div><span class="step-label">Constraints</span></div>
+                <div class="progress-step" data-step="6"><div class="step-number">6</div><span class="step-label">Market</span></div>
+                <div class="progress-step" data-step="7"><div class="step-number">7</div><span class="step-label">Risks</span></div>
+                <div class="progress-step" data-step="8"><div class="step-number">8</div><span class="step-label">Timeline</span></div>
+                <div class="progress-step" data-step="9"><div class="step-number">9</div><span class="step-label">Financials</span></div>
+                <div class="progress-step" data-step="10"><div class="step-number">10</div><span class="step-label">Preview</span></div>
+            </div>
+        </div>
+
+        <!-- Section 1: Basics -->
+        <section id="section1" class="section active">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">📝</div>
+                    <div><h2 class="card-title">Project Basics</h2><p class="card-subtitle">Define your project's identity and category</p></div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Project Name</label>
+                    <input type="text" class="form-input" id="projectName" placeholder="Enter a clear, descriptive project name">
+                    <button type="button" class="example-btn" id="exampleNameBtn">💡 See example</button>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Project Type</label>
+                    <p class="form-hint">Select the category that best describes your project</p>
+                    <div class="type-grid" id="typeGrid">
+                        <div class="type-card" data-type="construction"><div class="type-card-icon">🏗️</div><div class="type-card-title">Construction</div><div class="type-card-desc">Buildings, infrastructure, renovations</div></div>
+                        <div class="type-card" data-type="creative"><div class="type-card-icon">🎨</div><div class="type-card-title">Creative Content</div><div class="type-card-desc">Film, marketing, design, media</div></div>
+                        <div class="type-card" data-type="software"><div class="type-card-icon">💻</div><div class="type-card-title">Software</div><div class="type-card-desc">Applications, platforms, systems</div></div>
+                        <div class="type-card" data-type="other"><div class="type-card-icon">📦</div><div class="type-card-title">Other</div><div class="type-card-desc">Business, research, operations</div></div>
+                    </div>
+                    <div class="subtype-container" id="subtypeContainer">
+                        <label class="subtype-label">Specific Project Type</label>
+                        <div class="subtype-options" id="subtypeOptions"></div>
+                    </div>
+                </div>
+                <div class="form-group"><label class="form-label">Project Sponsor</label><input type="text" class="form-input" id="projectSponsor" placeholder="Name and title of the executive sponsor"></div>
+                <div class="form-group"><label class="form-label">Project Manager</label><input type="text" class="form-input" id="projectManager" placeholder="Name of the project lead"></div>
+                <div class="nav-buttons"><div></div><button type="button" class="btn btn-primary" id="nextBtn1">Continue →</button></div>
+            </div>
+        </section>
+
+        <!-- Section 2: Problem -->
+        <section id="section2" class="section">
+            <div class="card">
+                <div class="card-header"><div class="card-icon">🎯</div><div><h2 class="card-title">Problem Statement</h2><p class="card-subtitle">What problem does this project solve?</p></div></div>
+                <div class="form-group"><label class="form-label">Current Situation</label><p class="form-hint">Describe the current state and why it's problematic</p><textarea class="form-textarea" id="currentSituation" placeholder="Describe the existing situation, pain points, and inefficiencies..."></textarea><button type="button" class="example-btn" data-field="currentSituation">💡 See example</button></div>
+                <div class="form-group"><label class="form-label">Impact of Not Acting</label><p class="form-hint">What happens if we don't address this problem?</p><textarea class="form-textarea" id="impactNotActing" placeholder="Describe the consequences of inaction..."></textarea><button type="button" class="example-btn" data-field="impactNotActing">💡 See example</button></div>
+                <div class="form-group"><label class="form-label">Target Stakeholders</label><p class="form-hint">Who is affected by this problem?</p><textarea class="form-textarea" id="stakeholders" placeholder="List the groups impacted..."></textarea><button type="button" class="example-btn" data-field="stakeholders">💡 See example</button></div>
+                <div class="nav-buttons"><button type="button" class="btn btn-secondary" data-nav="prev">← Back</button><button type="button" class="btn btn-primary" data-nav="next">Continue →</button></div>
+            </div>
+        </section>
+
+        <!-- Section 3: Solution -->
+        <section id="section3" class="section">
+            <div class="card">
+                <div class="card-header"><div class="card-icon">💡</div><div><h2 class="card-title">Proposed Solution</h2><p class="card-subtitle">How will this project address the problem?</p></div></div>
+                <div class="form-group"><label class="form-label">Solution Overview</label><textarea class="form-textarea" id="solutionOverview" placeholder="Provide a high-level description of the solution..."></textarea><button type="button" class="example-btn" data-field="solutionOverview">💡 See example</button></div>
+                <div class="form-group"><label class="form-label">Key Deliverables</label><textarea class="form-textarea" id="deliverables" placeholder="List the main deliverables..."></textarea><button type="button" class="example-btn" data-field="deliverables">💡 See example</button></div>
+                <div class="form-group"><label class="form-label">Success Criteria</label><textarea class="form-textarea" id="successCriteria" placeholder="Define measurable success criteria..."></textarea><button type="button" class="example-btn" data-field="successCriteria">💡 See example</button></div>
+                <div class="nav-buttons"><button type="button" class="btn btn-secondary" data-nav="prev">← Back</button><button type="button" class="btn btn-primary" data-nav="next">Continue →</button></div>
+            </div>
+        </section>
+
+        <!-- Section 4: Benefits -->
+        <section id="section4" class="section">
+            <div class="card">
+                <div class="card-header"><div class="card-icon">📈</div><div><h2 class="card-title">Expected Benefits</h2><p class="card-subtitle">Quantify the value this project will deliver</p></div></div>
+                <div class="table-container"><table class="dynamic-table"><thead><tr><th>Benefit</th><th>Category</th><th>Value</th><th>Confidence</th><th>Measurement</th><th></th></tr></thead><tbody id="benefitsBody"></tbody></table></div>
+                <button type="button" class="add-row-btn" id="addBenefitBtn">+ Add Benefit</button>
+                <button type="button" class="example-btn" id="exampleBenefitsBtn">💡 Add examples</button>
+                <div class="nav-buttons"><button type="button" class="btn btn-secondary" data-nav="prev">← Back</button><button type="button" class="btn btn-primary" data-nav="next">Continue →</button></div>
+            </div>
+        </section>
+
+        <!-- Section 5: Constraints -->
+        <section id="section5" class="section">
+            <div class="card">
+                <div class="card-header"><div class="card-icon">🔒</div><div><h2 class="card-title">Constraints</h2><p class="card-subtitle">Identify limitations and boundaries</p></div></div>
+                <div class="table-container"><table class="dynamic-table"><thead><tr><th>Constraint</th><th>Type</th><th>Severity</th><th>Mitigation</th><th></th></tr></thead><tbody id="constraintsBody"></tbody></table></div>
+                <button type="button" class="add-row-btn" id="addConstraintBtn">+ Add Constraint</button>
+                <button type="button" class="example-btn" id="exampleConstraintsBtn">💡 Add examples</button>
+                <div class="nav-buttons"><button type="button" class="btn btn-secondary" data-nav="prev">← Back</button><button type="button" class="btn btn-primary" data-nav="next">Continue →</button></div>
+            </div>
+        </section>
+
+        <!-- Section 6: Market Analysis -->
+        <section id="section6" class="section">
+            <div class="card">
+                <div class="card-header"><div class="card-icon">🎯</div><div><h2 class="card-title">Market Analysis & Comparables</h2><p class="card-subtitle">Define target market and reference similar projects</p></div></div>
+                
+                <!-- Target Market Subsection (conditional) -->
+                <div id="targetMarketSection">
+                    <h3 style="color: var(--primary); margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--accent);">Target Market</h3>
+                    <p class="form-hint" style="margin-bottom: 1rem;">Define your target audience and market opportunity. Include market research data if available, or provide your best assumptions.</p>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Market Research Available?</label>
+                        <div class="toggle-group" style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                            <label class="toggle-option" style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                <input type="radio" name="hasMarketResearch" value="yes" id="marketResearchYes"> 
+                                <span>Yes, I have research data</span>
+                            </label>
+                            <label class="toggle-option" style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                <input type="radio" name="hasMarketResearch" value="no" id="marketResearchNo" checked> 
+                                <span>No, using assumptions</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Target Market Size (TAM)</label>
+                        <p class="form-hint">Total Addressable Market - the overall revenue opportunity</p>
+                        <input type="text" class="form-input" id="marketSize" placeholder="e.g., $2.5B globally, 50M potential users">
+                        <button type="button" class="example-btn" data-field="marketSize">💡 See example</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Target Demographics</label>
+                        <p class="form-hint">Who is your primary audience? Include age, location, income, profession, etc.</p>
+                        <textarea class="form-textarea" id="targetDemographics" placeholder="Describe your ideal customer profile..."></textarea>
+                        <button type="button" class="example-btn" data-field="targetDemographics">💡 See example</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Market Trends & Insights</label>
+                        <p class="form-hint">Key market trends supporting this project</p>
+                        <textarea class="form-textarea" id="marketTrends" placeholder="Describe relevant market trends, growth patterns, consumer behaviors..."></textarea>
+                        <button type="button" class="example-btn" data-field="marketTrends">💡 See example</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Competitive Landscape</label>
+                        <p class="form-hint">Who are the main competitors and what differentiates your project?</p>
+                        <textarea class="form-textarea" id="competitiveLandscape" placeholder="List key competitors and your competitive advantages..."></textarea>
+                        <button type="button" class="example-btn" data-field="competitiveLandscape">💡 See example</button>
+                    </div>
+                </div>
+
+                <!-- Internal Project Notice -->
+                <div id="internalProjectNotice" style="display: none; background: var(--bg); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem;">
+                    <p style="color: var(--text-muted); margin: 0;"><strong>ℹ️ Internal Project:</strong> Target Market analysis is not applicable for internal/operational projects. Proceed to define comparable projects below.</p>
+                </div>
+
+                <!-- Comparable Projects Subsection (always shown) -->
+                <h3 style="color: var(--primary); margin: 2rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--accent);">Comparable Projects</h3>
+                <p class="form-hint" style="margin-bottom: 1rem;">Reference similar projects to provide context on expected size, scope, timeline, and value. This helps stakeholders understand what to expect.</p>
+                
+                <div class="table-container">
+                    <table class="dynamic-table">
+                        <thead>
+                            <tr>
+                                <th>Project Name</th>
+                                <th>Type/Industry</th>
+                                <th>Budget/Value</th>
+                                <th>Outcome</th>
+                                <th>Relevance</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="comparablesBody"></tbody>
+                    </table>
+                </div>
+                <button type="button" class="add-row-btn" id="addComparableBtn">+ Add Comparable Project</button>
+                <button type="button" class="example-btn" id="exampleComparablesBtn">💡 Add examples</button>
+
+                <div class="nav-buttons"><button type="button" class="btn btn-secondary" data-nav="prev">← Back</button><button type="button" class="btn btn-primary" data-nav="next">Continue →</button></div>
+            </div>
+        </section>
+
+        <!-- Section 7: Risks -->
+        <section id="section7" class="section">
+            <div class="card">
+                <div class="card-header"><div class="card-icon">⚠️</div><div><h2 class="card-title">Risk Assessment</h2><p class="card-subtitle">Identify and plan for potential risks</p></div></div>
+                <div class="table-container"><table class="dynamic-table"><thead><tr><th>Risk</th><th>Probability</th><th>Impact</th><th>Score</th><th>Mitigation</th><th>Owner</th><th></th></tr></thead><tbody id="risksBody"></tbody></table></div>
+                <button type="button" class="add-row-btn" id="addRiskBtn">+ Add Risk</button>
+                <button type="button" class="example-btn" id="exampleRisksBtn">💡 Add examples</button>
+                <div class="nav-buttons"><button type="button" class="btn btn-secondary" data-nav="prev">← Back</button><button type="button" class="btn btn-primary" data-nav="next">Continue →</button></div>
+            </div>
+        </section>
+
+        <!-- Section 8: Timeline -->
+        <section id="section8" class="section">
+            <div class="card">
+                <div class="card-header"><div class="card-icon">📅</div><div><h2 class="card-title">Project Timeline</h2><p class="card-subtitle">Define phases and milestones</p></div></div>
+                <div class="form-group"><label class="form-label">Project Start Date</label><input type="date" class="form-input" id="startDate" style="max-width: 200px;"></div>
+                <div class="table-container"><table class="dynamic-table"><thead><tr><th>Phase</th><th>Duration (weeks)</th><th>Key Activities</th><th>Dependencies</th><th></th></tr></thead><tbody id="timelineBody"></tbody></table></div>
+                <button type="button" class="add-row-btn" id="addTimelineBtn">+ Add Phase</button>
+                <button type="button" class="example-btn" id="exampleTimelineBtn">💡 Add examples</button>
+                <div class="gantt-container"><h3 style="margin-bottom: 1rem; color: var(--primary);">Project Gantt Chart</h3><div class="gantt-chart" id="ganttChart"></div></div>
+                <div class="nav-buttons"><button type="button" class="btn btn-secondary" data-nav="prev">← Back</button><button type="button" class="btn btn-primary" data-nav="next">Continue →</button></div>
+            </div>
+        </section>
+
+        <!-- Section 9: Financials -->
+        <section id="section9" class="section">
+            <div class="card">
+                <div class="card-header"><div class="card-icon">💰</div><div><h2 class="card-title">Financial Analysis</h2><p class="card-subtitle">Investment required and expected returns</p></div></div>
+                <div class="form-group"><label class="form-label">Total Project Budget</label><div class="currency-input"><span class="currency-symbol">$</span><input type="number" class="form-input" id="totalBudget" placeholder="0"></div></div>
+                <h3 style="margin: 1.5rem 0 1rem; color: var(--primary);">Budget Breakdown</h3>
+                <div class="table-container"><table class="dynamic-table"><thead><tr><th>Category</th><th>Amount</th><th>Notes</th><th></th></tr></thead><tbody id="budgetBody"></tbody></table></div>
+                <button type="button" class="add-row-btn" id="addBudgetBtn">+ Add Budget Line</button>
+                <h3 style="margin: 1.5rem 0 1rem; color: var(--primary);">Expected Returns</h3>
+                <div class="financial-grid">
+                    <div class="form-group"><label class="form-label">Year 1 Return</label><div class="currency-input"><span class="currency-symbol">$</span><input type="number" class="form-input" id="year1Return" placeholder="0"></div></div>
+                    <div class="form-group"><label class="form-label">Year 2 Return</label><div class="currency-input"><span class="currency-symbol">$</span><input type="number" class="form-input" id="year2Return" placeholder="0"></div></div>
+                    <div class="form-group"><label class="form-label">Year 3 Return</label><div class="currency-input"><span class="currency-symbol">$</span><input type="number" class="form-input" id="year3Return" placeholder="0"></div></div>
+                </div>
+                <div class="roi-display">
+                    <div class="roi-label">3-Year Return on Investment</div>
+                    <div class="roi-value" id="roiValue">0%</div>
+                    <div class="roi-breakdown">
+                        <div class="roi-item"><div class="roi-item-label">Total Investment</div><div class="roi-item-value" id="totalInvestment">$0</div></div>
+                        <div class="roi-item"><div class="roi-item-label">Total Return</div><div class="roi-item-value" id="totalReturn">$0</div></div>
+                        <div class="roi-item"><div class="roi-item-label">Net Benefit</div><div class="roi-item-value" id="netBenefit">$0</div></div>
+                        <div class="roi-item"><div class="roi-item-label">Payback</div><div class="roi-item-value" id="paybackPeriod">-</div></div>
+                    </div>
+                </div>
+                <div class="nav-buttons"><button type="button" class="btn btn-secondary" data-nav="prev">← Back</button><button type="button" class="btn btn-primary" data-nav="next">Preview Charter →</button></div>
+            </div>
+        </section>
+
+        <!-- Section 10: Preview -->
+        <section id="section10" class="section">
+            <div class="card">
+                <div class="card-header"><div class="card-icon">📄</div><div><h2 class="card-title">Project Charter Preview</h2><p class="card-subtitle">Review and export your investor-ready document</p></div></div>
+                <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+                    <button type="button" class="btn btn-primary" id="saveCloseBtn">💾 Save & Close</button>
+                    <button type="button" class="btn btn-export" id="exportPdfBtn">📥 Download PDF</button>
+                    <button type="button" class="btn btn-secondary" id="printBtn">🖨️ Print This Page</button>
+                </div>
+                <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1rem;">💡 Tip: Click "Download PDF" to open a print-ready version. In the print dialog, select "Save as PDF" as your printer.</p>
+                <div id="charterPreview" class="preview-container"></div>
+                <div class="nav-buttons"><button type="button" class="btn btn-secondary" data-nav="prev">← Back to Edit</button><button type="button" class="btn btn-primary" id="exportPdfBtn2">📥 Download PDF</button></div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Check authentication and subscription
+        (function() {
+            const user = JSON.parse(localStorage.getItem('charterpro_user'));
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+            if (!user.subscription || user.subscription.status !== 'active') {
+                alert('Please subscribe to a plan to create charters.');
+                window.location.href = 'pricing.html';
+                return;
+            }
+        })();
+
+        // State
+        let currentStep = 1;
+        let selectedProjectType = null;
+        let selectedSubtype = null;
+        let currentCharterId = null;
+
+        // Data
+        const subtypes = {
+            construction: ['Commercial Building', 'Residential', 'Infrastructure', 'Renovation', 'Industrial'],
+            creative: ['Film Production', 'Marketing Campaign', 'Brand Design', 'Video Content', 'Advertising'],
+            software: ['Web Application', 'Mobile App', 'Enterprise System', 'API/Platform', 'AI/ML Solution'],
+            other: ['Business Transformation', 'Research Study', 'Operations', 'Training Program', 'Product Launch']
+        };
+
+        const examples = {
+            construction: { projectName: 'Downtown Office Tower Development', currentSituation: 'The downtown core lacks modern Class A office space. Existing buildings are aging with poor energy efficiency.', impactNotActing: 'Property tax revenue will decline and corporate headquarters will relocate to competing markets.', stakeholders: 'Corporate tenants, city economic development, downtown businesses, construction workforce.', solutionOverview: 'Develop a 42-story LEED Platinum certified office tower with 850,000 sq ft of Class A office space.', deliverables: '• 850,000 sq ft office space\n• Ground-floor retail\n• Underground parking\n• LEED certification', successCriteria: '• 75% pre-leased\n• On-time delivery\n• Within budget' },
+            creative: { projectName: 'Global Brand Refresh Campaign', currentSituation: 'Brand identity is 12 years old and no longer reflects our evolution to cloud solutions.', impactNotActing: 'Brand confusion leading to lost sales and difficulty attracting talent.', stakeholders: 'Marketing, sales, customers, employees, investors, media.', solutionOverview: 'Comprehensive global rebrand including visual identity, messaging, website, and launch campaign.', deliverables: '• New brand identity system\n• Brand guidelines\n• Redesigned website\n• Launch campaign', successCriteria: '• 25% awareness increase\n• 40% web traffic increase\n• 80%+ sentiment score' },
+            software: { projectName: 'Customer Portal 2.0', currentSituation: 'Legacy portal (10+ years) causes poor UX and high support costs ($4.2M annually).', impactNotActing: 'Rising support costs, customer churn, falling behind digital-native competitors.', stakeholders: '50,000+ customers, support team, product management, development, security.', solutionOverview: 'Modern cloud-native portal with React frontend, microservices, self-service capabilities.', deliverables: '• Production portal\n• Mobile-responsive design\n• API integration\n• Knowledge base', successCriteria: '• 99.9% uptime\n• 40% ticket reduction\n• +30 NPS improvement' },
+            other: { projectName: 'Sales Excellence Transformation', currentSituation: 'Sales productivity down 15% over 3 years. CRM adoption only 45%.', impactNotActing: 'Market share loss, reduced revenue growth, inability to fund R&D.', stakeholders: 'Sales reps, management, marketing, customers, HR, IT, executives.', solutionOverview: 'Sales transformation with new CRM, methodology, training, and performance management.', deliverables: '• Deployed CRM system\n• Sales playbook\n• Training curriculum\n• Performance dashboard', successCriteria: '• 95% CRM adoption\n• 20% cycle reduction\n• +15pt win rate' }
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            initEventListeners();
+            updateProgress();
+            addBenefitRow();
+            addConstraintRow();
+            addRiskRow();
+            addTimelineRow();
+            addBudgetRow();
+            addComparableRow();
+            document.getElementById('startDate').valueAsDate = new Date();
+            
+            // Check for existing charter to edit
+            var params = new URLSearchParams(window.location.search);
+            var charterId = params.get('id');
+            if (charterId) {
+                loadCharter(charterId);
+            } else {
+                currentCharterId = 'charter-' + Date.now();
+            }
+        });
+
+        function initEventListeners() {
+            // Progress steps
+            document.querySelectorAll('.progress-step').forEach(function(step) {
+                step.addEventListener('click', function() {
+                    goToStep(parseInt(this.dataset.step));
+                });
+            });
+
+            // Type cards
+            document.querySelectorAll('.type-card').forEach(function(card) {
+                card.addEventListener('click', function() {
+                    selectProjectType(this.dataset.type);
+                });
+            });
+
+            // Navigation buttons
+            document.querySelectorAll('[data-nav="next"]').forEach(function(btn) {
+                btn.addEventListener('click', nextStep);
+            });
+            document.querySelectorAll('[data-nav="prev"]').forEach(function(btn) {
+                btn.addEventListener('click', prevStep);
+            });
+            document.getElementById('nextBtn1').addEventListener('click', nextStep);
+
+            // Example buttons
+            document.getElementById('exampleNameBtn').addEventListener('click', function() {
+                document.getElementById('projectName').value = examples[selectedProjectType || 'software'].projectName;
+            });
+            document.querySelectorAll('.example-btn[data-field]').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    var field = this.dataset.field;
+                    var type = selectedProjectType || 'software';
+                    // Check if field is a market analysis field
+                    if (marketExamples[type] && marketExamples[type][field]) {
+                        document.getElementById(field).value = marketExamples[type][field];
+                    } else if (examples[type] && examples[type][field]) {
+                        document.getElementById(field).value = examples[type][field];
+                    }
+                });
+            });
+
+            // Add row buttons
+            document.getElementById('addBenefitBtn').addEventListener('click', addBenefitRow);
+            document.getElementById('addConstraintBtn').addEventListener('click', addConstraintRow);
+            document.getElementById('addRiskBtn').addEventListener('click', addRiskRow);
+            document.getElementById('addTimelineBtn').addEventListener('click', addTimelineRow);
+            document.getElementById('addBudgetBtn').addEventListener('click', addBudgetRow);
+            document.getElementById('addComparableBtn').addEventListener('click', addComparableRow);
+
+            // Example table buttons
+            document.getElementById('exampleBenefitsBtn').addEventListener('click', addExampleBenefits);
+            document.getElementById('exampleConstraintsBtn').addEventListener('click', addExampleConstraints);
+            document.getElementById('exampleRisksBtn').addEventListener('click', addExampleRisks);
+            document.getElementById('exampleTimelineBtn').addEventListener('click', addExampleTimeline);
+            document.getElementById('exampleComparablesBtn').addEventListener('click', addExampleComparables);
+
+            // Financial inputs
+            document.getElementById('totalBudget').addEventListener('input', calculateROI);
+            document.getElementById('year1Return').addEventListener('input', calculateROI);
+            document.getElementById('year2Return').addEventListener('input', calculateROI);
+            document.getElementById('year3Return').addEventListener('input', calculateROI);
+
+            // Export buttons
+            document.getElementById('exportPdfBtn').addEventListener('click', exportToPDF);
+            document.getElementById('exportPdfBtn2').addEventListener('click', exportToPDF);
+            document.getElementById('printBtn').addEventListener('click', function() { window.print(); });
+            document.getElementById('saveCloseBtn').addEventListener('click', function() {
+                saveCharter();
+                window.location.href = 'dashboard.html';
+            });
+        }
+
+        // Navigation
+        function nextStep() {
+            autoSave();
+            if (currentStep < 10) {
+                currentStep++;
+                showSection(currentStep);
+                if (currentStep === 10) generatePreview();
+            }
+        }
+
+        function prevStep() {
+            autoSave();
+            if (currentStep > 1) {
+                currentStep--;
+                showSection(currentStep);
+            }
+        }
+
+        function goToStep(step) {
+            autoSave();
+            currentStep = step;
+            showSection(step);
+            if (step === 10) generatePreview();
+        }
+
+        function showSection(step) {
+            document.querySelectorAll('.section').forEach(function(s) {
+                s.classList.remove('active');
+            });
+            document.getElementById('section' + step).classList.add('active');
+            updateProgress();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function updateProgress() {
+            document.querySelectorAll('.progress-step').forEach(function(step, i) {
+                step.classList.remove('active', 'completed');
+                if (i + 1 === currentStep) step.classList.add('active');
+                else if (i + 1 < currentStep) step.classList.add('completed');
+            });
+            var line = document.getElementById('progressLine');
+            var pct = ((currentStep - 1) / 9) * 100;
+            var totalWidth = document.querySelector('.progress-steps').offsetWidth - 80;
+            line.style.width = (totalWidth * pct / 100) + 'px';
+        }
+
+        // Check if project type needs target market section
+        function isMarketFacingProject() {
+            // Internal/operational projects that DON'T need target market
+            var internalSubtypes = ['Infrastructure', 'Renovation', 'Industrial', 'Enterprise System', 'Operations', 'Business Transformation'];
+            var internalTypes = ['construction'];
+            
+            // If subtype is internal, hide target market
+            if (selectedSubtype && internalSubtypes.indexOf(selectedSubtype) !== -1) {
+                return false;
+            }
+            
+            // Creative projects always need target market (films, campaigns, etc.)
+            if (selectedProjectType === 'creative') {
+                return true;
+            }
+            
+            // Software products (not enterprise) need target market
+            if (selectedProjectType === 'software' && selectedSubtype !== 'Enterprise System') {
+                return true;
+            }
+            
+            // Product launches need target market
+            if (selectedSubtype === 'Product Launch') {
+                return true;
+            }
+            
+            // Default: check if it's primarily construction (internal infrastructure)
+            if (selectedProjectType === 'construction') {
+                return false;
+            }
+            
+            return true;
+        }
+
+        function updateTargetMarketVisibility() {
+            var targetMarketSection = document.getElementById('targetMarketSection');
+            var internalNotice = document.getElementById('internalProjectNotice');
+            
+            if (isMarketFacingProject()) {
+                targetMarketSection.style.display = 'block';
+                internalNotice.style.display = 'none';
+            } else {
+                targetMarketSection.style.display = 'none';
+                internalNotice.style.display = 'block';
+            }
+        }
+
+        // Project type selection
+        function selectProjectType(type) {
+            selectedProjectType = type;
+            selectedSubtype = null;
+            
+            document.querySelectorAll('.type-card').forEach(function(c) {
+                c.classList.remove('selected');
+            });
+            document.querySelector('.type-card[data-type="' + type + '"]').classList.add('selected');
+            
+            var opts = document.getElementById('subtypeOptions');
+            opts.innerHTML = '';
+            subtypes[type].forEach(function(st) {
+                var div = document.createElement('div');
+                div.className = 'subtype-option';
+                div.textContent = st;
+                div.addEventListener('click', function() {
+                    selectSubtype(st);
+                });
+                opts.appendChild(div);
+            });
+            document.getElementById('subtypeContainer').classList.add('visible');
+            updateTargetMarketVisibility();
+        }
+
+        function selectSubtype(st) {
+            selectedSubtype = st;
+            document.querySelectorAll('.subtype-option').forEach(function(o) {
+                o.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+            updateTargetMarketVisibility();
+        }
+
+        // Table row functions
+        function addBenefitRow() {
+            var tr = document.createElement('tr');
+            tr.innerHTML = '<td><input type="text" class="table-input" placeholder="Benefit"></td>' +
+                '<td><select class="table-select"><option>Financial</option><option>Operational</option><option>Strategic</option><option>Compliance</option></select></td>' +
+                '<td><input type="text" class="table-input" placeholder="$X or %"></td>' +
+                '<td><select class="table-select"><option>High</option><option>Medium</option><option>Low</option></select></td>' +
+                '<td><input type="text" class="table-input" placeholder="Measurement"></td>' +
+                '<td><button type="button" class="remove-row-btn">×</button></td>';
+            tr.querySelector('.remove-row-btn').addEventListener('click', function() { tr.remove(); });
+            document.getElementById('benefitsBody').appendChild(tr);
+        }
+
+        function addExampleBenefits() {
+            document.getElementById('benefitsBody').innerHTML = '';
+            var ex = { construction: [['Premium rents', 'Financial', '$11M/yr', 'High', 'Leases']], creative: [['Brand awareness', 'Strategic', '+25%', 'High', 'Survey']], software: [['Support savings', 'Financial', '$1.7M/yr', 'High', 'Tickets']], other: [['Sales productivity', 'Financial', '+25%', 'High', 'Revenue/rep']] };
+            var data = ex[selectedProjectType || 'software'] || ex.software;
+            data.forEach(function(b) {
+                var tr = document.createElement('tr');
+                tr.innerHTML = '<td><input type="text" class="table-input" value="' + b[0] + '"></td>' +
+                    '<td><select class="table-select"><option' + (b[1]==='Financial'?' selected':'') + '>Financial</option><option' + (b[1]==='Operational'?' selected':'') + '>Operational</option><option' + (b[1]==='Strategic'?' selected':'') + '>Strategic</option><option>Compliance</option></select></td>' +
+                    '<td><input type="text" class="table-input" value="' + b[2] + '"></td>' +
+                    '<td><select class="table-select"><option' + (b[3]==='High'?' selected':'') + '>High</option><option' + (b[3]==='Medium'?' selected':'') + '>Medium</option><option>Low</option></select></td>' +
+                    '<td><input type="text" class="table-input" value="' + b[4] + '"></td>' +
+                    '<td><button type="button" class="remove-row-btn">×</button></td>';
+                tr.querySelector('.remove-row-btn').addEventListener('click', function() { tr.remove(); });
+                document.getElementById('benefitsBody').appendChild(tr);
+            });
+        }
+
+        function addConstraintRow() {
+            var tr = document.createElement('tr');
+            tr.innerHTML = '<td><input type="text" class="table-input" placeholder="Constraint"></td>' +
+                '<td><select class="table-select"><option>Budget</option><option>Time</option><option>Resource</option><option>Technical</option><option>Regulatory</option></select></td>' +
+                '<td><select class="table-select"><option>High</option><option>Medium</option><option>Low</option></select></td>' +
+                '<td><input type="text" class="table-input" placeholder="Mitigation"></td>' +
+                '<td><button type="button" class="remove-row-btn">×</button></td>';
+            tr.querySelector('.remove-row-btn').addEventListener('click', function() { tr.remove(); });
+            document.getElementById('constraintsBody').appendChild(tr);
+        }
+
+        function addExampleConstraints() {
+            document.getElementById('constraintsBody').innerHTML = '';
+            var ex = { construction: [['Fixed deadline', 'Time', 'High', 'Parallel work']], creative: [['Launch date', 'Time', 'High', 'Agile sprints']], software: [['Legacy integration', 'Technical', 'High', 'API adapter']], other: [['FY budget only', 'Budget', 'High', 'Prioritize']] };
+            var data = ex[selectedProjectType || 'software'] || ex.software;
+            data.forEach(function(c) {
+                var tr = document.createElement('tr');
+                tr.innerHTML = '<td><input type="text" class="table-input" value="' + c[0] + '"></td>' +
+                    '<td><select class="table-select"><option>Budget</option><option' + (c[1]==='Time'?' selected':'') + '>Time</option><option>Resource</option><option' + (c[1]==='Technical'?' selected':'') + '>Technical</option><option>Regulatory</option></select></td>' +
+                    '<td><select class="table-select"><option' + (c[2]==='High'?' selected':'') + '>High</option><option>Medium</option><option>Low</option></select></td>' +
+                    '<td><input type="text" class="table-input" value="' + c[3] + '"></td>' +
+                    '<td><button type="button" class="remove-row-btn">×</button></td>';
+                tr.querySelector('.remove-row-btn').addEventListener('click', function() { tr.remove(); });
+                document.getElementById('constraintsBody').appendChild(tr);
+            });
+        }
+
+        function addRiskRow() {
+            var tr = document.createElement('tr');
+            tr.innerHTML = '<td><input type="text" class="table-input" placeholder="Risk"></td>' +
+                '<td><select class="table-select risk-prob"><option value="1">Low</option><option value="2">Med</option><option value="3" selected>High</option></select></td>' +
+                '<td><select class="table-select risk-impact"><option value="1">Low</option><option value="2">Med</option><option value="3" selected>High</option></select></td>' +
+                '<td class="risk-score">9</td>' +
+                '<td><input type="text" class="table-input" placeholder="Mitigation"></td>' +
+                '<td><input type="text" class="table-input" placeholder="Owner"></td>' +
+                '<td><button type="button" class="remove-row-btn">×</button></td>';
+            tr.querySelector('.remove-row-btn').addEventListener('click', function() { tr.remove(); });
+            tr.querySelector('.risk-prob').addEventListener('change', function() { calcRisk(tr); });
+            tr.querySelector('.risk-impact').addEventListener('change', function() { calcRisk(tr); });
+            document.getElementById('risksBody').appendChild(tr);
+            calcRisk(tr);
+        }
+
+        function calcRisk(tr) {
+            var prob = parseInt(tr.querySelector('.risk-prob').value);
+            var impact = parseInt(tr.querySelector('.risk-impact').value);
+            var score = prob * impact;
+            var cell = tr.querySelector('.risk-score');
+            cell.textContent = score;
+            cell.className = 'risk-score ' + (score >= 6 ? 'assessment-low' : score >= 3 ? 'assessment-medium' : 'assessment-high');
+        }
+
+        function addExampleRisks() {
+            document.getElementById('risksBody').innerHTML = '';
+            var ex = { construction: [['Cost overrun', 2, 3, 'Fixed contracts', 'PM']], creative: [['Scope creep', 3, 2, 'Change control', 'CD']], software: [['Tech complexity', 2, 3, 'Spikes', 'Tech Lead']], other: [['Resistance', 3, 3, 'Champions', 'CM']] };
+            var data = ex[selectedProjectType || 'software'] || ex.software;
+            data.forEach(function(r) {
+                var tr = document.createElement('tr');
+                var score = r[1] * r[2];
+                var cls = score >= 6 ? 'assessment-low' : score >= 3 ? 'assessment-medium' : 'assessment-high';
+                tr.innerHTML = '<td><input type="text" class="table-input" value="' + r[0] + '"></td>' +
+                    '<td><select class="table-select risk-prob"><option value="1"' + (r[1]===1?' selected':'') + '>Low</option><option value="2"' + (r[1]===2?' selected':'') + '>Med</option><option value="3"' + (r[1]===3?' selected':'') + '>High</option></select></td>' +
+                    '<td><select class="table-select risk-impact"><option value="1"' + (r[2]===1?' selected':'') + '>Low</option><option value="2"' + (r[2]===2?' selected':'') + '>Med</option><option value="3"' + (r[2]===3?' selected':'') + '>High</option></select></td>' +
+                    '<td class="risk-score ' + cls + '">' + score + '</td>' +
+                    '<td><input type="text" class="table-input" value="' + r[3] + '"></td>' +
+                    '<td><input type="text" class="table-input" value="' + r[4] + '"></td>' +
+                    '<td><button type="button" class="remove-row-btn">×</button></td>';
+                tr.querySelector('.remove-row-btn').addEventListener('click', function() { tr.remove(); });
+                tr.querySelector('.risk-prob').addEventListener('change', function() { calcRisk(tr); });
+                tr.querySelector('.risk-impact').addEventListener('change', function() { calcRisk(tr); });
+                document.getElementById('risksBody').appendChild(tr);
+            });
+        }
+
+        function addTimelineRow() {
+            var tr = document.createElement('tr');
+            tr.innerHTML = '<td><input type="text" class="table-input timeline-phase" placeholder="Phase"></td>' +
+                '<td><input type="number" class="table-input timeline-weeks" value="4" min="1"></td>' +
+                '<td><input type="text" class="table-input" placeholder="Activities"></td>' +
+                '<td><input type="text" class="table-input" placeholder="Dependencies"></td>' +
+                '<td><button type="button" class="remove-row-btn">×</button></td>';
+            tr.querySelector('.remove-row-btn').addEventListener('click', function() { tr.remove(); updateGantt(); });
+            tr.querySelector('.timeline-phase').addEventListener('input', updateGantt);
+            tr.querySelector('.timeline-weeks').addEventListener('input', updateGantt);
+            document.getElementById('timelineBody').appendChild(tr);
+            updateGantt();
+        }
+
+        function addExampleTimeline() {
+            document.getElementById('timelineBody').innerHTML = '';
+            var ex = { construction: [['Design', 12, 'Architecture', 'None'], ['Site Prep', 8, 'Excavation', 'Design']], creative: [['Strategy', 4, 'Research', 'None'], ['Creative', 6, 'Design', 'Strategy']], software: [['Planning', 4, 'Requirements', 'None'], ['Development', 12, 'Features', 'Planning']], other: [['Assessment', 4, 'Analysis', 'None'], ['Implementation', 8, 'Rollout', 'Assessment']] };
+            var data = ex[selectedProjectType || 'software'] || ex.software;
+            data.forEach(function(t) {
+                var tr = document.createElement('tr');
+                tr.innerHTML = '<td><input type="text" class="table-input timeline-phase" value="' + t[0] + '"></td>' +
+                    '<td><input type="number" class="table-input timeline-weeks" value="' + t[1] + '" min="1"></td>' +
+                    '<td><input type="text" class="table-input" value="' + t[2] + '"></td>' +
+                    '<td><input type="text" class="table-input" value="' + t[3] + '"></td>' +
+                    '<td><button type="button" class="remove-row-btn">×</button></td>';
+                tr.querySelector('.remove-row-btn').addEventListener('click', function() { tr.remove(); updateGantt(); });
+                tr.querySelector('.timeline-phase').addEventListener('input', updateGantt);
+                tr.querySelector('.timeline-weeks').addEventListener('input', updateGantt);
+                document.getElementById('timelineBody').appendChild(tr);
+            });
+            updateGantt();
+        }
+
+        function updateGantt() {
+            var rows = document.querySelectorAll('#timelineBody tr');
+            var chart = document.getElementById('ganttChart');
+            if (!rows.length) { chart.innerHTML = '<p style="color:var(--text-muted);text-align:center">Add phases to see Gantt chart</p>'; return; }
+            var total = 0;
+            var phases = [];
+            rows.forEach(function(r) {
+                var name = r.querySelector('.timeline-phase').value || 'Phase';
+                var weeks = parseInt(r.querySelector('.timeline-weeks').value) || 4;
+                phases.push({ name: name, weeks: weeks, start: total });
+                total += weeks;
+            });
+            var months = Math.ceil(total / 4);
+            var mNames = [];
+            for (var i = 1; i <= months; i++) mNames.push('M' + i);
+            var html = '<div class="gantt-header"><div class="gantt-task-col">Phase</div><div class="gantt-timeline-col">' + mNames.map(function(m) { return '<div class="gantt-month">' + m + '</div>'; }).join('') + '</div></div>';
+            phases.forEach(function(p) {
+                var left = (p.start / total) * 100;
+                var width = (p.weeks / total) * 100;
+                html += '<div class="gantt-row"><div class="gantt-task-name">' + p.name + '</div><div class="gantt-bar-container">' + mNames.map(function() { return '<div class="gantt-cell"></div>'; }).join('') + '<div class="gantt-bar" style="left:' + left + '%;width:' + width + '%">' + p.weeks + 'w</div></div></div>';
+            });
+            chart.innerHTML = html;
+        }
+
+        function addBudgetRow() {
+            var tr = document.createElement('tr');
+            tr.innerHTML = '<td><input type="text" class="table-input" placeholder="Category"></td>' +
+                '<td><input type="number" class="table-input budget-amount" placeholder="Amount"></td>' +
+                '<td><input type="text" class="table-input" placeholder="Notes"></td>' +
+                '<td><button type="button" class="remove-row-btn">×</button></td>';
+            tr.querySelector('.remove-row-btn').addEventListener('click', function() { tr.remove(); updateBudgetTotal(); });
+            tr.querySelector('.budget-amount').addEventListener('input', updateBudgetTotal);
+            document.getElementById('budgetBody').appendChild(tr);
+        }
+
+        function updateBudgetTotal() {
+            var total = 0;
+            document.querySelectorAll('.budget-amount').forEach(function(inp) {
+                total += parseFloat(inp.value) || 0;
+            });
+            document.getElementById('totalBudget').value = total;
+            calculateROI();
+        }
+
+        function calculateROI() {
+            var budget = parseFloat(document.getElementById('totalBudget').value) || 0;
+            var y1 = parseFloat(document.getElementById('year1Return').value) || 0;
+            var y2 = parseFloat(document.getElementById('year2Return').value) || 0;
+            var y3 = parseFloat(document.getElementById('year3Return').value) || 0;
+            var ret = y1 + y2 + y3;
+            var net = ret - budget;
+            var roi = budget > 0 ? (net / budget * 100) : 0;
+            var payback = '-';
+            if (budget > 0 && ret > 0) {
+                var cum = 0;
+                var years = [y1, y2, y3];
+                for (var i = 0; i < years.length; i++) {
+                    cum += years[i];
+                    if (cum >= budget && payback === '-') {
+                        var prev = i > 0 ? cum - years[i] : 0;
+                        payback = ((budget - prev) / years[i] + i + 1).toFixed(1) + ' yrs';
+                    }
+                }
+                if (cum < budget) payback = '> 3 yrs';
+            }
+            document.getElementById('roiValue').textContent = roi.toFixed(1) + '%';
+            document.getElementById('totalInvestment').textContent = '$' + budget.toLocaleString();
+            document.getElementById('totalReturn').textContent = '$' + ret.toLocaleString();
+            document.getElementById('netBenefit').textContent = '$' + net.toLocaleString();
+            document.getElementById('paybackPeriod').textContent = payback;
+        }
+
+        // Comparable Projects
+        function addComparableRow() {
+            var tr = document.createElement('tr');
+            tr.innerHTML = '<td><input type="text" class="table-input" placeholder="Project name"></td>' +
+                '<td><input type="text" class="table-input" placeholder="Industry/Type"></td>' +
+                '<td><input type="text" class="table-input" placeholder="$X million"></td>' +
+                '<td><input type="text" class="table-input" placeholder="Success/Failure"></td>' +
+                '<td><input type="text" class="table-input" placeholder="Why relevant"></td>' +
+                '<td><button type="button" class="remove-row-btn">×</button></td>';
+            tr.querySelector('.remove-row-btn').addEventListener('click', function() { tr.remove(); });
+            document.getElementById('comparablesBody').appendChild(tr);
+        }
+
+        function addExampleComparables() {
+            document.getElementById('comparablesBody').innerHTML = '';
+            var ex = {
+                construction: [
+                    ['Apple Park', 'Tech Campus', '$5B', 'Success - Iconic HQ', 'Similar scale corporate campus'],
+                    ['Hudson Yards NYC', 'Mixed-Use', '$25B', 'Success - Urban revitalization', 'Comparable complexity']
+                ],
+                creative: [
+                    ['Barbie (2023)', 'Film', '$145M budget / $1.4B box office', 'Massive success', 'Brand-driven entertainment'],
+                    ['Nike "Just Do It" Refresh', 'Campaign', '$100M', 'Increased sales 31%', 'Major brand refresh']
+                ],
+                software: [
+                    ['Slack', 'Enterprise SaaS', '$40M Series C', 'Acquired $27.7B', 'Similar collaboration focus'],
+                    ['Zoom', 'Video Platform', '$30M pre-COVID', 'IPO success', 'User experience focus']
+                ],
+                other: [
+                    ['GE Digital Transformation', 'Enterprise', '$1.5B', 'Mixed results', 'Scale of transformation'],
+                    ['Microsoft Agile Adoption', 'Process Change', '$200M', 'Success - faster delivery', 'Cultural transformation']
+                ]
+            };
+            var data = ex[selectedProjectType || 'software'] || ex.software;
+            data.forEach(function(c) {
+                var tr = document.createElement('tr');
+                tr.innerHTML = '<td><input type="text" class="table-input" value="' + c[0] + '"></td>' +
+                    '<td><input type="text" class="table-input" value="' + c[1] + '"></td>' +
+                    '<td><input type="text" class="table-input" value="' + c[2] + '"></td>' +
+                    '<td><input type="text" class="table-input" value="' + c[3] + '"></td>' +
+                    '<td><input type="text" class="table-input" value="' + c[4] + '"></td>' +
+                    '<td><button type="button" class="remove-row-btn">×</button></td>';
+                tr.querySelector('.remove-row-btn').addEventListener('click', function() { tr.remove(); });
+                document.getElementById('comparablesBody').appendChild(tr);
+            });
+        }
+
+        // Market Analysis Examples
+        var marketExamples = {
+            construction: {
+                marketSize: 'N/A - Internal infrastructure project',
+                targetDemographics: 'N/A - Internal stakeholders',
+                marketTrends: 'N/A',
+                competitiveLandscape: 'N/A'
+            },
+            creative: {
+                marketSize: '$650B global entertainment market, with streaming segment growing 12% annually. Target market of 18-45 year olds represents 180M potential viewers in North America alone.',
+                targetDemographics: 'Primary: Adults 18-34, urban professionals, household income $50K+, streaming subscribers (Netflix, Disney+, HBO Max), social media active, entertainment enthusiasts. Secondary: Family audiences 35-54 with children.',
+                marketTrends: '• Streaming overtaking traditional media\n• Demand for inclusive, diverse content\n• Short-form content gaining traction\n• Brand storytelling integration\n• Social media driving discovery',
+                competitiveLandscape: 'Major studios (Disney, Warner Bros, Universal), streaming platforms producing original content. Our differentiation: unique IP, targeted niche audience, cross-platform strategy, agile production.'
+            },
+            software: {
+                marketSize: '$12.5B total addressable market for customer engagement platforms. Serviceable market of mid-market B2B companies: $3.2B. Target segment of 5,000+ potential customers at $50K average contract value.',
+                targetDemographics: 'Primary: B2B mid-market companies (100-1000 employees), VP/Director of Customer Success, SaaS industry vertical, US and Western Europe markets, currently using legacy tools. Secondary: Enterprise accounts ready for digital transformation.',
+                marketTrends: '• Customer experience as competitive differentiator\n• Self-service expectations rising\n• AI/ML integration in support tools\n• Mobile-first customer journeys\n• Omnichannel engagement requirements',
+                competitiveLandscape: 'Key competitors: Zendesk ($15B cap), Freshdesk, Intercom. Market is fragmented with room for differentiated solutions. Our advantages: modern architecture, superior UX, better integration capabilities, competitive pricing.'
+            },
+            other: {
+                marketSize: 'Internal initiative - productivity gains estimated at $2.4M annually across 500 employees. Efficiency market benchmark: similar transformations show 15-25% productivity improvement.',
+                targetDemographics: 'Internal stakeholders: All department employees (500), management team (45), executive leadership (12). Key adoption groups by department priority.',
+                marketTrends: '• Digital workplace adoption accelerating\n• Remote work driving tool consolidation\n• Employee experience impacting retention\n• Process automation demand growing\n• Data-driven decision making priority',
+                competitiveLandscape: 'Internal project - no direct competitors. Vendor landscape for solutions includes Microsoft, Salesforce, ServiceNow. Selection criteria: integration capability, total cost of ownership, implementation timeline.'
+            }
+        };
+
+        function getTableData(id, fields) {
+            var data = [];
+            document.querySelectorAll('#' + id + ' tr').forEach(function(r) {
+                var inp = r.querySelectorAll('input, select');
+                var row = {};
+                fields.forEach(function(f, i) {
+                    if (inp[i]) row[f] = inp[i].tagName === 'SELECT' ? inp[i].options[inp[i].selectedIndex].text : inp[i].value;
+                    else if (f === 'score') { var s = r.querySelector('.risk-score'); row[f] = s ? s.textContent : ''; }
+                });
+                if (row[fields[0]]) data.push(row);
+            });
+            return data;
+        }
+
+        function generatePreview() {
+            var name = document.getElementById('projectName').value || 'Untitled Project';
+            var type = selectedSubtype || (selectedProjectType ? selectedProjectType.charAt(0).toUpperCase() + selectedProjectType.slice(1) : 'General');
+            var sponsor = document.getElementById('projectSponsor').value || 'Not specified';
+            var manager = document.getElementById('projectManager').value || 'Not specified';
+            var today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            var budget = parseFloat(document.getElementById('totalBudget').value) || 0;
+            var y1 = parseFloat(document.getElementById('year1Return').value) || 0;
+            var y2 = parseFloat(document.getElementById('year2Return').value) || 0;
+            var y3 = parseFloat(document.getElementById('year3Return').value) || 0;
+            var ret = y1 + y2 + y3;
+            var roi = budget > 0 ? ((ret - budget) / budget * 100).toFixed(1) : '0';
+
+            var html = '<div class="preview-header"><div class="preview-logo">Project Charter</div><h1 class="preview-title">' + name + '</h1><p class="preview-subtitle">' + type + ' | ' + today + '</p></div>';
+            html += '<div class="preview-section"><h2 class="preview-section-title">Executive Summary</h2><table class="preview-table"><tr><td><strong>Sponsor</strong></td><td>' + sponsor + '</td></tr><tr><td><strong>Manager</strong></td><td>' + manager + '</td></tr><tr><td><strong>Type</strong></td><td>' + type + '</td></tr><tr><td><strong>Date</strong></td><td>' + today + '</td></tr></table></div>';
+            html += '<div class="preview-section"><h2 class="preview-section-title">Problem Statement</h2><p class="preview-content"><strong>Current Situation:</strong> ' + (document.getElementById('currentSituation').value || 'Not provided') + '</p><p class="preview-content"><strong>Impact of Inaction:</strong> ' + (document.getElementById('impactNotActing').value || 'Not provided') + '</p><p class="preview-content"><strong>Stakeholders:</strong> ' + (document.getElementById('stakeholders').value || 'Not provided') + '</p></div>';
+            html += '<div class="preview-section"><h2 class="preview-section-title">Proposed Solution</h2><p class="preview-content"><strong>Overview:</strong> ' + (document.getElementById('solutionOverview').value || 'Not provided') + '</p><p class="preview-content"><strong>Deliverables:</strong></p><p class="preview-content" style="white-space:pre-line">' + (document.getElementById('deliverables').value || 'Not provided') + '</p><p class="preview-content"><strong>Success Criteria:</strong></p><p class="preview-content" style="white-space:pre-line">' + (document.getElementById('successCriteria').value || 'Not provided') + '</p></div>';
+
+            var benefits = getTableData('benefitsBody', ['benefit', 'category', 'value', 'confidence', 'measurement']);
+            if (benefits.length) html += '<div class="preview-section"><h2 class="preview-section-title">Expected Benefits</h2><table class="preview-table"><tr><th>Benefit</th><th>Category</th><th>Value</th><th>Confidence</th><th>Measurement</th></tr>' + benefits.map(function(b) { return '<tr><td>' + b.benefit + '</td><td>' + b.category + '</td><td>' + b.value + '</td><td>' + b.confidence + '</td><td>' + b.measurement + '</td></tr>'; }).join('') + '</table></div>';
+
+            var constraints = getTableData('constraintsBody', ['constraint', 'type', 'severity', 'mitigation']);
+            if (constraints.length) html += '<div class="preview-section"><h2 class="preview-section-title">Constraints</h2><table class="preview-table"><tr><th>Constraint</th><th>Type</th><th>Severity</th><th>Mitigation</th></tr>' + constraints.map(function(c) { return '<tr><td>' + c.constraint + '</td><td>' + c.type + '</td><td>' + c.severity + '</td><td>' + c.mitigation + '</td></tr>'; }).join('') + '</table></div>';
+
+            // Target Market (only for market-facing projects)
+            if (isMarketFacingProject()) {
+                var marketSize = document.getElementById('marketSize').value;
+                var targetDemographics = document.getElementById('targetDemographics').value;
+                var marketTrends = document.getElementById('marketTrends').value;
+                var competitiveLandscape = document.getElementById('competitiveLandscape').value;
+                if (marketSize || targetDemographics || marketTrends || competitiveLandscape) {
+                    html += '<div class="preview-section"><h2 class="preview-section-title">Target Market</h2>';
+                    if (marketSize) html += '<p class="preview-content"><strong>Market Size (TAM):</strong> ' + marketSize + '</p>';
+                    if (targetDemographics) html += '<p class="preview-content"><strong>Target Demographics:</strong> ' + targetDemographics + '</p>';
+                    if (marketTrends) html += '<p class="preview-content" style="white-space:pre-line"><strong>Market Trends:</strong> ' + marketTrends + '</p>';
+                    if (competitiveLandscape) html += '<p class="preview-content" style="white-space:pre-line"><strong>Competitive Landscape:</strong> ' + competitiveLandscape + '</p>';
+                    html += '</div>';
+                }
+            }
+
+            // Comparable Projects
+            var comparables = getTableData('comparablesBody', ['name', 'type', 'budget', 'outcome', 'relevance']);
+            if (comparables.length) html += '<div class="preview-section"><h2 class="preview-section-title">Comparable Projects</h2><table class="preview-table"><tr><th>Project</th><th>Type</th><th>Budget/Value</th><th>Outcome</th><th>Relevance</th></tr>' + comparables.map(function(c) { return '<tr><td>' + c.name + '</td><td>' + c.type + '</td><td>' + c.budget + '</td><td>' + c.outcome + '</td><td>' + c.relevance + '</td></tr>'; }).join('') + '</table></div>';
+
+            var risks = getTableData('risksBody', ['risk', 'probability', 'impact', 'score', 'mitigation', 'owner']);
+            if (risks.length) html += '<div class="preview-section"><h2 class="preview-section-title">Risk Assessment</h2><table class="preview-table"><tr><th>Risk</th><th>Prob</th><th>Impact</th><th>Score</th><th>Mitigation</th><th>Owner</th></tr>' + risks.map(function(r) { return '<tr><td>' + r.risk + '</td><td>' + r.probability + '</td><td>' + r.impact + '</td><td>' + r.score + '</td><td>' + r.mitigation + '</td><td>' + r.owner + '</td></tr>'; }).join('') + '</table></div>';
+
+            var timeline = getTableData('timelineBody', ['phase', 'duration', 'activities', 'dependencies']);
+            if (timeline.length) {
+                html += '<div class="preview-section"><h2 class="preview-section-title">Timeline</h2><table class="preview-table"><tr><th>Phase</th><th>Duration</th><th>Activities</th><th>Dependencies</th></tr>' + timeline.map(function(t) { return '<tr><td>' + t.phase + '</td><td>' + t.duration + ' weeks</td><td>' + t.activities + '</td><td>' + t.dependencies + '</td></tr>'; }).join('') + '</table>';
+                
+                // Generate Gantt Chart for preview
+                var total = 0;
+                var phases = [];
+                timeline.forEach(function(t) {
+                    var weeks = parseInt(t.duration) || 4;
+                    phases.push({ name: t.phase, weeks: weeks, start: total });
+                    total += weeks;
+                });
+                var months = Math.ceil(total / 4);
+                var mNames = [];
+                for (var i = 1; i <= months; i++) mNames.push('M' + i);
+                
+                html += '<h3 style="margin-top: 1.5rem; margin-bottom: 0.75rem; color: var(--primary); font-size: 1rem;">Project Gantt Chart</h3>';
+                html += '<div style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; background: #f8f7f4;">';
+                html += '<div style="display: flex; background: #1a365d; color: white; font-size: 0.8rem; font-weight: 600;">';
+                html += '<div style="width: 160px; padding: 0.6rem 0.75rem; flex-shrink: 0;">Phase</div>';
+                html += '<div style="flex: 1; display: flex;">';
+                mNames.forEach(function(m) {
+                    html += '<div style="flex: 1; text-align: center; padding: 0.6rem 0.25rem; border-left: 1px solid rgba(255,255,255,0.2);">' + m + '</div>';
+                });
+                html += '</div></div>';
+                
+                phases.forEach(function(p, idx) {
+                    var leftPct = (p.start / total) * 100;
+                    var widthPct = (p.weeks / total) * 100;
+                    var bgColor = idx % 2 === 0 ? '#ffffff' : '#f8f7f4';
+                    html += '<div style="display: flex; min-height: 36px; align-items: center; background: ' + bgColor + '; border-top: 1px solid #e2e8f0;">';
+                    html += '<div style="width: 160px; padding: 0.5rem 0.75rem; flex-shrink: 0; font-size: 0.85rem; font-weight: 500;">' + p.name + '</div>';
+                    html += '<div style="flex: 1; display: flex; position: relative; height: 36px;">';
+                    mNames.forEach(function() {
+                        html += '<div style="flex: 1; border-left: 1px solid #e2e8f0;"></div>';
+                    });
+                    html += '<div style="position: absolute; left: ' + leftPct + '%; width: ' + widthPct + '%; top: 50%; transform: translateY(-50%); height: 22px; background: linear-gradient(to right, #c6a052, #d4af61); border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #1a365d; font-size: 0.75rem; font-weight: 600;">' + p.weeks + 'w</div>';
+                    html += '</div></div>';
+                });
+                html += '</div>';
+                html += '<p style="text-align: center; color: #718096; font-size: 0.8rem; margin-top: 0.5rem;">Total Duration: ' + total + ' weeks</p>';
+                html += '</div>';
+            }
+
+            html += '<div class="preview-section"><h2 class="preview-section-title">Financial Analysis</h2><table class="preview-table"><tr><td><strong>Investment</strong></td><td>$' + budget.toLocaleString() + '</td></tr><tr><td><strong>Year 1</strong></td><td>$' + y1.toLocaleString() + '</td></tr><tr><td><strong>Year 2</strong></td><td>$' + y2.toLocaleString() + '</td></tr><tr><td><strong>Year 3</strong></td><td>$' + y3.toLocaleString() + '</td></tr><tr style="background:#c6f6d5"><td><strong>Total Return</strong></td><td>$' + ret.toLocaleString() + '</td></tr><tr style="background:#1a365d;color:#fff"><td><strong>ROI</strong></td><td>' + roi + '%</td></tr></table></div>';
+            html += '<div class="preview-section" style="margin-top:2rem;padding-top:1.5rem;border-top:2px solid #1a365d"><h2 class="preview-section-title">Approval Signatures</h2><table class="preview-table"><tr><td style="padding:2rem;width:50%"><div style="border-bottom:1px solid #333;height:40px"></div><strong>Sponsor</strong><br>' + sponsor + '<br>Date: ___________</td><td style="padding:2rem"><div style="border-bottom:1px solid #333;height:40px"></div><strong>Manager</strong><br>' + manager + '<br>Date: ___________</td></tr></table></div>';
+
+            document.getElementById('charterPreview').innerHTML = html;
+        }
+
+        function exportToPDF() {
+            var name = document.getElementById('projectName').value || 'Untitled Project';
+            var type = selectedSubtype || (selectedProjectType ? selectedProjectType.charAt(0).toUpperCase() + selectedProjectType.slice(1) : 'General');
+            var sponsor = document.getElementById('projectSponsor').value || 'Not specified';
+            var manager = document.getElementById('projectManager').value || 'Not specified';
+            var today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            var budget = parseFloat(document.getElementById('totalBudget').value) || 0;
+            var y1 = parseFloat(document.getElementById('year1Return').value) || 0;
+            var y2 = parseFloat(document.getElementById('year2Return').value) || 0;
+            var y3 = parseFloat(document.getElementById('year3Return').value) || 0;
+            var ret = y1 + y2 + y3;
+            var net = ret - budget;
+            var roi = budget > 0 ? ((net / budget) * 100).toFixed(1) : '0';
+
+            var benefits = getTableData('benefitsBody', ['benefit', 'category', 'value', 'confidence', 'measurement']);
+            var constraints = getTableData('constraintsBody', ['constraint', 'type', 'severity', 'mitigation']);
+            var comparables = getTableData('comparablesBody', ['name', 'type', 'budget', 'outcome', 'relevance']);
+            var risks = getTableData('risksBody', ['risk', 'probability', 'impact', 'score', 'mitigation', 'owner']);
+            var timeline = getTableData('timelineBody', ['phase', 'duration', 'activities', 'dependencies']);
+
+            var html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + name + ' - Project Charter</title>' +
+'<style>' +
+'* { margin: 0; padding: 0; box-sizing: border-box; }' +
+'body { font-family: Arial, Helvetica, sans-serif; font-size: 11pt; line-height: 1.5; color: #1a202c; padding: 0.5in; }' +
+'.header { text-align: center; margin-bottom: 24pt; padding-bottom: 16pt; border-bottom: 3pt solid #1a365d; }' +
+'.logo { font-size: 10pt; color: #c6a052; text-transform: uppercase; letter-spacing: 2pt; margin-bottom: 8pt; font-weight: bold; }' +
+'h1 { font-size: 22pt; color: #1a365d; margin-bottom: 6pt; }' +
+'.subtitle { color: #718096; font-size: 11pt; }' +
+'h2 { font-size: 14pt; color: #1a365d; margin: 20pt 0 10pt 0; padding-bottom: 4pt; border-bottom: 2pt solid #c6a052; }' +
+'p { margin-bottom: 8pt; }' +
+'strong { color: #1a365d; }' +
+'table { width: 100%; border-collapse: collapse; margin: 8pt 0 16pt 0; font-size: 10pt; }' +
+'th { background: #1a365d; color: white; padding: 8pt; text-align: left; }' +
+'td { padding: 8pt; border-bottom: 1pt solid #e2e8f0; }' +
+'tr:nth-child(even) { background: #f7fafc; }' +
+'.highlight { background: #c6f6d5 !important; }' +
+'.roi-row { background: #1a365d !important; }' +
+'.roi-row td { color: white; font-weight: bold; }' +
+'.sig-section { margin-top: 30pt; padding-top: 20pt; border-top: 2pt solid #1a365d; }' +
+'.sig-table td { padding: 20pt; width: 50%; vertical-align: top; }' +
+'.sig-line { border-bottom: 1pt solid #333; height: 30pt; margin-bottom: 8pt; }' +
+'@media print { body { padding: 0; } @page { margin: 0.5in; } }' +
+'</style></head><body>' +
+'<div class="header"><div class="logo">Project Charter</div><h1>' + name + '</h1><div class="subtitle">' + type + ' | ' + today + '</div></div>' +
+'<h2>Executive Summary</h2>' +
+'<table><tr><td width="140"><strong>Project Sponsor</strong></td><td>' + sponsor + '</td></tr>' +
+'<tr><td><strong>Project Manager</strong></td><td>' + manager + '</td></tr>' +
+'<tr><td><strong>Project Type</strong></td><td>' + type + '</td></tr>' +
+'<tr><td><strong>Document Date</strong></td><td>' + today + '</td></tr></table>' +
+'<h2>Problem Statement</h2>' +
+'<p><strong>Current Situation:</strong> ' + (document.getElementById('currentSituation').value || 'Not provided') + '</p>' +
+'<p><strong>Impact of Inaction:</strong> ' + (document.getElementById('impactNotActing').value || 'Not provided') + '</p>' +
+'<p><strong>Stakeholders Affected:</strong> ' + (document.getElementById('stakeholders').value || 'Not provided') + '</p>' +
+'<h2>Proposed Solution</h2>' +
+'<p><strong>Overview:</strong> ' + (document.getElementById('solutionOverview').value || 'Not provided') + '</p>' +
+'<p><strong>Key Deliverables:</strong></p>' +
+'<p style="white-space: pre-line">' + (document.getElementById('deliverables').value || 'Not provided') + '</p>' +
+'<p><strong>Success Criteria:</strong></p>' +
+'<p style="white-space: pre-line">' + (document.getElementById('successCriteria').value || 'Not provided') + '</p>';
+
+            if (benefits.length) {
+                html += '<h2>Expected Benefits</h2><table><tr><th>Benefit</th><th>Category</th><th>Value</th><th>Confidence</th><th>Measurement</th></tr>' + benefits.map(function(b) { return '<tr><td>' + b.benefit + '</td><td>' + b.category + '</td><td>' + b.value + '</td><td>' + b.confidence + '</td><td>' + b.measurement + '</td></tr>'; }).join('') + '</table>';
+            }
+
+            if (constraints.length) {
+                html += '<h2>Constraints</h2><table><tr><th>Constraint</th><th>Type</th><th>Severity</th><th>Mitigation</th></tr>' + constraints.map(function(c) { return '<tr><td>' + c.constraint + '</td><td>' + c.type + '</td><td>' + c.severity + '</td><td>' + c.mitigation + '</td></tr>'; }).join('') + '</table>';
+            }
+
+            // Target Market (only for market-facing projects)
+            if (isMarketFacingProject()) {
+                var marketSize = document.getElementById('marketSize').value;
+                var targetDemographics = document.getElementById('targetDemographics').value;
+                var marketTrends = document.getElementById('marketTrends').value;
+                var competitiveLandscape = document.getElementById('competitiveLandscape').value;
+                var hasResearch = document.getElementById('marketResearchYes').checked;
+                if (marketSize || targetDemographics || marketTrends || competitiveLandscape) {
+                    html += '<h2>Target Market</h2>';
+                    html += '<p><em>' + (hasResearch ? 'Based on market research data' : 'Based on assumptions and estimates') + '</em></p>';
+                    if (marketSize) html += '<p><strong>Market Size (TAM):</strong> ' + marketSize + '</p>';
+                    if (targetDemographics) html += '<p><strong>Target Demographics:</strong> ' + targetDemographics + '</p>';
+                    if (marketTrends) html += '<p style="white-space: pre-line"><strong>Market Trends:</strong> ' + marketTrends + '</p>';
+                    if (competitiveLandscape) html += '<p style="white-space: pre-line"><strong>Competitive Landscape:</strong> ' + competitiveLandscape + '</p>';
+                }
+            }
+
+            // Comparable Projects
+            if (comparables.length) {
+                html += '<h2>Comparable Projects</h2><table><tr><th>Project</th><th>Type/Industry</th><th>Budget/Value</th><th>Outcome</th><th>Relevance</th></tr>' + comparables.map(function(c) { return '<tr><td>' + c.name + '</td><td>' + c.type + '</td><td>' + c.budget + '</td><td>' + c.outcome + '</td><td>' + c.relevance + '</td></tr>'; }).join('') + '</table>';
+            }
+
+            if (risks.length) {
+                html += '<h2>Risk Assessment</h2><table><tr><th>Risk</th><th>Prob</th><th>Impact</th><th>Score</th><th>Mitigation</th><th>Owner</th></tr>' + risks.map(function(r) { return '<tr><td>' + r.risk + '</td><td>' + r.probability + '</td><td>' + r.impact + '</td><td>' + r.score + '</td><td>' + r.mitigation + '</td><td>' + r.owner + '</td></tr>'; }).join('') + '</table>';
+            }
+
+            if (timeline.length) {
+                html += '<h2>Project Timeline</h2><table><tr><th>Phase</th><th>Duration</th><th>Key Activities</th><th>Dependencies</th></tr>' + timeline.map(function(t) { return '<tr><td>' + t.phase + '</td><td>' + t.duration + ' weeks</td><td>' + t.activities + '</td><td>' + t.dependencies + '</td></tr>'; }).join('') + '</table>';
+                
+                // Add Gantt Chart
+                var total = 0;
+                var phases = [];
+                timeline.forEach(function(t) {
+                    var weeks = parseInt(t.duration) || 4;
+                    phases.push({ name: t.phase, weeks: weeks, start: total });
+                    total += weeks;
+                });
+                var months = Math.ceil(total / 4);
+                var mNames = [];
+                for (var i = 1; i <= months; i++) mNames.push('M' + i);
+                
+                html += '<h3 style="margin-top: 16pt; margin-bottom: 8pt; color: #1a365d; font-size: 12pt;">Project Gantt Chart</h3>';
+                html += '<div style="border: 1px solid #e2e8f0; border-radius: 4pt; overflow: hidden;">';
+                html += '<div style="display: flex; background: #1a365d; color: white; font-size: 9pt; font-weight: bold;">';
+                html += '<div style="width: 140pt; padding: 6pt 8pt; flex-shrink: 0;">Phase</div>';
+                html += '<div style="flex: 1; display: flex;">';
+                mNames.forEach(function(m) {
+                    html += '<div style="flex: 1; text-align: center; padding: 6pt 4pt; border-left: 1px solid rgba(255,255,255,0.2);">' + m + '</div>';
+                });
+                html += '</div></div>';
+                
+                phases.forEach(function(p, idx) {
+                    var leftPct = (p.start / total) * 100;
+                    var widthPct = (p.weeks / total) * 100;
+                    var bgColor = idx % 2 === 0 ? '#ffffff' : '#f7fafc';
+                    html += '<div style="display: flex; min-height: 28pt; align-items: center; background: ' + bgColor + '; border-top: 1px solid #e2e8f0;">';
+                    html += '<div style="width: 140pt; padding: 4pt 8pt; flex-shrink: 0; font-size: 9pt; font-weight: 500;">' + p.name + '</div>';
+                    html += '<div style="flex: 1; display: flex; position: relative; height: 28pt;">';
+                    mNames.forEach(function() {
+                        html += '<div style="flex: 1; border-left: 1px solid #e2e8f0;"></div>';
+                    });
+                    html += '<div style="position: absolute; left: ' + leftPct + '%; width: ' + widthPct + '%; top: 50%; transform: translateY(-50%); height: 18pt; background: linear-gradient(to right, #c6a052, #d4af61); border-radius: 3pt; display: flex; align-items: center; justify-content: center; color: white; font-size: 8pt; font-weight: bold;">' + p.weeks + 'w</div>';
+                    html += '</div></div>';
+                });
+                html += '</div>';
+            }
+
+            html += '<h2>Financial Analysis</h2>' +
+'<table>' +
+'<tr><td width="180"><strong>Total Investment</strong></td><td>$' + budget.toLocaleString() + '</td></tr>' +
+'<tr><td><strong>Year 1 Return</strong></td><td>$' + y1.toLocaleString() + '</td></tr>' +
+'<tr><td><strong>Year 2 Return</strong></td><td>$' + y2.toLocaleString() + '</td></tr>' +
+'<tr><td><strong>Year 3 Return</strong></td><td>$' + y3.toLocaleString() + '</td></tr>' +
+'<tr class="highlight"><td><strong>Total 3-Year Return</strong></td><td>$' + ret.toLocaleString() + '</td></tr>' +
+'<tr class="highlight"><td><strong>Net Benefit</strong></td><td>$' + net.toLocaleString() + '</td></tr>' +
+'<tr class="roi-row"><td><strong>Return on Investment</strong></td><td style="font-size: 14pt">' + roi + '%</td></tr>' +
+'</table>' +
+'<div class="sig-section">' +
+'<h2>Approval Signatures</h2>' +
+'<table class="sig-table"><tr>' +
+'<td><div class="sig-line"></div><strong>Project Sponsor</strong><br>' + sponsor + '<br>Date: _______________</td>' +
+'<td><div class="sig-line"></div><strong>Project Manager</strong><br>' + manager + '<br>Date: _______________</td>' +
+'</tr></table>' +
+'</div>' +
+'<script>window.onload = function() { window.print(); }<\/script>' +
+'</body></html>';
+
+            var printWindow = window.open('', '_blank');
+            printWindow.document.write(html);
+            printWindow.document.close();
+        }
+
+        // Save charter to localStorage
+        function saveCharter() {
+            var charter = {
+                id: currentCharterId,
+                projectName: document.getElementById('projectName').value || 'Untitled Project',
+                projectType: selectedProjectType || 'other',
+                subtype: selectedSubtype,
+                sponsor: document.getElementById('projectSponsor').value,
+                manager: document.getElementById('projectManager').value,
+                currentSituation: document.getElementById('currentSituation').value,
+                impactNotActing: document.getElementById('impactNotActing').value,
+                stakeholders: document.getElementById('stakeholders').value,
+                solutionOverview: document.getElementById('solutionOverview').value,
+                deliverables: document.getElementById('deliverables').value,
+                successCriteria: document.getElementById('successCriteria').value,
+                startDate: document.getElementById('startDate').value,
+                budget: parseFloat(document.getElementById('totalBudget').value) || 0,
+                year1Return: parseFloat(document.getElementById('year1Return').value) || 0,
+                year2Return: parseFloat(document.getElementById('year2Return').value) || 0,
+                year3Return: parseFloat(document.getElementById('year3Return').value) || 0,
+                benefits: getTableData('benefitsBody', ['benefit', 'category', 'value', 'confidence', 'measurement']),
+                constraints: getTableData('constraintsBody', ['constraint', 'type', 'severity', 'mitigation']),
+                risks: getTableData('risksBody', ['risk', 'probability', 'impact', 'score', 'mitigation', 'owner']),
+                timeline: getTableData('timelineBody', ['phase', 'duration', 'activities', 'dependencies']),
+                budgetItems: getTableData('budgetBody', ['category', 'amount', 'notes']),
+                createdAt: null,
+                updatedAt: new Date().toISOString()
+            };
+
+            // Calculate ROI
+            var totalReturn = charter.year1Return + charter.year2Return + charter.year3Return;
+            charter.roi = charter.budget > 0 ? ((totalReturn - charter.budget) / charter.budget * 100) : 0;
+
+            // Get existing charters
+            var charters = JSON.parse(localStorage.getItem('charterpro_charters') || '[]');
+            
+            // Find existing or add new
+            var existingIndex = charters.findIndex(function(c) { return c.id === currentCharterId; });
+            if (existingIndex >= 0) {
+                charter.createdAt = charters[existingIndex].createdAt;
+                charters[existingIndex] = charter;
+            } else {
+                charter.createdAt = new Date().toISOString();
+                charters.unshift(charter);
+            }
+
+            localStorage.setItem('charterpro_charters', JSON.stringify(charters));
+            return charter;
+        }
+
+        // Load charter from localStorage
+        function loadCharter(id) {
+            var charters = JSON.parse(localStorage.getItem('charterpro_charters') || '[]');
+            var charter = charters.find(function(c) { return c.id === id; });
+            
+            if (!charter) {
+                currentCharterId = 'charter-' + Date.now();
+                return;
+            }
+
+            currentCharterId = charter.id;
+
+            // Load basic fields
+            document.getElementById('projectName').value = charter.projectName || '';
+            document.getElementById('projectSponsor').value = charter.sponsor || '';
+            document.getElementById('projectManager').value = charter.manager || '';
+            document.getElementById('currentSituation').value = charter.currentSituation || '';
+            document.getElementById('impactNotActing').value = charter.impactNotActing || '';
+            document.getElementById('stakeholders').value = charter.stakeholders || '';
+            document.getElementById('solutionOverview').value = charter.solutionOverview || '';
+            document.getElementById('deliverables').value = charter.deliverables || '';
+            document.getElementById('successCriteria').value = charter.successCriteria || '';
+            document.getElementById('totalBudget').value = charter.budget || '';
+            document.getElementById('year1Return').value = charter.year1Return || '';
+            document.getElementById('year2Return').value = charter.year2Return || '';
+            document.getElementById('year3Return').value = charter.year3Return || '';
+
+            if (charter.startDate) {
+                document.getElementById('startDate').value = charter.startDate;
+            }
+
+            // Load project type
+            if (charter.projectType) {
+                selectProjectType(charter.projectType);
+                if (charter.subtype) {
+                    setTimeout(function() {
+                        var subtypeOptions = document.querySelectorAll('.subtype-option');
+                        subtypeOptions.forEach(function(opt) {
+                            if (opt.textContent === charter.subtype) {
+                                opt.click();
+                            }
+                        });
+                    }, 100);
+                }
+            }
+
+            // Load benefits
+            document.getElementById('benefitsBody').innerHTML = '';
+            if (charter.benefits && charter.benefits.length > 0) {
+                charter.benefits.forEach(function(b) {
+                    addBenefitRowWithData(b);
+                });
+            } else {
+                addBenefitRow();
+            }
+
+            // Load constraints
+            document.getElementById('constraintsBody').innerHTML = '';
+            if (charter.constraints && charter.constraints.length > 0) {
+                charter.constraints.forEach(function(c) {
+                    addConstraintRowWithData(c);
+                });
+            } else {
+                addConstraintRow();
+            }
+
+            // Load risks
+            document.getElementById('risksBody').innerHTML = '';
+            if (charter.risks && charter.risks.length > 0) {
+                charter.risks.forEach(function(r) {
+                    addRiskRowWithData(r);
+                });
+            } else {
+                addRiskRow();
+            }
+
+            // Load timeline
+            document.getElementById('timelineBody').innerHTML = '';
+            if (charter.timeline && charter.timeline.length > 0) {
+                charter.timeline.forEach(function(t) {
+                    addTimelineRowWithData(t);
+                });
+            } else {
+                addTimelineRow();
+            }
+
+            // Load budget items
+            document.getElementById('budgetBody').innerHTML = '';
+            if (charter.budgetItems && charter.budgetItems.length > 0) {
+                charter.budgetItems.forEach(function(b) {
+                    addBudgetRowWithData(b);
+                });
+            } else {
+                addBudgetRow();
+            }
+
+            // Update ROI
+            calculateROI();
+            updateGantt();
+        }
+
+        // Helper functions to add rows with data
+        function addBenefitRowWithData(data) {
+            var tr = document.createElement('tr');
+            tr.innerHTML = '<td><input type="text" class="table-input" value="' + escapeAttr(data.benefit) + '"></td>' +
+                '<td><select class="table-select"><option' + (data.category==='Financial'?' selected':'') + '>Financial</option><option' + (data.category==='Operational'?' selected':'') + '>Operational</option><option' + (data.category==='Strategic'?' selected':'') + '>Strategic</option><option' + (data.category==='Compliance'?' selected':'') + '>Compliance</option></select></td>' +
+                '<td><input type="text" class="table-input" value="' + escapeAttr(data.value) + '"></td>' +
+                '<td><select class="table-select"><option' + (data.confidence==='High'?' selected':'') + '>High</option><option' + (data.confidence==='Medium'?' selected':'') + '>Medium</option><option' + (data.confidence==='Low'?' selected':'') + '>Low</option></select></td>' +
+                '<td><input type="text" class="table-input" value="' + escapeAttr(data.measurement) + '"></td>' +
+                '<td><button type="button" class="remove-row-btn">×</button></td>';
+            tr.querySelector('.remove-row-btn').addEventListener('click', function() { tr.remove(); });
+            document.getElementById('benefitsBody').appendChild(tr);
+        }
+
+        function addConstraintRowWithData(data) {
+            var tr = document.createElement('tr');
+            tr.innerHTML = '<td><input type="text" class="table-input" value="' + escapeAttr(data.constraint) + '"></td>' +
+                '<td><select class="table-select"><option' + (data.type==='Budget'?' selected':'') + '>Budget</option><option' + (data.type==='Time'?' selected':'') + '>Time</option><option' + (data.type==='Resource'?' selected':'') + '>Resource</option><option' + (data.type==='Technical'?' selected':'') + '>Technical</option><option' + (data.type==='Regulatory'?' selected':'') + '>Regulatory</option></select></td>' +
+                '<td><select class="table-select"><option' + (data.severity==='High'?' selected':'') + '>High</option><option' + (data.severity==='Medium'?' selected':'') + '>Medium</option><option' + (data.severity==='Low'?' selected':'') + '>Low</option></select></td>' +
+                '<td><input type="text" class="table-input" value="' + escapeAttr(data.mitigation) + '"></td>' +
+                '<td><button type="button" class="remove-row-btn">×</button></td>';
+            tr.querySelector('.remove-row-btn').addEventListener('click', function() { tr.remove(); });
+            document.getElementById('constraintsBody').appendChild(tr);
+        }
+
+        function addRiskRowWithData(data) {
+            var tr = document.createElement('tr');
+            var probVal = data.probability === 'Low' ? '1' : data.probability === 'Med' ? '2' : '3';
+            var impactVal = data.impact === 'Low' ? '1' : data.impact === 'Med' ? '2' : '3';
+            var score = parseInt(probVal) * parseInt(impactVal);
+            var cls = score >= 6 ? 'assessment-low' : score >= 3 ? 'assessment-medium' : 'assessment-high';
+            
+            tr.innerHTML = '<td><input type="text" class="table-input" value="' + escapeAttr(data.risk) + '"></td>' +
+                '<td><select class="table-select risk-prob"><option value="1"' + (probVal==='1'?' selected':'') + '>Low</option><option value="2"' + (probVal==='2'?' selected':'') + '>Med</option><option value="3"' + (probVal==='3'?' selected':'') + '>High</option></select></td>' +
+                '<td><select class="table-select risk-impact"><option value="1"' + (impactVal==='1'?' selected':'') + '>Low</option><option value="2"' + (impactVal==='2'?' selected':'') + '>Med</option><option value="3"' + (impactVal==='3'?' selected':'') + '>High</option></select></td>' +
+                '<td class="risk-score ' + cls + '">' + score + '</td>' +
+                '<td><input type="text" class="table-input" value="' + escapeAttr(data.mitigation) + '"></td>' +
+                '<td><input type="text" class="table-input" value="' + escapeAttr(data.owner) + '"></td>' +
+                '<td><button type="button" class="remove-row-btn">×</button></td>';
+            tr.querySelector('.remove-row-btn').addEventListener('click', function() { tr.remove(); });
+            tr.querySelector('.risk-prob').addEventListener('change', function() { calcRisk(tr); });
+            tr.querySelector('.risk-impact').addEventListener('change', function() { calcRisk(tr); });
+            document.getElementById('risksBody').appendChild(tr);
+        }
+
+        function addTimelineRowWithData(data) {
+            var tr = document.createElement('tr');
+            tr.innerHTML = '<td><input type="text" class="table-input timeline-phase" value="' + escapeAttr(data.phase) + '"></td>' +
+                '<td><input type="number" class="table-input timeline-weeks" value="' + (data.duration || 4) + '" min="1"></td>' +
+                '<td><input type="text" class="table-input" value="' + escapeAttr(data.activities) + '"></td>' +
+                '<td><input type="text" class="table-input" value="' + escapeAttr(data.dependencies) + '"></td>' +
+                '<td><button type="button" class="remove-row-btn">×</button></td>';
+            tr.querySelector('.remove-row-btn').addEventListener('click', function() { tr.remove(); updateGantt(); });
+            tr.querySelector('.timeline-phase').addEventListener('input', updateGantt);
+            tr.querySelector('.timeline-weeks').addEventListener('input', updateGantt);
+            document.getElementById('timelineBody').appendChild(tr);
+        }
+
+        function addBudgetRowWithData(data) {
+            var tr = document.createElement('tr');
+            tr.innerHTML = '<td><input type="text" class="table-input" value="' + escapeAttr(data.category) + '"></td>' +
+                '<td><input type="number" class="table-input budget-amount" value="' + (data.amount || '') + '"></td>' +
+                '<td><input type="text" class="table-input" value="' + escapeAttr(data.notes) + '"></td>' +
+                '<td><button type="button" class="remove-row-btn">×</button></td>';
+            tr.querySelector('.remove-row-btn').addEventListener('click', function() { tr.remove(); updateBudgetTotal(); });
+            tr.querySelector('.budget-amount').addEventListener('input', updateBudgetTotal);
+            document.getElementById('budgetBody').appendChild(tr);
+        }
+
+        function escapeAttr(str) {
+            if (!str) return '';
+            return str.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+
+        // Auto-save on navigation
+        function autoSave() {
+            if (document.getElementById('projectName').value) {
+                saveCharter();
+            }
+        }
+    </script>
+</body>
+</html>

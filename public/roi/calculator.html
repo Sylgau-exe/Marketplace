@@ -1,0 +1,2104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROI Calculator - ProjectManagerTool</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #92400e;
+            --primary-light: #b45309;
+            --primary-dark: #78350f;
+            --accent: #f59e0b;
+            --accent-light: #fbbf24;
+            --accent-glow: rgba(245, 158, 11, 0.3);
+            --success: #22c55e;
+            --success-bg: rgba(34, 197, 94, 0.1);
+            --warning: #f59e0b;
+            --warning-bg: rgba(245, 158, 11, 0.1);
+            --error: #ef4444;
+            --error-bg: rgba(239, 68, 68, 0.1);
+            --info: #3b82f6;
+            --bg: #0a0f1a;
+            --bg-card: #111827;
+            --bg-card-hover: #1a2332;
+            --text: #f7fafc;
+            --text-muted: #a0aec0;
+            --text-dim: #718096;
+            --border: #2d3748;
+            --gradient-gold: linear-gradient(135deg, #f59e0b 0%, #fbbf24 50%, #f59e0b 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1rem 2rem;
+            background: rgba(10, 15, 26, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+
+        .nav-logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-gold);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .nav-logo-text {
+            font-family: 'Fraunces', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .platform-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 8px;
+            color: #a5b4fc;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .platform-link:hover {
+            background: rgba(99, 102, 241, 0.25);
+            color: #c7d2fe;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .save-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .save-status.saving { color: var(--warning); }
+        .save-status.saved { color: var(--success); }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--gradient-gold);
+            color: var(--primary-dark);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px var(--accent-glow);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* Main Layout */
+        .main-layout {
+            display: flex;
+            min-height: 100vh;
+            padding-top: 70px;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            padding: 1.5rem 0;
+            position: fixed;
+            top: 70px;
+            bottom: 0;
+            overflow-y: auto;
+        }
+
+        .sidebar-title {
+            padding: 0 1.5rem 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-dim);
+        }
+
+        .step-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .step-item:hover {
+            background: var(--bg-card-hover);
+        }
+
+        .step-item.active {
+            background: var(--bg-card-hover);
+            border-left-color: var(--accent);
+        }
+
+        .step-item.completed .step-number {
+            background: var(--accent);
+            color: var(--primary-dark);
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+
+        .step-item.active .step-number {
+            background: var(--accent);
+            color: var(--primary-dark);
+        }
+
+        .step-info h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 0.15rem;
+        }
+
+        .step-info p {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+
+        /* Content Area */
+        .content-area {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem 3rem;
+            max-width: calc(100% - 280px);
+        }
+
+        .step-content {
+            display: none;
+            max-width: 900px;
+        }
+
+        .step-content.active {
+            display: block;
+        }
+
+        .step-header {
+            margin-bottom: 2rem;
+        }
+
+        .step-header h2 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .step-header p {
+            color: var(--text-muted);
+        }
+
+        .step-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        /* Form Styles */
+        .form-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .form-label .required {
+            color: var(--error);
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        .form-input::placeholder,
+        .form-textarea::placeholder {
+            color: var(--text-dim);
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .form-hint {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            margin-top: 0.35rem;
+        }
+
+        /* Currency Input */
+        .currency-input {
+            position: relative;
+        }
+
+        .currency-input::before {
+            content: '$';
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-dim);
+            font-weight: 500;
+        }
+
+        .currency-input .form-input {
+            padding-left: 2rem;
+        }
+
+        /* Cost Item */
+        .cost-item {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .cost-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .cost-item-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-icon:hover {
+            border-color: var(--error);
+            color: var(--error);
+        }
+
+        .btn-add {
+            margin-top: 0.5rem;
+            width: auto;
+            padding: 0.5rem 1rem;
+        }
+
+        .btn-add:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* Results Cards */
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .result-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            text-align: center;
+        }
+
+        .result-card.highlight {
+            border-color: var(--accent);
+            background: rgba(245, 158, 11, 0.05);
+        }
+
+        .result-value {
+            font-family: 'Fraunces', serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.25rem;
+        }
+
+        .result-card.negative .result-value {
+            color: var(--error);
+        }
+
+        .result-card.positive .result-value {
+            color: var(--success);
+        }
+
+        .result-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Cash Flow Table */
+        .cashflow-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .cashflow-table th,
+        .cashflow-table td {
+            padding: 0.75rem;
+            text-align: right;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .cashflow-table th {
+            background: var(--bg);
+            color: var(--text-muted);
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .cashflow-table th:first-child,
+        .cashflow-table td:first-child {
+            text-align: left;
+        }
+
+        .cashflow-table tr:hover {
+            background: var(--bg-card-hover);
+        }
+
+        .cashflow-table .positive {
+            color: var(--success);
+        }
+
+        .cashflow-table .negative {
+            color: var(--error);
+        }
+
+        .cashflow-table .total-row {
+            font-weight: 600;
+            background: var(--bg);
+        }
+
+        /* Chart Container */
+        .chart-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
+
+        .bar-chart {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .bar-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .bar-label {
+            width: 80px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .bar-container {
+            flex: 1;
+            height: 24px;
+            background: var(--bg);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .bar-fill.costs {
+            background: linear-gradient(90deg, #ef4444, #f87171);
+        }
+
+        .bar-fill.benefits {
+            background: linear-gradient(90deg, #22c55e, #4ade80);
+        }
+
+        .bar-value {
+            width: 100px;
+            text-align: right;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        /* Navigation Buttons */
+        .step-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+        }
+
+        /* Preview Section */
+        .preview-container {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            color: #1a1a2e;
+        }
+
+        .preview-header {
+            background: var(--primary);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .preview-header h1 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .preview-body {
+            padding: 2rem;
+        }
+
+        .preview-section {
+            margin-bottom: 2rem;
+        }
+
+        .preview-section-title {
+            font-family: 'Fraunces', serif;
+            font-size: 1.1rem;
+            color: var(--primary);
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .preview-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+
+        .preview-table th,
+        .preview-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid #e0e0e0;
+        }
+
+        .preview-table th {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+
+        .preview-table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .preview-metrics {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .preview-metric {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .preview-metric-value {
+            font-family: 'Fraunces', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .preview-metric-label {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 240px;
+            }
+            .content-area {
+                margin-left: 240px;
+                max-width: calc(100% - 240px);
+            }
+            .results-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+            .content-area {
+                margin-left: 0;
+                max-width: 100%;
+                padding: 1.5rem;
+            }
+            .form-row, .form-row-3 {
+                grid-template-columns: 1fr;
+            }
+            .results-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .preview-metrics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Print Header Styles */
+        .print-header {
+            display: none;
+            padding: 2rem;
+            border-bottom: 2px solid #f59e0b;
+            margin-bottom: 2rem;
+        }
+        .print-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .print-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        .print-meta {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+        .print-description {
+            padding: 1rem;
+            background: #f5f5f5;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+
+        /* Help Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .modal-title {
+            font-family: 'Fraunces', serif;
+            font-size: 1.25rem;
+        }
+        .modal-body {
+            padding: 1.5rem;
+        }
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            padding: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+        .help-section {
+            margin-bottom: 1.5rem;
+        }
+        .help-section h4 {
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+        .help-section p, .help-section li {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        .help-section ol, .help-section ul {
+            padding-left: 1.25rem;
+        }
+        .help-section li {
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-content">
+            <a href="index.html" class="nav-logo">
+                <div class="nav-logo-icon">💰</div>
+                <span class="nav-logo-text">ROI Calculator</span>
+            </a>
+            <a href="/" class="platform-link">← All Tools</a>
+            <div class="nav-actions">
+                <div class="save-status" id="saveStatus">
+                    <span>●</span> Auto-saved
+                </div>
+                <button class="btn btn-secondary" onclick="openHelpModal()">❓ Guide</button>
+                <button class="btn btn-secondary" onclick="loadExample()">📋 Example</button>
+                <button class="btn btn-primary" onclick="goToStep(5)">View Results</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Print Header (only visible when printing) -->
+    <div class="print-header" id="printHeader">
+        <div class="print-logo">💰 ROI Calculator</div>
+        <h1 class="print-title" id="printProjectName">ROI Analysis Report</h1>
+        <div class="print-meta">
+            <div class="print-meta-item"><strong>Department:</strong> <span id="printDepartment">-</span></div>
+            <div class="print-meta-item"><strong>Owner:</strong> <span id="printOwner">-</span></div>
+            <div class="print-meta-item"><strong>Date:</strong> <span id="printDate">-</span></div>
+            <div class="print-meta-item"><strong>Analysis Period:</strong> <span id="printPeriod">-</span></div>
+        </div>
+        <div class="print-description" id="printDescription"></div>
+    </div>
+
+    <!-- Help Modal -->
+    <div class="modal-overlay" id="helpModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">📖 How to Use the ROI Calculator</h3>
+                <button class="btn-icon" onclick="closeHelpModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="help-section">
+                    <h4>What is ROI Analysis?</h4>
+                    <p>Return on Investment (ROI) analysis helps you evaluate the profitability of an investment by comparing the costs against the expected benefits over time.</p>
+                </div>
+                <div class="help-section">
+                    <h4>Step-by-Step Guide</h4>
+                    <ol>
+                        <li><strong>Project Details:</strong> Enter basic information about your investment project including name, department, and a brief description.</li>
+                        <li><strong>Investment Costs:</strong> Add all one-time initial costs (software, hardware, implementation) and ongoing annual costs (maintenance, support, licenses).</li>
+                        <li><strong>Benefits & Returns:</strong> List expected benefits including cost savings, revenue increases, and productivity gains.</li>
+                        <li><strong>Analysis Parameters:</strong> Set the time period, discount rate, and when benefits begin.</li>
+                        <li><strong>View Results:</strong> Review ROI, NPV, IRR, and payback period calculations.</li>
+                    </ol>
+                </div>
+                <div class="help-section">
+                    <h4>Key Metrics Explained</h4>
+                    <ul>
+                        <li><strong>ROI:</strong> Total return as a percentage of investment</li>
+                        <li><strong>NPV:</strong> Net Present Value - today's value of future cash flows</li>
+                        <li><strong>IRR:</strong> Internal Rate of Return - the discount rate that makes NPV zero</li>
+                        <li><strong>Payback Period:</strong> Time to recover initial investment</li>
+                    </ul>
+                </div>
+                <div class="help-section">
+                    <h4>Tips for Accurate Analysis</h4>
+                    <ul>
+                        <li>Be conservative with benefit estimates</li>
+                        <li>Include all hidden costs (training, downtime, support)</li>
+                        <li>Use realistic discount rates (typically 8-15%)</li>
+                        <li>Consider both hard and soft savings</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="loadExample()">Load Example Data</button>
+                <button class="btn btn-primary" onclick="closeHelpModal()">Got It!</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Layout -->
+    <div class="main-layout">
+        <!-- Sidebar Steps -->
+        <aside class="sidebar">
+            <div class="sidebar-title">Analysis Steps</div>
+            
+            <div class="step-item active" onclick="goToStep(1)" data-step="1">
+                <div class="step-number">1</div>
+                <div class="step-info">
+                    <h4>Project Details</h4>
+                    <p>Basic information</p>
+                </div>
+            </div>
+            
+            <div class="step-item" onclick="goToStep(2)" data-step="2">
+                <div class="step-number">2</div>
+                <div class="step-info">
+                    <h4>Investment Costs</h4>
+                    <p>Initial & ongoing</p>
+                </div>
+            </div>
+            
+            <div class="step-item" onclick="goToStep(3)" data-step="3">
+                <div class="step-number">3</div>
+                <div class="step-info">
+                    <h4>Benefits & Returns</h4>
+                    <p>Revenue & savings</p>
+                </div>
+            </div>
+            
+            <div class="step-item" onclick="goToStep(4)" data-step="4">
+                <div class="step-number">4</div>
+                <div class="step-info">
+                    <h4>Analysis Settings</h4>
+                    <p>Discount rate & period</p>
+                </div>
+            </div>
+            
+            <div class="step-item" onclick="goToStep(5)" data-step="5">
+                <div class="step-number">📊</div>
+                <div class="step-info">
+                    <h4>Results & Export</h4>
+                    <p>ROI, NPV, IRR</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Content Area -->
+        <main class="content-area">
+            <!-- Step 1: Project Details -->
+            <div class="step-content active" id="step1">
+                <div class="step-header">
+                    <div class="step-badge">Step 1 of 4</div>
+                    <h2>Project Details</h2>
+                    <p>Enter basic information about the investment or project.</p>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Investment Information</div>
+                    <div class="form-group">
+                        <label class="form-label">Project / Investment Name <span class="required">*</span></label>
+                        <input type="text" class="form-input" id="projectName" placeholder="e.g., CRM System Implementation">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Department / Business Unit</label>
+                            <input type="text" class="form-input" id="department" placeholder="e.g., Sales & Marketing">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Project Owner</label>
+                            <input type="text" class="form-input" id="projectOwner" placeholder="e.g., Jane Smith">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Analysis Date</label>
+                            <input type="date" class="form-input" id="analysisDate">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Investment Type</label>
+                            <select class="form-select" id="investmentType">
+                                <option value="">Select type...</option>
+                                <option value="technology">Technology / Software</option>
+                                <option value="equipment">Equipment / Machinery</option>
+                                <option value="facility">Facility / Infrastructure</option>
+                                <option value="process">Process Improvement</option>
+                                <option value="marketing">Marketing Campaign</option>
+                                <option value="training">Training / Development</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Investment Description</div>
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-textarea" id="description" placeholder="Briefly describe the investment and its purpose..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Business Justification</label>
+                        <textarea class="form-textarea" id="justification" placeholder="Why is this investment needed? What problem does it solve?"></textarea>
+                    </div>
+                </div>
+
+                <div class="step-navigation">
+                    <div></div>
+                    <button class="btn btn-primary" onclick="goToStep(2)">Next: Costs →</button>
+                </div>
+            </div>
+
+            <!-- Step 2: Investment Costs -->
+            <div class="step-content" id="step2">
+                <div class="step-header">
+                    <div class="step-badge">Step 2 of 4</div>
+                    <h2>Investment Costs</h2>
+                    <p>Enter all costs associated with the investment.</p>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Initial Investment (One-Time Costs)</div>
+                    <div id="initialCostsList">
+                        <div class="cost-item">
+                            <div class="cost-item-header">
+                                <span class="cost-item-title">Cost Item 1</span>
+                                <button class="btn-icon" onclick="removeInitialCost(this)" style="display:none;">✕</button>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Description</label>
+                                    <input type="text" class="form-input cost-desc" placeholder="e.g., Software licenses">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Amount</label>
+                                    <div class="currency-input">
+                                        <input type="number" class="form-input cost-amount" placeholder="0" min="0" step="100">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn-icon btn-add" onclick="addInitialCost()">+ Add Cost Item</button>
+                    
+                    <div class="form-group" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                        <div class="form-row">
+                            <div>
+                                <label class="form-label">Total Initial Investment</label>
+                                <p class="form-hint">Auto-calculated from items above</p>
+                            </div>
+                            <div class="result-card" style="margin: 0;">
+                                <div class="result-value" id="totalInitialCost">$0</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Ongoing Annual Costs</div>
+                    <div id="annualCostsList">
+                        <div class="cost-item">
+                            <div class="cost-item-header">
+                                <span class="cost-item-title">Annual Cost 1</span>
+                                <button class="btn-icon" onclick="removeAnnualCost(this)" style="display:none;">✕</button>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Description</label>
+                                    <input type="text" class="form-input annual-desc" placeholder="e.g., Maintenance & support">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Annual Amount</label>
+                                    <div class="currency-input">
+                                        <input type="number" class="form-input annual-amount" placeholder="0" min="0" step="100">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn-icon btn-add" onclick="addAnnualCost()">+ Add Annual Cost</button>
+                    
+                    <div class="form-group" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                        <div class="form-row">
+                            <div>
+                                <label class="form-label">Total Annual Operating Costs</label>
+                                <p class="form-hint">Auto-calculated from items above</p>
+                            </div>
+                            <div class="result-card" style="margin: 0;">
+                                <div class="result-value" id="totalAnnualCost">$0</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-navigation">
+                    <button class="btn btn-secondary" onclick="goToStep(1)">← Back</button>
+                    <button class="btn btn-primary" onclick="goToStep(3)">Next: Benefits →</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Benefits & Returns -->
+            <div class="step-content" id="step3">
+                <div class="step-header">
+                    <div class="step-badge">Step 3 of 4</div>
+                    <h2>Benefits & Returns</h2>
+                    <p>Enter the expected benefits and returns from the investment.</p>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Annual Benefits</div>
+                    <div id="benefitsList">
+                        <div class="cost-item">
+                            <div class="cost-item-header">
+                                <span class="cost-item-title">Benefit 1</span>
+                                <button class="btn-icon" onclick="removeBenefit(this)" style="display:none;">✕</button>
+                            </div>
+                            <div class="form-row-3">
+                                <div class="form-group">
+                                    <label class="form-label">Description</label>
+                                    <input type="text" class="form-input benefit-desc" placeholder="e.g., Labor cost savings">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Annual Amount</label>
+                                    <div class="currency-input">
+                                        <input type="number" class="form-input benefit-amount" placeholder="0" min="0" step="100">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Type</label>
+                                    <select class="form-select benefit-type">
+                                        <option value="hard">Hard Savings (Quantifiable)</option>
+                                        <option value="soft">Soft Savings (Estimated)</option>
+                                        <option value="revenue">Revenue Increase</option>
+                                        <option value="avoidance">Cost Avoidance</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn-icon btn-add" onclick="addBenefit()">+ Add Benefit</button>
+                    
+                    <div class="form-group" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                        <div class="form-row">
+                            <div>
+                                <label class="form-label">Total Annual Benefits</label>
+                                <p class="form-hint">Auto-calculated from items above</p>
+                            </div>
+                            <div class="result-card positive" style="margin: 0;">
+                                <div class="result-value" id="totalAnnualBenefits">$0</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Benefit Timing</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Benefits Start</label>
+                            <select class="form-select" id="benefitsStart">
+                                <option value="0">Year 0 (Immediately)</option>
+                                <option value="1" selected>Year 1</option>
+                                <option value="2">Year 2</option>
+                                <option value="3">Year 3</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Annual Benefit Growth Rate</label>
+                            <div class="form-row" style="gap: 0.5rem;">
+                                <input type="number" class="form-input" id="benefitGrowth" placeholder="0" min="0" max="50" step="1" value="0">
+                                <span style="display: flex; align-items: center; color: var(--text-muted);">%</span>
+                            </div>
+                            <p class="form-hint">Expected annual increase in benefits</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Intangible Benefits (Optional)</div>
+                    <div class="form-group">
+                        <label class="form-label">Describe any benefits that can't be easily quantified</label>
+                        <textarea class="form-textarea" id="intangibleBenefits" placeholder="e.g., Improved customer satisfaction, better employee morale, enhanced brand reputation..."></textarea>
+                    </div>
+                </div>
+
+                <div class="step-navigation">
+                    <button class="btn btn-secondary" onclick="goToStep(2)">← Back</button>
+                    <button class="btn btn-primary" onclick="goToStep(4)">Next: Settings →</button>
+                </div>
+            </div>
+
+            <!-- Step 4: Analysis Settings -->
+            <div class="step-content" id="step4">
+                <div class="step-header">
+                    <div class="step-badge">Step 4 of 4</div>
+                    <h2>Analysis Settings</h2>
+                    <p>Configure the financial analysis parameters.</p>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Time Horizon</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Analysis Period (Years) <span class="required">*</span></label>
+                            <select class="form-select" id="analysisPeriod">
+                                <option value="1">1 Year</option>
+                                <option value="2">2 Years</option>
+                                <option value="3" selected>3 Years</option>
+                                <option value="4">4 Years</option>
+                                <option value="5">5 Years</option>
+                                <option value="7">7 Years</option>
+                                <option value="10">10 Years</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Discount Rate (%) <span class="required">*</span></label>
+                            <input type="number" class="form-input" id="discountRate" value="10" min="0" max="50" step="0.5">
+                            <p class="form-hint">Typical range: 8-15% (cost of capital)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Sensitivity Analysis</div>
+                    <p class="form-hint" style="margin-bottom: 1rem;">Test how changes in key assumptions affect the results.</p>
+                    <div class="form-row-3">
+                        <div class="form-group">
+                            <label class="form-label">Cost Variance (+/-)</label>
+                            <select class="form-select" id="costVariance">
+                                <option value="0">No variance</option>
+                                <option value="10" selected>±10%</option>
+                                <option value="20">±20%</option>
+                                <option value="30">±30%</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Benefit Variance (+/-)</label>
+                            <select class="form-select" id="benefitVariance">
+                                <option value="0">No variance</option>
+                                <option value="10" selected>±10%</option>
+                                <option value="20">±20%</option>
+                                <option value="30">±30%</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Timeline Variance</label>
+                            <select class="form-select" id="timelineVariance">
+                                <option value="0" selected>No delay</option>
+                                <option value="6">+6 months</option>
+                                <option value="12">+12 months</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Additional Options</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Residual/Salvage Value</label>
+                            <div class="currency-input">
+                                <input type="number" class="form-input" id="salvageValue" placeholder="0" min="0" step="100" value="0">
+                            </div>
+                            <p class="form-hint">Value at end of analysis period</p>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Tax Rate (%)</label>
+                            <input type="number" class="form-input" id="taxRate" placeholder="0" min="0" max="50" step="1" value="0">
+                            <p class="form-hint">For after-tax analysis (0 = pre-tax)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-navigation">
+                    <button class="btn btn-secondary" onclick="goToStep(3)">← Back</button>
+                    <button class="btn btn-primary" onclick="calculateAndShowResults()">Calculate ROI →</button>
+                </div>
+            </div>
+
+            <!-- Step 5: Results & Export -->
+            <div class="step-content" id="step5">
+                <div class="step-header">
+                    <h2>ROI Analysis Results</h2>
+                    <p>Financial metrics and cash flow analysis for your investment.</p>
+                </div>
+
+                <div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
+                    <button class="btn btn-primary" onclick="exportPDF()">📄 Export PDF</button>
+                    <button class="btn btn-secondary" onclick="printPreview()">🖨️ Print</button>
+                    <button class="btn btn-secondary" onclick="goToStep(1)">✏️ Edit Inputs</button>
+                </div>
+
+                <!-- Key Metrics -->
+                <div class="results-grid" id="keyMetrics">
+                    <div class="result-card highlight">
+                        <div class="result-value" id="roiResult">0%</div>
+                        <div class="result-label">ROI</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-value" id="npvResult">$0</div>
+                        <div class="result-label">NPV</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-value" id="irrResult">0%</div>
+                        <div class="result-label">IRR</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-value" id="paybackResult">N/A</div>
+                        <div class="result-label">Payback Period</div>
+                    </div>
+                </div>
+
+                <!-- Summary -->
+                <div class="form-section">
+                    <div class="form-section-title">Investment Summary</div>
+                    <div class="results-grid" style="grid-template-columns: repeat(3, 1fr);">
+                        <div class="result-card negative">
+                            <div class="result-value" id="totalCostsResult">$0</div>
+                            <div class="result-label">Total Investment</div>
+                        </div>
+                        <div class="result-card positive">
+                            <div class="result-value" id="totalBenefitsResult">$0</div>
+                            <div class="result-label">Total Benefits</div>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-value" id="netBenefitResult">$0</div>
+                            <div class="result-label">Net Benefit</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cash Flow Chart -->
+                <div class="chart-container">
+                    <div class="chart-title">Annual Cash Flow Comparison</div>
+                    <div class="bar-chart" id="cashFlowChart">
+                        <!-- Generated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Cash Flow Table -->
+                <div class="form-section">
+                    <div class="form-section-title">Cash Flow Projection</div>
+                    <div style="overflow-x: auto;">
+                        <table class="cashflow-table" id="cashFlowTable">
+                            <!-- Generated by JavaScript -->
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Recommendation -->
+                <div class="form-section" id="recommendationSection">
+                    <div class="form-section-title">Investment Recommendation</div>
+                    <div id="recommendation" style="padding: 1rem; border-radius: 8px;">
+                        <!-- Generated by JavaScript -->
+                    </div>
+                </div>
+
+                <div class="step-navigation">
+                    <button class="btn btn-secondary" onclick="goToStep(4)">← Back to Settings</button>
+                    <div></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // State management
+        let currentStep = 1;
+        let projectData = {};
+        let results = {};
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('analysisDate').value = new Date().toISOString().split('T')[0];
+            loadSavedData();
+            setupAutoSave();
+            setupCalculations();
+        });
+
+        // Step Navigation
+        function goToStep(step) {
+            document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.step-item').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById('step' + step).classList.add('active');
+            document.querySelector(`.step-item[data-step="${step}"]`).classList.add('active');
+            
+            currentStep = step;
+            
+            if (step === 5) {
+                calculateAndShowResults();
+            }
+            
+            window.scrollTo(0, 0);
+        }
+
+        // Dynamic List Functions
+        function addInitialCost() {
+            const list = document.getElementById('initialCostsList');
+            const count = list.children.length + 1;
+            const item = document.createElement('div');
+            item.className = 'cost-item';
+            item.innerHTML = `
+                <div class="cost-item-header">
+                    <span class="cost-item-title">Cost Item ${count}</span>
+                    <button class="btn-icon" onclick="removeInitialCost(this)">✕</button>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <input type="text" class="form-input cost-desc" placeholder="e.g., Implementation services">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Amount</label>
+                        <div class="currency-input">
+                            <input type="number" class="form-input cost-amount" placeholder="0" min="0" step="100">
+                        </div>
+                    </div>
+                </div>
+            `;
+            list.appendChild(item);
+            setupCalculations();
+        }
+
+        function removeInitialCost(btn) {
+            const item = btn.closest('.cost-item');
+            const list = item.parentElement;
+            if (list.children.length > 1) {
+                item.remove();
+                updateTotals();
+            }
+        }
+
+        function addAnnualCost() {
+            const list = document.getElementById('annualCostsList');
+            const count = list.children.length + 1;
+            const item = document.createElement('div');
+            item.className = 'cost-item';
+            item.innerHTML = `
+                <div class="cost-item-header">
+                    <span class="cost-item-title">Annual Cost ${count}</span>
+                    <button class="btn-icon" onclick="removeAnnualCost(this)">✕</button>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <input type="text" class="form-input annual-desc" placeholder="e.g., Training">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Annual Amount</label>
+                        <div class="currency-input">
+                            <input type="number" class="form-input annual-amount" placeholder="0" min="0" step="100">
+                        </div>
+                    </div>
+                </div>
+            `;
+            list.appendChild(item);
+            setupCalculations();
+        }
+
+        function removeAnnualCost(btn) {
+            const item = btn.closest('.cost-item');
+            const list = item.parentElement;
+            if (list.children.length > 1) {
+                item.remove();
+                updateTotals();
+            }
+        }
+
+        function addBenefit() {
+            const list = document.getElementById('benefitsList');
+            const count = list.children.length + 1;
+            const item = document.createElement('div');
+            item.className = 'cost-item';
+            item.innerHTML = `
+                <div class="cost-item-header">
+                    <span class="cost-item-title">Benefit ${count}</span>
+                    <button class="btn-icon" onclick="removeBenefit(this)">✕</button>
+                </div>
+                <div class="form-row-3">
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <input type="text" class="form-input benefit-desc" placeholder="e.g., Productivity improvement">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Annual Amount</label>
+                        <div class="currency-input">
+                            <input type="number" class="form-input benefit-amount" placeholder="0" min="0" step="100">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Type</label>
+                        <select class="form-select benefit-type">
+                            <option value="hard">Hard Savings (Quantifiable)</option>
+                            <option value="soft">Soft Savings (Estimated)</option>
+                            <option value="revenue">Revenue Increase</option>
+                            <option value="avoidance">Cost Avoidance</option>
+                        </select>
+                    </div>
+                </div>
+            `;
+            list.appendChild(item);
+            setupCalculations();
+        }
+
+        function removeBenefit(btn) {
+            const item = btn.closest('.cost-item');
+            const list = item.parentElement;
+            if (list.children.length > 1) {
+                item.remove();
+                updateTotals();
+            }
+        }
+
+        // Setup automatic calculations
+        function setupCalculations() {
+            document.querySelectorAll('.cost-amount, .annual-amount, .benefit-amount').forEach(input => {
+                input.addEventListener('input', updateTotals);
+            });
+        }
+
+        function updateTotals() {
+            // Initial costs
+            let totalInitial = 0;
+            document.querySelectorAll('#initialCostsList .cost-amount').forEach(input => {
+                totalInitial += parseFloat(input.value) || 0;
+            });
+            document.getElementById('totalInitialCost').textContent = formatCurrency(totalInitial);
+
+            // Annual costs
+            let totalAnnual = 0;
+            document.querySelectorAll('#annualCostsList .annual-amount').forEach(input => {
+                totalAnnual += parseFloat(input.value) || 0;
+            });
+            document.getElementById('totalAnnualCost').textContent = formatCurrency(totalAnnual);
+
+            // Benefits
+            let totalBenefits = 0;
+            document.querySelectorAll('#benefitsList .benefit-amount').forEach(input => {
+                totalBenefits += parseFloat(input.value) || 0;
+            });
+            document.getElementById('totalAnnualBenefits').textContent = formatCurrency(totalBenefits);
+
+            saveData();
+        }
+
+        function formatCurrency(value) {
+            return '$' + value.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        }
+
+        // Financial Calculations
+        function calculateAndShowResults() {
+            saveData();
+            
+            // Get inputs
+            const initialCost = getTotalInitialCost();
+            const annualCost = getTotalAnnualCost();
+            const annualBenefit = getTotalAnnualBenefit();
+            const period = parseInt(document.getElementById('analysisPeriod').value);
+            const discountRate = parseFloat(document.getElementById('discountRate').value) / 100;
+            const benefitsStart = parseInt(document.getElementById('benefitsStart').value);
+            const benefitGrowth = parseFloat(document.getElementById('benefitGrowth').value) / 100 || 0;
+            const salvageValue = parseFloat(document.getElementById('salvageValue').value) || 0;
+
+            // Generate cash flows
+            const cashFlows = [];
+            let cumulativeCashFlow = 0;
+            let paybackYear = null;
+
+            // Year 0 (initial investment)
+            cashFlows.push({
+                year: 0,
+                costs: initialCost,
+                benefits: 0,
+                netCashFlow: -initialCost,
+                cumulative: -initialCost
+            });
+            cumulativeCashFlow = -initialCost;
+
+            // Years 1 to N
+            for (let year = 1; year <= period; year++) {
+                const yearBenefit = year >= benefitsStart ? 
+                    annualBenefit * Math.pow(1 + benefitGrowth, year - benefitsStart) : 0;
+                const netCF = yearBenefit - annualCost + (year === period ? salvageValue : 0);
+                cumulativeCashFlow += netCF;
+
+                if (paybackYear === null && cumulativeCashFlow >= 0) {
+                    // Calculate exact payback
+                    const prevCumulative = cashFlows[cashFlows.length - 1].cumulative;
+                    paybackYear = year - 1 + Math.abs(prevCumulative) / netCF;
+                }
+
+                cashFlows.push({
+                    year: year,
+                    costs: annualCost,
+                    benefits: yearBenefit,
+                    netCashFlow: netCF,
+                    cumulative: cumulativeCashFlow
+                });
+            }
+
+            // Calculate metrics
+            const totalCosts = initialCost + (annualCost * period);
+            const totalBenefits = cashFlows.reduce((sum, cf) => sum + cf.benefits, 0) + salvageValue;
+            const netBenefit = totalBenefits - totalCosts;
+            
+            // ROI
+            const roi = totalCosts > 0 ? ((totalBenefits - totalCosts) / totalCosts) * 100 : 0;
+
+            // NPV
+            let npv = -initialCost;
+            for (let year = 1; year <= period; year++) {
+                npv += cashFlows[year].netCashFlow / Math.pow(1 + discountRate, year);
+            }
+
+            // IRR (using Newton-Raphson approximation)
+            const irr = calculateIRR(cashFlows.map(cf => cf.netCashFlow));
+
+            // Store results
+            results = {
+                cashFlows,
+                totalCosts,
+                totalBenefits,
+                netBenefit,
+                roi,
+                npv,
+                irr,
+                paybackYear
+            };
+
+            // Display results
+            displayResults();
+        }
+
+        function getTotalInitialCost() {
+            let total = 0;
+            document.querySelectorAll('#initialCostsList .cost-amount').forEach(input => {
+                total += parseFloat(input.value) || 0;
+            });
+            return total;
+        }
+
+        function getTotalAnnualCost() {
+            let total = 0;
+            document.querySelectorAll('#annualCostsList .annual-amount').forEach(input => {
+                total += parseFloat(input.value) || 0;
+            });
+            return total;
+        }
+
+        function getTotalAnnualBenefit() {
+            let total = 0;
+            document.querySelectorAll('#benefitsList .benefit-amount').forEach(input => {
+                total += parseFloat(input.value) || 0;
+            });
+            return total;
+        }
+
+        function calculateIRR(cashFlows, guess = 0.1) {
+            const maxIterations = 100;
+            const tolerance = 0.0001;
+            let rate = guess;
+
+            for (let i = 0; i < maxIterations; i++) {
+                let npv = 0;
+                let dnpv = 0;
+                for (let j = 0; j < cashFlows.length; j++) {
+                    npv += cashFlows[j] / Math.pow(1 + rate, j);
+                    dnpv -= j * cashFlows[j] / Math.pow(1 + rate, j + 1);
+                }
+                const newRate = rate - npv / dnpv;
+                if (Math.abs(newRate - rate) < tolerance) {
+                    return newRate * 100;
+                }
+                rate = newRate;
+            }
+            return rate * 100;
+        }
+
+        function displayResults() {
+            const { cashFlows, totalCosts, totalBenefits, netBenefit, roi, npv, irr, paybackYear } = results;
+
+            // Key metrics
+            document.getElementById('roiResult').textContent = roi.toFixed(1) + '%';
+            document.getElementById('npvResult').textContent = formatCurrency(npv);
+            document.getElementById('irrResult').textContent = isFinite(irr) ? irr.toFixed(1) + '%' : 'N/A';
+            document.getElementById('paybackResult').textContent = paybackYear ? paybackYear.toFixed(1) + ' yrs' : 'Never';
+
+            // Apply colors
+            const npvCard = document.getElementById('npvResult').parentElement;
+            npvCard.className = 'result-card ' + (npv >= 0 ? 'positive' : 'negative');
+
+            // Summary
+            document.getElementById('totalCostsResult').textContent = formatCurrency(totalCosts);
+            document.getElementById('totalBenefitsResult').textContent = formatCurrency(totalBenefits);
+            document.getElementById('netBenefitResult').textContent = formatCurrency(netBenefit);
+            
+            const netCard = document.getElementById('netBenefitResult').parentElement;
+            netCard.className = 'result-card ' + (netBenefit >= 0 ? 'positive' : 'negative');
+
+            // Cash flow chart
+            displayCashFlowChart(cashFlows);
+
+            // Cash flow table
+            displayCashFlowTable(cashFlows);
+
+            // Recommendation
+            displayRecommendation();
+        }
+
+        function displayCashFlowChart(cashFlows) {
+            const chart = document.getElementById('cashFlowChart');
+            const maxValue = Math.max(
+                ...cashFlows.map(cf => Math.max(cf.costs, cf.benefits))
+            );
+
+            chart.innerHTML = cashFlows.map(cf => {
+                const costWidth = maxValue > 0 ? (cf.costs / maxValue) * 100 : 0;
+                const benefitWidth = maxValue > 0 ? (cf.benefits / maxValue) * 100 : 0;
+                
+                return `
+                    <div class="bar-row">
+                        <span class="bar-label">Year ${cf.year}</span>
+                        <div class="bar-container">
+                            <div class="bar-fill costs" style="width: ${costWidth}%"></div>
+                        </div>
+                        <span class="bar-value negative">${formatCurrency(cf.costs)}</span>
+                    </div>
+                    <div class="bar-row">
+                        <span class="bar-label"></span>
+                        <div class="bar-container">
+                            <div class="bar-fill benefits" style="width: ${benefitWidth}%"></div>
+                        </div>
+                        <span class="bar-value positive">${formatCurrency(cf.benefits)}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function displayCashFlowTable(cashFlows) {
+            const table = document.getElementById('cashFlowTable');
+            const period = cashFlows.length - 1;
+
+            let html = `
+                <thead>
+                    <tr>
+                        <th>Year</th>
+                        <th>Costs</th>
+                        <th>Benefits</th>
+                        <th>Net Cash Flow</th>
+                        <th>Cumulative</th>
+                    </tr>
+                </thead>
+                <tbody>
+            `;
+
+            cashFlows.forEach(cf => {
+                const netClass = cf.netCashFlow >= 0 ? 'positive' : 'negative';
+                const cumClass = cf.cumulative >= 0 ? 'positive' : 'negative';
+                html += `
+                    <tr>
+                        <td>Year ${cf.year}</td>
+                        <td class="negative">${formatCurrency(cf.costs)}</td>
+                        <td class="positive">${formatCurrency(cf.benefits)}</td>
+                        <td class="${netClass}">${formatCurrency(cf.netCashFlow)}</td>
+                        <td class="${cumClass}">${formatCurrency(cf.cumulative)}</td>
+                    </tr>
+                `;
+            });
+
+            // Totals row
+            const totalCosts = cashFlows.reduce((sum, cf) => sum + cf.costs, 0);
+            const totalBenefits = cashFlows.reduce((sum, cf) => sum + cf.benefits, 0);
+            const totalNet = totalBenefits - totalCosts;
+            
+            html += `
+                <tr class="total-row">
+                    <td><strong>Total</strong></td>
+                    <td class="negative"><strong>${formatCurrency(totalCosts)}</strong></td>
+                    <td class="positive"><strong>${formatCurrency(totalBenefits)}</strong></td>
+                    <td class="${totalNet >= 0 ? 'positive' : 'negative'}"><strong>${formatCurrency(totalNet)}</strong></td>
+                    <td>-</td>
+                </tr>
+            `;
+
+            html += '</tbody>';
+            table.innerHTML = html;
+        }
+
+        function displayRecommendation() {
+            const { roi, npv, irr, paybackYear } = results;
+            const discountRate = parseFloat(document.getElementById('discountRate').value);
+            const section = document.getElementById('recommendation');
+
+            let recommendation = '';
+            let bgColor = '';
+
+            if (npv > 0 && roi > 0) {
+                bgColor = 'rgba(34, 197, 94, 0.15)';
+                recommendation = `
+                    <strong style="color: #22c55e;">✓ Recommended Investment</strong>
+                    <p style="margin-top: 0.5rem; color: var(--text-muted);">
+                        This investment shows positive returns with an ROI of ${roi.toFixed(1)}% and NPV of ${formatCurrency(npv)}. 
+                        ${irr > discountRate ? `The IRR of ${irr.toFixed(1)}% exceeds your required rate of return (${discountRate}%).` : ''}
+                        ${paybackYear ? `The investment pays back in ${paybackYear.toFixed(1)} years.` : ''}
+                    </p>
+                `;
+            } else if (npv < 0 || roi < 0) {
+                bgColor = 'rgba(239, 68, 68, 0.15)';
+                recommendation = `
+                    <strong style="color: #ef4444;">✗ Not Recommended</strong>
+                    <p style="margin-top: 0.5rem; color: var(--text-muted);">
+                        Based on the current assumptions, this investment does not meet financial thresholds. 
+                        The NPV is negative (${formatCurrency(npv)}) and ROI is ${roi.toFixed(1)}%.
+                        Consider revising costs, increasing benefits, or exploring alternative investments.
+                    </p>
+                `;
+            } else {
+                bgColor = 'rgba(245, 158, 11, 0.15)';
+                recommendation = `
+                    <strong style="color: #f59e0b;">⚠ Marginal Investment</strong>
+                    <p style="margin-top: 0.5rem; color: var(--text-muted);">
+                        This investment shows borderline returns. Consider the intangible benefits and strategic value 
+                        before making a decision. A sensitivity analysis is recommended.
+                    </p>
+                `;
+            }
+
+            section.style.background = bgColor;
+            section.innerHTML = recommendation;
+        }
+
+        // Auto-save functionality
+        function setupAutoSave() {
+            document.querySelectorAll('input, textarea, select').forEach(el => {
+                el.addEventListener('change', saveData);
+                el.addEventListener('input', debounce(saveData, 1000));
+            });
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), wait);
+            };
+        }
+
+        function saveData() {
+            const status = document.getElementById('saveStatus');
+            status.innerHTML = '<span>●</span> Saving...';
+            status.className = 'save-status saving';
+
+            const data = {
+                projectName: document.getElementById('projectName').value,
+                department: document.getElementById('department').value,
+                projectOwner: document.getElementById('projectOwner').value,
+                analysisDate: document.getElementById('analysisDate').value,
+                investmentType: document.getElementById('investmentType').value,
+                description: document.getElementById('description').value,
+                justification: document.getElementById('justification').value,
+                analysisPeriod: document.getElementById('analysisPeriod').value,
+                discountRate: document.getElementById('discountRate').value,
+                benefitsStart: document.getElementById('benefitsStart').value,
+                benefitGrowth: document.getElementById('benefitGrowth').value,
+                salvageValue: document.getElementById('salvageValue').value,
+                taxRate: document.getElementById('taxRate').value,
+                intangibleBenefits: document.getElementById('intangibleBenefits').value,
+                lastSaved: new Date().toISOString()
+            };
+
+            // Collect cost items
+            data.initialCosts = [];
+            document.querySelectorAll('#initialCostsList .cost-item').forEach(item => {
+                data.initialCosts.push({
+                    desc: item.querySelector('.cost-desc').value,
+                    amount: item.querySelector('.cost-amount').value
+                });
+            });
+
+            data.annualCosts = [];
+            document.querySelectorAll('#annualCostsList .cost-item').forEach(item => {
+                data.annualCosts.push({
+                    desc: item.querySelector('.annual-desc').value,
+                    amount: item.querySelector('.annual-amount').value
+                });
+            });
+
+            data.benefits = [];
+            document.querySelectorAll('#benefitsList .cost-item').forEach(item => {
+                data.benefits.push({
+                    desc: item.querySelector('.benefit-desc').value,
+                    amount: item.querySelector('.benefit-amount').value,
+                    type: item.querySelector('.benefit-type').value
+                });
+            });
+
+            projectData = data;
+            localStorage.setItem('roi_current_project', JSON.stringify(data));
+
+            setTimeout(() => {
+                status.innerHTML = '<span>●</span> Auto-saved';
+                status.className = 'save-status saved';
+            }, 500);
+        }
+
+        function loadSavedData() {
+            const saved = localStorage.getItem('roi_current_project');
+            if (!saved) return;
+
+            const data = JSON.parse(saved);
+            projectData = data;
+
+            // Restore simple fields
+            const fields = ['projectName', 'department', 'projectOwner', 'analysisDate', 'investmentType',
+                'description', 'justification', 'analysisPeriod', 'discountRate', 'benefitsStart',
+                'benefitGrowth', 'salvageValue', 'taxRate', 'intangibleBenefits'];
+            
+            fields.forEach(field => {
+                const el = document.getElementById(field);
+                if (el && data[field]) el.value = data[field];
+            });
+
+            // Restore initial costs
+            if (data.initialCosts && data.initialCosts.length > 0) {
+                const list = document.getElementById('initialCostsList');
+                list.innerHTML = '';
+                data.initialCosts.forEach((cost, i) => {
+                    const item = document.createElement('div');
+                    item.className = 'cost-item';
+                    item.innerHTML = `
+                        <div class="cost-item-header">
+                            <span class="cost-item-title">Cost Item ${i + 1}</span>
+                            <button class="btn-icon" onclick="removeInitialCost(this)" ${i === 0 ? 'style="display:none;"' : ''}>✕</button>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Description</label>
+                                <input type="text" class="form-input cost-desc" value="${cost.desc || ''}" placeholder="e.g., Software licenses">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Amount</label>
+                                <div class="currency-input">
+                                    <input type="number" class="form-input cost-amount" value="${cost.amount || ''}" placeholder="0" min="0" step="100">
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    list.appendChild(item);
+                });
+            }
+
+            // Similar for annual costs and benefits...
+            setupCalculations();
+            updateTotals();
+        }
+
+        // Help Modal
+        function openHelpModal() {
+            document.getElementById('helpModal').classList.add('active');
+        }
+
+        function closeHelpModal() {
+            document.getElementById('helpModal').classList.remove('active');
+        }
+
+        // Load Example Data
+        function loadExample() {
+            if (!confirm('This will replace your current data with example data. Continue?')) return;
+            
+            // Set project details
+            document.getElementById('projectName').value = 'CRM System Implementation';
+            document.getElementById('department').value = 'Sales & Marketing';
+            document.getElementById('projectOwner').value = 'Sarah Johnson';
+            document.getElementById('analysisDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('investmentType').value = 'software';
+            document.getElementById('description').value = 'Implementation of Salesforce CRM to replace legacy customer tracking spreadsheets. This project will centralize customer data, automate sales workflows, and provide better reporting capabilities.';
+            document.getElementById('justification').value = 'Current manual processes are causing data inconsistencies and limiting sales team productivity. A modern CRM will improve customer retention and enable data-driven decision making.';
+            document.getElementById('analysisPeriod').value = '5';
+            document.getElementById('discountRate').value = '10';
+            document.getElementById('benefitsStart').value = '1';
+            document.getElementById('benefitGrowth').value = '5';
+            
+            // Clear and set initial costs
+            const initialList = document.getElementById('initialCostsList');
+            initialList.innerHTML = '';
+            const initialCosts = [
+                { desc: 'Salesforce Enterprise Licenses (50 users)', amount: 75000 },
+                { desc: 'Implementation Partner Services', amount: 45000 },
+                { desc: 'Data Migration & Integration', amount: 25000 },
+                { desc: 'Staff Training Program', amount: 15000 },
+                { desc: 'Hardware & Infrastructure', amount: 10000 }
+            ];
+            initialCosts.forEach((cost, i) => {
+                addInitialCost();
+                const items = initialList.querySelectorAll('.cost-item');
+                const item = items[items.length - 1];
+                item.querySelector('.cost-desc').value = cost.desc;
+                item.querySelector('.cost-amount').value = cost.amount;
+            });
+
+            // Clear and set annual costs
+            const annualList = document.getElementById('annualCostsList');
+            annualList.innerHTML = '';
+            const annualCosts = [
+                { desc: 'Annual License Renewal', amount: 60000 },
+                { desc: 'Maintenance & Support', amount: 12000 },
+                { desc: 'Ongoing Training', amount: 5000 }
+            ];
+            annualCosts.forEach((cost, i) => {
+                addAnnualCost();
+                const items = annualList.querySelectorAll('.cost-item');
+                const item = items[items.length - 1];
+                item.querySelector('.annual-desc').value = cost.desc;
+                item.querySelector('.annual-amount').value = cost.amount;
+            });
+
+            // Clear and set benefits
+            const benefitsList = document.getElementById('benefitsList');
+            benefitsList.innerHTML = '';
+            const benefits = [
+                { desc: 'Sales productivity improvement (20% efficiency gain)', amount: 120000, type: 'hard' },
+                { desc: 'Reduced customer churn (5% improvement)', amount: 85000, type: 'revenue' },
+                { desc: 'Eliminated manual reporting labor', amount: 35000, type: 'hard' },
+                { desc: 'Faster deal closure (reduced sales cycle)', amount: 45000, type: 'soft' }
+            ];
+            benefits.forEach((benefit, i) => {
+                addBenefit();
+                const items = benefitsList.querySelectorAll('.cost-item');
+                const item = items[items.length - 1];
+                item.querySelector('.benefit-desc').value = benefit.desc;
+                item.querySelector('.benefit-amount').value = benefit.amount;
+                item.querySelector('.benefit-type').value = benefit.type;
+            });
+
+            // Update totals and save
+            setupCalculations();
+            updateTotals();
+            saveData();
+            
+            closeHelpModal();
+            alert('Example data loaded! Click through the steps to see the data, then view results.');
+        }
+
+        // Export PDF with project info
+        function exportPDF() {
+            // Populate print header
+            document.getElementById('printProjectName').textContent = 
+                document.getElementById('projectName').value || 'ROI Analysis Report';
+            document.getElementById('printDepartment').textContent = 
+                document.getElementById('department').value || '-';
+            document.getElementById('printOwner').textContent = 
+                document.getElementById('projectOwner').value || '-';
+            document.getElementById('printDate').textContent = 
+                document.getElementById('analysisDate').value || new Date().toLocaleDateString();
+            document.getElementById('printPeriod').textContent = 
+                document.getElementById('analysisPeriod').value + ' years';
+            
+            const desc = document.getElementById('description').value;
+            const justification = document.getElementById('justification').value;
+            let descHtml = '';
+            if (desc) descHtml += '<strong>Description:</strong> ' + desc + '<br><br>';
+            if (justification) descHtml += '<strong>Business Justification:</strong> ' + justification;
+            document.getElementById('printDescription').innerHTML = descHtml || '';
+            
+            window.print();
+        }
+
+        function printPreview() {
+            exportPDF();
+        }
+    </script>
+
+    <style>
+        @media print {
+            .nav, .sidebar, .step-navigation, .btn, .step-header, .step-badge, .modal-overlay { display: none !important; }
+            .main-layout { display: block; }
+            .content-area { margin: 0; padding: 0; max-width: 100%; }
+            .step-content { display: none !important; }
+            #step5 { display: block !important; }
+            .form-section { break-inside: avoid; }
+            .print-header { display: block !important; }
+            body { background: white; color: black; }
+            .result-card { background: #f5f5f5; border: 1px solid #ddd; }
+            .result-value { color: #333; }
+            .form-section { background: white; border: 1px solid #ddd; }
+            .form-section-title { color: #b45309; }
+        }
+    </style>
+</body>
+</html>

@@ -1,0 +1,1934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DMAIC Project - ProjectManagerTool</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #065f46;
+            --primary-light: #059669;
+            --primary-dark: #064e3b;
+            --accent: #10b981;
+            --accent-light: #34d399;
+            --accent-glow: rgba(16, 185, 129, 0.3);
+            --success: #22c55e;
+            --success-bg: rgba(34, 197, 94, 0.1);
+            --warning: #f59e0b;
+            --warning-bg: rgba(245, 158, 11, 0.1);
+            --error: #ef4444;
+            --error-bg: rgba(239, 68, 68, 0.1);
+            --info: #3b82f6;
+            --bg: #0a0f1a;
+            --bg-card: #111827;
+            --bg-card-hover: #1a2332;
+            --text: #f7fafc;
+            --text-muted: #a0aec0;
+            --text-dim: #718096;
+            --border: #2d3748;
+            --gradient-green: linear-gradient(135deg, #10b981 0%, #34d399 50%, #10b981 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1rem 2rem;
+            background: rgba(10, 15, 26, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+
+        .nav-logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-green);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .nav-logo-text {
+            font-family: 'Fraunces', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .platform-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 8px;
+            color: #a5b4fc;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .platform-link:hover {
+            background: rgba(99, 102, 241, 0.25);
+            color: #c7d2fe;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .save-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .save-status.saving { color: var(--warning); }
+        .save-status.saved { color: var(--success); }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--gradient-green);
+            color: var(--primary-dark);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px var(--accent-glow);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* Main Layout */
+        .main-layout {
+            display: flex;
+            min-height: 100vh;
+            padding-top: 70px;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            padding: 1.5rem 0;
+            position: fixed;
+            top: 70px;
+            bottom: 0;
+            overflow-y: auto;
+        }
+
+        .sidebar-title {
+            padding: 0 1.5rem 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-dim);
+        }
+
+        .step-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .step-item:hover {
+            background: var(--bg-card-hover);
+        }
+
+        .step-item.active {
+            background: var(--bg-card-hover);
+            border-left-color: var(--accent);
+        }
+
+        .step-item.completed .step-number {
+            background: var(--accent);
+            color: var(--primary-dark);
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+
+        .step-item.active .step-number {
+            background: var(--accent);
+            color: var(--primary-dark);
+        }
+
+        .step-info h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 0.15rem;
+        }
+
+        .step-info p {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+
+        /* Content Area */
+        .content-area {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem 3rem;
+            max-width: calc(100% - 280px);
+        }
+
+        .step-content {
+            display: none;
+            max-width: 800px;
+        }
+
+        .step-content.active {
+            display: block;
+        }
+
+        .step-header {
+            margin-bottom: 2rem;
+        }
+
+        .step-header h2 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .step-header p {
+            color: var(--text-muted);
+        }
+
+        .step-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        /* Form Styles */
+        .form-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .form-label .required {
+            color: var(--error);
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        .form-input::placeholder,
+        .form-textarea::placeholder {
+            color: var(--text-dim);
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .form-hint {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            margin-top: 0.35rem;
+        }
+
+        /* Dynamic List */
+        .dynamic-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .dynamic-item {
+            display: flex;
+            gap: 0.75rem;
+            align-items: flex-start;
+        }
+
+        .dynamic-item .form-input,
+        .dynamic-item .form-textarea {
+            flex: 1;
+        }
+
+        .dynamic-item .btn-icon {
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            flex-shrink: 0;
+        }
+
+        .btn-icon {
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-icon:hover {
+            border-color: var(--error);
+            color: var(--error);
+        }
+
+        .btn-add {
+            margin-top: 0.5rem;
+        }
+
+        .btn-add:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* Metric Card */
+        .metric-card {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .metric-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+        }
+
+        .metric-grid .form-group {
+            margin-bottom: 0;
+        }
+
+        /* Root Cause Analysis */
+        .rca-container {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .rca-why {
+            padding: 0.75rem;
+            border-left: 3px solid var(--accent);
+            margin-bottom: 0.75rem;
+        }
+
+        .rca-why-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 0.35rem;
+        }
+
+        /* Solution Card */
+        .solution-card {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        /* Control Item */
+        .control-item {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        /* Navigation Buttons */
+        .step-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+        }
+
+        /* Preview Section */
+        .preview-container {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            color: #1a1a2e;
+        }
+
+        .preview-header {
+            background: var(--primary);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .preview-header h1 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .preview-meta {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        .preview-body {
+            padding: 2rem;
+        }
+
+        .preview-section {
+            margin-bottom: 2rem;
+        }
+
+        .preview-section-title {
+            font-family: 'Fraunces', serif;
+            font-size: 1.1rem;
+            color: var(--primary);
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .preview-section p {
+            margin-bottom: 0.75rem;
+            line-height: 1.7;
+        }
+
+        .preview-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+
+        .preview-table th,
+        .preview-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid #e0e0e0;
+        }
+
+        .preview-table th {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+
+        .preview-table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 240px;
+            }
+            .content-area {
+                margin-left: 240px;
+                max-width: calc(100% - 240px);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+            .content-area {
+                margin-left: 0;
+                max-width: 100%;
+                padding: 1.5rem;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .metric-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Print Header */
+        .print-header {
+            display: none;
+            padding: 2rem;
+            border-bottom: 2px solid #10b981;
+            margin-bottom: 2rem;
+        }
+        .print-logo { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .print-title { font-size: 1.75rem; font-weight: 700; margin-bottom: 1rem; }
+        .print-meta { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; font-size: 0.9rem; margin-bottom: 1rem; }
+        .print-description { padding: 1rem; background: #f5f5f5; border-radius: 8px; font-size: 0.9rem; }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center;
+            z-index: 2000; opacity: 0; visibility: hidden; transition: all 0.3s;
+        }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .modal {
+            background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px;
+            width: 90%; max-width: 600px; max-height: 85vh; overflow-y: auto;
+        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; border-bottom: 1px solid var(--border); }
+        .modal-title { font-family: 'Fraunces', serif; font-size: 1.25rem; }
+        .modal-body { padding: 1.5rem; }
+        .modal-footer { display: flex; justify-content: flex-end; gap: 1rem; padding: 1.5rem; border-top: 1px solid var(--border); }
+        .help-section { margin-bottom: 1.5rem; }
+        .help-section h4 { color: var(--accent); margin-bottom: 0.5rem; font-size: 1rem; }
+        .help-section p, .help-section li { color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; }
+        .help-section ol, .help-section ul { padding-left: 1.25rem; }
+        .help-section li { margin-bottom: 0.5rem; }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-content">
+            <a href="index.html" class="nav-logo">
+                <div class="nav-logo-icon">🔄</div>
+                <span class="nav-logo-text">DMAIC Generator</span>
+            </a>
+            <a href="/" class="platform-link">← All Tools</a>
+            <div class="nav-actions">
+                <div class="save-status" id="saveStatus">
+                    <span>●</span> Auto-saved
+                </div>
+                <button class="btn btn-secondary" onclick="openHelpModal()">❓ Guide</button>
+                <button class="btn btn-secondary" onclick="loadExample()">📋 Example</button>
+                <button class="btn btn-primary" onclick="goToStep(6)">Preview & Export</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Print Header -->
+    <div class="print-header" id="printHeader">
+        <div class="print-logo">🔄 DMAIC Generator</div>
+        <h1 class="print-title" id="printProjectTitle">DMAIC Project Report</h1>
+        <div class="print-meta">
+            <div><strong>Project Leader:</strong> <span id="printLeader">-</span></div>
+            <div><strong>Department:</strong> <span id="printDept">-</span></div>
+            <div><strong>Start Date:</strong> <span id="printStart">-</span></div>
+            <div><strong>Target Date:</strong> <span id="printTarget">-</span></div>
+        </div>
+        <div class="print-description" id="printProblem"></div>
+    </div>
+
+    <!-- Help Modal -->
+    <div class="modal-overlay" id="helpModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">📖 How to Use the DMAIC Generator</h3>
+                <button class="btn-icon" onclick="closeHelpModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="help-section">
+                    <h4>What is DMAIC?</h4>
+                    <p>DMAIC is a data-driven Six Sigma methodology for improving processes. It stands for Define, Measure, Analyze, Improve, and Control - five phases that guide you through systematic problem-solving.</p>
+                </div>
+                <div class="help-section">
+                    <h4>The 5 Phases</h4>
+                    <ol>
+                        <li><strong>Define:</strong> Clearly state the problem, project scope, and goals</li>
+                        <li><strong>Measure:</strong> Collect data on current process performance</li>
+                        <li><strong>Analyze:</strong> Identify root causes of the problem</li>
+                        <li><strong>Improve:</strong> Develop and implement solutions</li>
+                        <li><strong>Control:</strong> Sustain improvements with monitoring</li>
+                    </ol>
+                </div>
+                <div class="help-section">
+                    <h4>Tips for Success</h4>
+                    <ul>
+                        <li>Be specific about the problem - use data</li>
+                        <li>Focus on measurable outcomes</li>
+                        <li>Involve stakeholders from the start</li>
+                        <li>Document everything for sustainability</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="loadExample()">Load Example Project</button>
+                <button class="btn btn-primary" onclick="closeHelpModal()">Got It!</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Layout -->
+    <div class="main-layout">
+        <!-- Sidebar Steps -->
+        <aside class="sidebar">
+            <div class="sidebar-title">DMAIC Phases</div>
+            
+            <div class="step-item active" onclick="goToStep(1)" data-step="1">
+                <div class="step-number">D</div>
+                <div class="step-info">
+                    <h4>Define</h4>
+                    <p>Problem & scope</p>
+                </div>
+            </div>
+            
+            <div class="step-item" onclick="goToStep(2)" data-step="2">
+                <div class="step-number">M</div>
+                <div class="step-info">
+                    <h4>Measure</h4>
+                    <p>Current state & data</p>
+                </div>
+            </div>
+            
+            <div class="step-item" onclick="goToStep(3)" data-step="3">
+                <div class="step-number">A</div>
+                <div class="step-info">
+                    <h4>Analyze</h4>
+                    <p>Root cause analysis</p>
+                </div>
+            </div>
+            
+            <div class="step-item" onclick="goToStep(4)" data-step="4">
+                <div class="step-number">I</div>
+                <div class="step-info">
+                    <h4>Improve</h4>
+                    <p>Solutions & implementation</p>
+                </div>
+            </div>
+            
+            <div class="step-item" onclick="goToStep(5)" data-step="5">
+                <div class="step-number">C</div>
+                <div class="step-info">
+                    <h4>Control</h4>
+                    <p>Sustain improvements</p>
+                </div>
+            </div>
+            
+            <div class="step-item" onclick="goToStep(6)" data-step="6">
+                <div class="step-number">📄</div>
+                <div class="step-info">
+                    <h4>Preview & Export</h4>
+                    <p>Generate report</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Content Area -->
+        <main class="content-area">
+            <!-- Step 1: Define -->
+            <div class="step-content active" id="step1">
+                <div class="step-header">
+                    <div class="step-badge">Phase 1 of 5</div>
+                    <h2>Define Phase</h2>
+                    <p>Clearly define the problem, project scope, and goals.</p>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Project Information</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Project Name <span class="required">*</span></label>
+                            <input type="text" class="form-input" id="projectName" placeholder="e.g., Reduce Customer Wait Time">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Project ID</label>
+                            <input type="text" class="form-input" id="projectId" placeholder="e.g., DMAIC-2026-001">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Project Champion/Sponsor</label>
+                            <input type="text" class="form-input" id="champion" placeholder="e.g., Jane Smith, VP Operations">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Project Leader</label>
+                            <input type="text" class="form-input" id="projectLeader" placeholder="e.g., John Doe, Green Belt">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Start Date</label>
+                            <input type="date" class="form-input" id="startDate">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Target Completion</label>
+                            <input type="date" class="form-input" id="targetDate">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Problem Statement</div>
+                    <div class="form-group">
+                        <label class="form-label">What is the problem? <span class="required">*</span></label>
+                        <textarea class="form-textarea" id="problemStatement" placeholder="Describe the problem in specific, measurable terms. What is happening that shouldn't be? Include who, what, when, where, and the extent of the problem."></textarea>
+                        <p class="form-hint">Tip: Use data to quantify the problem (e.g., "Customer wait times average 15 minutes, exceeding our 5-minute target by 200%")</p>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Business Case</div>
+                    <div class="form-group">
+                        <label class="form-label">Why is this project important?</label>
+                        <textarea class="form-textarea" id="businessCase" placeholder="Explain the business impact of the problem. What happens if we don't solve it? What are the potential benefits of solving it?"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Estimated Annual Impact ($)</label>
+                            <input type="text" class="form-input" id="annualImpact" placeholder="e.g., $250,000">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Impact Type</label>
+                            <select class="form-select" id="impactType">
+                                <option value="">Select type...</option>
+                                <option value="cost-reduction">Cost Reduction</option>
+                                <option value="revenue-increase">Revenue Increase</option>
+                                <option value="productivity">Productivity Gain</option>
+                                <option value="quality">Quality Improvement</option>
+                                <option value="customer-satisfaction">Customer Satisfaction</option>
+                                <option value="compliance">Compliance/Risk Reduction</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Project Scope</div>
+                    <div class="form-group">
+                        <label class="form-label">In Scope</label>
+                        <textarea class="form-textarea" id="inScope" placeholder="What processes, departments, products, or locations are included?"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Out of Scope</label>
+                        <textarea class="form-textarea" id="outScope" placeholder="What is explicitly excluded from this project?"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Goal Statement (SMART)</div>
+                    <div class="form-group">
+                        <label class="form-label">Project Goal <span class="required">*</span></label>
+                        <textarea class="form-textarea" id="goalStatement" placeholder="State your goal using SMART criteria: Specific, Measurable, Achievable, Relevant, Time-bound. Example: 'Reduce average customer wait time from 15 minutes to 5 minutes by June 2026.'"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Team Members</div>
+                    <div class="dynamic-list" id="teamList">
+                        <div class="dynamic-item">
+                            <input type="text" class="form-input" placeholder="Name and Role (e.g., Jane Doe - Process Owner)">
+                            <button class="btn-icon" onclick="removeItem(this)">✕</button>
+                        </div>
+                    </div>
+                    <button class="btn-icon btn-add" onclick="addTeamMember()">+ Add Team Member</button>
+                </div>
+
+                <div class="step-navigation">
+                    <div></div>
+                    <button class="btn btn-primary" onclick="goToStep(2)">Next: Measure →</button>
+                </div>
+            </div>
+
+            <!-- Step 2: Measure -->
+            <div class="step-content" id="step2">
+                <div class="step-header">
+                    <div class="step-badge">Phase 2 of 5</div>
+                    <h2>Measure Phase</h2>
+                    <p>Establish baseline performance and collect data.</p>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Current Process Overview</div>
+                    <div class="form-group">
+                        <label class="form-label">Process Description</label>
+                        <textarea class="form-textarea" id="processDescription" placeholder="Describe the current process at a high level. What are the main steps?"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Process Start Point</label>
+                            <input type="text" class="form-input" id="processStart" placeholder="e.g., Customer enters store">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Process End Point</label>
+                            <input type="text" class="form-input" id="processEnd" placeholder="e.g., Customer completes purchase">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Key Metrics (CTQs - Critical to Quality)</div>
+                    <div id="metricsList">
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <span class="metric-title">Primary Metric</span>
+                                <button class="btn-icon" onclick="removeMetric(this)" style="display:none;">✕</button>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Metric Name</label>
+                                <input type="text" class="form-input metric-name" placeholder="e.g., Average Wait Time">
+                            </div>
+                            <div class="metric-grid">
+                                <div class="form-group">
+                                    <label class="form-label">Baseline Value</label>
+                                    <input type="text" class="form-input metric-baseline" placeholder="e.g., 15 min">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Target Value</label>
+                                    <input type="text" class="form-input metric-target" placeholder="e.g., 5 min">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Unit of Measure</label>
+                                    <input type="text" class="form-input metric-unit" placeholder="e.g., minutes">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn-icon btn-add" onclick="addMetric()">+ Add Another Metric</button>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Data Collection Plan</div>
+                    <div class="form-group">
+                        <label class="form-label">What data will be collected?</label>
+                        <textarea class="form-textarea" id="dataCollection" placeholder="List the specific data points you will collect to measure the problem and track improvement."></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Data Source</label>
+                            <input type="text" class="form-input" id="dataSource" placeholder="e.g., POS system, observation, survey">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Sample Size</label>
+                            <input type="text" class="form-input" id="sampleSize" placeholder="e.g., 500 transactions">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Collection Frequency</label>
+                            <select class="form-select" id="collectionFrequency">
+                                <option value="">Select frequency...</option>
+                                <option value="continuous">Continuous</option>
+                                <option value="daily">Daily</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="monthly">Monthly</option>
+                                <option value="one-time">One-time Study</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Responsible Person</label>
+                            <input type="text" class="form-input" id="dataResponsible" placeholder="e.g., John Doe">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Process Capability</div>
+                    <div class="form-group">
+                        <label class="form-label">Current Process Performance Summary</label>
+                        <textarea class="form-textarea" id="processCapability" placeholder="Summarize the current process capability. Include any statistical measures if available (e.g., Cp, Cpk, sigma level, defect rate)."></textarea>
+                    </div>
+                </div>
+
+                <div class="step-navigation">
+                    <button class="btn btn-secondary" onclick="goToStep(1)">← Back: Define</button>
+                    <button class="btn btn-primary" onclick="goToStep(3)">Next: Analyze →</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Analyze -->
+            <div class="step-content" id="step3">
+                <div class="step-header">
+                    <div class="step-badge">Phase 3 of 5</div>
+                    <h2>Analyze Phase</h2>
+                    <p>Identify root causes of the problem.</p>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">5 Whys Analysis</div>
+                    <p class="form-hint" style="margin-bottom: 1rem;">Ask "Why?" repeatedly to drill down to the root cause.</p>
+                    <div class="rca-container">
+                        <div class="rca-why">
+                            <div class="rca-why-label">Problem Statement</div>
+                            <input type="text" class="form-input" id="why0" placeholder="State the problem...">
+                        </div>
+                        <div class="rca-why">
+                            <div class="rca-why-label">Why #1</div>
+                            <input type="text" class="form-input" id="why1" placeholder="Why does this happen?">
+                        </div>
+                        <div class="rca-why">
+                            <div class="rca-why-label">Why #2</div>
+                            <input type="text" class="form-input" id="why2" placeholder="Why does that happen?">
+                        </div>
+                        <div class="rca-why">
+                            <div class="rca-why-label">Why #3</div>
+                            <input type="text" class="form-input" id="why3" placeholder="Why?">
+                        </div>
+                        <div class="rca-why">
+                            <div class="rca-why-label">Why #4</div>
+                            <input type="text" class="form-input" id="why4" placeholder="Why?">
+                        </div>
+                        <div class="rca-why">
+                            <div class="rca-why-label">Why #5 (Root Cause)</div>
+                            <input type="text" class="form-input" id="why5" placeholder="Root cause identified...">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Fishbone Categories (6M Analysis)</div>
+                    <p class="form-hint" style="margin-bottom: 1rem;">Identify potential causes in each category.</p>
+                    <div class="form-group">
+                        <label class="form-label">Man (People)</label>
+                        <textarea class="form-textarea" id="fishboneMan" placeholder="Training, skills, experience, motivation, staffing levels..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Machine (Equipment)</label>
+                        <textarea class="form-textarea" id="fishboneMachine" placeholder="Equipment, tools, technology, software, maintenance..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Method (Process)</label>
+                        <textarea class="form-textarea" id="fishboneMethod" placeholder="Procedures, policies, standards, workflow, sequencing..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Material (Inputs)</label>
+                        <textarea class="form-textarea" id="fishboneMaterial" placeholder="Raw materials, supplies, information inputs, quality..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Measurement (Data)</label>
+                        <textarea class="form-textarea" id="fishboneMeasurement" placeholder="Metrics, data accuracy, inspection, calibration..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Mother Nature (Environment)</label>
+                        <textarea class="form-textarea" id="fishboneEnvironment" placeholder="Physical environment, culture, external factors..."></textarea>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Verified Root Causes</div>
+                    <div class="form-group">
+                        <label class="form-label">What are the verified root causes?</label>
+                        <textarea class="form-textarea" id="verifiedCauses" placeholder="List the root causes that have been verified through data analysis. Include evidence supporting each root cause."></textarea>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Data Analysis Summary</div>
+                    <div class="form-group">
+                        <label class="form-label">Key Findings from Data Analysis</label>
+                        <textarea class="form-textarea" id="analysisFindings" placeholder="Summarize the key insights from your data analysis. What patterns, correlations, or trends did you discover?"></textarea>
+                    </div>
+                </div>
+
+                <div class="step-navigation">
+                    <button class="btn btn-secondary" onclick="goToStep(2)">← Back: Measure</button>
+                    <button class="btn btn-primary" onclick="goToStep(4)">Next: Improve →</button>
+                </div>
+            </div>
+
+            <!-- Step 4: Improve -->
+            <div class="step-content" id="step4">
+                <div class="step-header">
+                    <div class="step-badge">Phase 4 of 5</div>
+                    <h2>Improve Phase</h2>
+                    <p>Develop and implement solutions.</p>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Solution Generation</div>
+                    <div id="solutionsList">
+                        <div class="solution-card">
+                            <div class="metric-header">
+                                <span class="metric-title">Solution 1</span>
+                                <button class="btn-icon" onclick="removeSolution(this)" style="display:none;">✕</button>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Solution Description</label>
+                                <textarea class="form-textarea solution-desc" placeholder="Describe the proposed solution..."></textarea>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Addresses Root Cause</label>
+                                    <input type="text" class="form-input solution-cause" placeholder="Which root cause does this address?">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Expected Impact</label>
+                                    <select class="form-select solution-impact">
+                                        <option value="">Select impact...</option>
+                                        <option value="high">High</option>
+                                        <option value="medium">Medium</option>
+                                        <option value="low">Low</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Implementation Effort</label>
+                                    <select class="form-select solution-effort">
+                                        <option value="">Select effort...</option>
+                                        <option value="low">Low</option>
+                                        <option value="medium">Medium</option>
+                                        <option value="high">High</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Estimated Cost</label>
+                                    <input type="text" class="form-input solution-cost" placeholder="e.g., $5,000">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn-icon btn-add" onclick="addSolution()">+ Add Another Solution</button>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Selected Solution(s)</div>
+                    <div class="form-group">
+                        <label class="form-label">Which solution(s) will be implemented?</label>
+                        <textarea class="form-textarea" id="selectedSolutions" placeholder="Describe the solution(s) selected for implementation and the rationale for selection."></textarea>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Implementation Plan</div>
+                    <div class="form-group">
+                        <label class="form-label">Implementation Steps</label>
+                        <textarea class="form-textarea" id="implementationSteps" placeholder="List the key steps required to implement the solution, including timeline and responsible parties."></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Pilot Start Date</label>
+                            <input type="date" class="form-input" id="pilotStart">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Full Implementation Date</label>
+                            <input type="date" class="form-input" id="fullImplementation">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Pilot Results</div>
+                    <div class="form-group">
+                        <label class="form-label">Pilot Test Results</label>
+                        <textarea class="form-textarea" id="pilotResults" placeholder="Document the results of pilot testing. Did the solution achieve expected results? What was learned?"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Before (Baseline)</label>
+                            <input type="text" class="form-input" id="beforeValue" placeholder="e.g., 15 minutes">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">After (Pilot Result)</label>
+                            <input type="text" class="form-input" id="afterValue" placeholder="e.g., 6 minutes">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Improvement Percentage</label>
+                        <input type="text" class="form-input" id="improvementPct" placeholder="e.g., 60% improvement">
+                    </div>
+                </div>
+
+                <div class="step-navigation">
+                    <button class="btn btn-secondary" onclick="goToStep(3)">← Back: Analyze</button>
+                    <button class="btn btn-primary" onclick="goToStep(5)">Next: Control →</button>
+                </div>
+            </div>
+
+            <!-- Step 5: Control -->
+            <div class="step-content" id="step5">
+                <div class="step-header">
+                    <div class="step-badge">Phase 5 of 5</div>
+                    <h2>Control Phase</h2>
+                    <p>Sustain the improvements over time.</p>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Control Plan</div>
+                    <div id="controlsList">
+                        <div class="control-item">
+                            <div class="metric-header">
+                                <span class="metric-title">Control Point 1</span>
+                                <button class="btn-icon" onclick="removeControl(this)" style="display:none;">✕</button>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">What will be monitored?</label>
+                                <input type="text" class="form-input control-what" placeholder="e.g., Average customer wait time">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Target/Specification</label>
+                                    <input type="text" class="form-input control-target" placeholder="e.g., ≤ 5 minutes">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Measurement Method</label>
+                                    <input type="text" class="form-input control-method" placeholder="e.g., POS timestamp">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Frequency</label>
+                                    <select class="form-select control-frequency">
+                                        <option value="">Select frequency...</option>
+                                        <option value="continuous">Continuous</option>
+                                        <option value="daily">Daily</option>
+                                        <option value="weekly">Weekly</option>
+                                        <option value="monthly">Monthly</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Responsible Person</label>
+                                    <input type="text" class="form-input control-owner" placeholder="e.g., Operations Manager">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Reaction Plan (if out of spec)</label>
+                                <textarea class="form-textarea control-reaction" placeholder="What actions should be taken if the metric falls outside acceptable limits?"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn-icon btn-add" onclick="addControl()">+ Add Control Point</button>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Documentation Updates</div>
+                    <div class="form-group">
+                        <label class="form-label">Process Documentation Changes</label>
+                        <textarea class="form-textarea" id="docChanges" placeholder="List the SOPs, work instructions, or other documentation that has been updated to reflect the new process."></textarea>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Training</div>
+                    <div class="form-group">
+                        <label class="form-label">Training Completed</label>
+                        <textarea class="form-textarea" id="trainingCompleted" placeholder="Describe the training that has been provided to ensure the new process is followed correctly."></textarea>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Project Results Summary</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Final Metric Value</label>
+                            <input type="text" class="form-input" id="finalValue" placeholder="e.g., 4.5 minutes">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Goal Achievement</label>
+                            <select class="form-select" id="goalAchievement">
+                                <option value="">Select status...</option>
+                                <option value="exceeded">Goal Exceeded</option>
+                                <option value="met">Goal Met</option>
+                                <option value="partial">Partially Met</option>
+                                <option value="not-met">Not Met</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Actual Financial Impact</label>
+                        <input type="text" class="form-input" id="actualImpact" placeholder="e.g., $275,000 annual savings">
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Lessons Learned</div>
+                    <div class="form-group">
+                        <label class="form-label">Key Takeaways</label>
+                        <textarea class="form-textarea" id="lessonsLearned" placeholder="What were the key lessons learned during this project? What would you do differently next time?"></textarea>
+                    </div>
+                </div>
+
+                <div class="step-navigation">
+                    <button class="btn btn-secondary" onclick="goToStep(4)">← Back: Improve</button>
+                    <button class="btn btn-primary" onclick="goToStep(6)">Preview & Export →</button>
+                </div>
+            </div>
+
+            <!-- Step 6: Preview & Export -->
+            <div class="step-content" id="step6">
+                <div class="step-header">
+                    <h2>Preview & Export</h2>
+                    <p>Review your DMAIC report and export as PDF.</p>
+                </div>
+
+                <div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
+                    <button class="btn btn-primary" onclick="exportPDF()">📄 Export PDF</button>
+                    <button class="btn btn-secondary" onclick="printPreview()">🖨️ Print</button>
+                </div>
+
+                <div class="preview-container" id="previewContainer">
+                    <!-- Preview will be generated here -->
+                </div>
+
+                <div class="step-navigation">
+                    <button class="btn btn-secondary" onclick="goToStep(5)">← Back: Control</button>
+                    <div></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // State management
+        let currentStep = 1;
+        let projectData = {};
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSavedData();
+            setupAutoSave();
+            updatePreview();
+        });
+
+        // Step Navigation
+        function goToStep(step) {
+            // Hide all steps
+            document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.step-item').forEach(el => el.classList.remove('active'));
+            
+            // Show selected step
+            document.getElementById('step' + step).classList.add('active');
+            document.querySelector(`.step-item[data-step="${step}"]`).classList.add('active');
+            
+            currentStep = step;
+            
+            // Update preview if on last step
+            if (step === 6) {
+                updatePreview();
+            }
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        // Dynamic List Functions
+        function addTeamMember() {
+            const list = document.getElementById('teamList');
+            const item = document.createElement('div');
+            item.className = 'dynamic-item';
+            item.innerHTML = `
+                <input type="text" class="form-input" placeholder="Name and Role (e.g., Jane Doe - Process Owner)">
+                <button class="btn-icon" onclick="removeItem(this)">✕</button>
+            `;
+            list.appendChild(item);
+        }
+
+        function removeItem(btn) {
+            const item = btn.parentElement;
+            const list = item.parentElement;
+            if (list.children.length > 1) {
+                item.remove();
+            }
+        }
+
+        function addMetric() {
+            const list = document.getElementById('metricsList');
+            const count = list.children.length + 1;
+            const card = document.createElement('div');
+            card.className = 'metric-card';
+            card.innerHTML = `
+                <div class="metric-header">
+                    <span class="metric-title">Metric ${count}</span>
+                    <button class="btn-icon" onclick="removeMetric(this)">✕</button>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Metric Name</label>
+                    <input type="text" class="form-input metric-name" placeholder="e.g., Defect Rate">
+                </div>
+                <div class="metric-grid">
+                    <div class="form-group">
+                        <label class="form-label">Baseline Value</label>
+                        <input type="text" class="form-input metric-baseline" placeholder="e.g., 5%">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Target Value</label>
+                        <input type="text" class="form-input metric-target" placeholder="e.g., 1%">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Unit of Measure</label>
+                        <input type="text" class="form-input metric-unit" placeholder="e.g., %">
+                    </div>
+                </div>
+            `;
+            list.appendChild(card);
+        }
+
+        function removeMetric(btn) {
+            const card = btn.closest('.metric-card');
+            const list = card.parentElement;
+            if (list.children.length > 1) {
+                card.remove();
+            }
+        }
+
+        function addSolution() {
+            const list = document.getElementById('solutionsList');
+            const count = list.children.length + 1;
+            const card = document.createElement('div');
+            card.className = 'solution-card';
+            card.innerHTML = `
+                <div class="metric-header">
+                    <span class="metric-title">Solution ${count}</span>
+                    <button class="btn-icon" onclick="removeSolution(this)">✕</button>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Solution Description</label>
+                    <textarea class="form-textarea solution-desc" placeholder="Describe the proposed solution..."></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Addresses Root Cause</label>
+                        <input type="text" class="form-input solution-cause" placeholder="Which root cause does this address?">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Expected Impact</label>
+                        <select class="form-select solution-impact">
+                            <option value="">Select impact...</option>
+                            <option value="high">High</option>
+                            <option value="medium">Medium</option>
+                            <option value="low">Low</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Implementation Effort</label>
+                        <select class="form-select solution-effort">
+                            <option value="">Select effort...</option>
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Estimated Cost</label>
+                        <input type="text" class="form-input solution-cost" placeholder="e.g., $5,000">
+                    </div>
+                </div>
+            `;
+            list.appendChild(card);
+        }
+
+        function removeSolution(btn) {
+            const card = btn.closest('.solution-card');
+            const list = card.parentElement;
+            if (list.children.length > 1) {
+                card.remove();
+            }
+        }
+
+        function addControl() {
+            const list = document.getElementById('controlsList');
+            const count = list.children.length + 1;
+            const item = document.createElement('div');
+            item.className = 'control-item';
+            item.innerHTML = `
+                <div class="metric-header">
+                    <span class="metric-title">Control Point ${count}</span>
+                    <button class="btn-icon" onclick="removeControl(this)">✕</button>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">What will be monitored?</label>
+                    <input type="text" class="form-input control-what" placeholder="e.g., Average customer wait time">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Target/Specification</label>
+                        <input type="text" class="form-input control-target" placeholder="e.g., ≤ 5 minutes">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Measurement Method</label>
+                        <input type="text" class="form-input control-method" placeholder="e.g., POS timestamp">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Frequency</label>
+                        <select class="form-select control-frequency">
+                            <option value="">Select frequency...</option>
+                            <option value="continuous">Continuous</option>
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Responsible Person</label>
+                        <input type="text" class="form-input control-owner" placeholder="e.g., Operations Manager">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Reaction Plan (if out of spec)</label>
+                    <textarea class="form-textarea control-reaction" placeholder="What actions should be taken if the metric falls outside acceptable limits?"></textarea>
+                </div>
+            `;
+            list.appendChild(item);
+        }
+
+        function removeControl(btn) {
+            const item = btn.closest('.control-item');
+            const list = item.parentElement;
+            if (list.children.length > 1) {
+                item.remove();
+            }
+        }
+
+        // Auto-save functionality
+        function setupAutoSave() {
+            document.querySelectorAll('input, textarea, select').forEach(el => {
+                el.addEventListener('change', saveData);
+                el.addEventListener('input', debounce(saveData, 1000));
+            });
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), wait);
+            };
+        }
+
+        function saveData() {
+            const status = document.getElementById('saveStatus');
+            status.innerHTML = '<span>●</span> Saving...';
+            status.className = 'save-status saving';
+
+            // Collect all form data
+            const data = {
+                // Define
+                projectName: document.getElementById('projectName').value,
+                projectId: document.getElementById('projectId').value,
+                champion: document.getElementById('champion').value,
+                projectLeader: document.getElementById('projectLeader').value,
+                startDate: document.getElementById('startDate').value,
+                targetDate: document.getElementById('targetDate').value,
+                problemStatement: document.getElementById('problemStatement').value,
+                businessCase: document.getElementById('businessCase').value,
+                annualImpact: document.getElementById('annualImpact').value,
+                impactType: document.getElementById('impactType').value,
+                inScope: document.getElementById('inScope').value,
+                outScope: document.getElementById('outScope').value,
+                goalStatement: document.getElementById('goalStatement').value,
+                // Measure
+                processDescription: document.getElementById('processDescription').value,
+                processStart: document.getElementById('processStart').value,
+                processEnd: document.getElementById('processEnd').value,
+                dataCollection: document.getElementById('dataCollection').value,
+                dataSource: document.getElementById('dataSource').value,
+                sampleSize: document.getElementById('sampleSize').value,
+                collectionFrequency: document.getElementById('collectionFrequency').value,
+                dataResponsible: document.getElementById('dataResponsible').value,
+                processCapability: document.getElementById('processCapability').value,
+                // Analyze
+                why0: document.getElementById('why0').value,
+                why1: document.getElementById('why1').value,
+                why2: document.getElementById('why2').value,
+                why3: document.getElementById('why3').value,
+                why4: document.getElementById('why4').value,
+                why5: document.getElementById('why5').value,
+                fishboneMan: document.getElementById('fishboneMan').value,
+                fishboneMachine: document.getElementById('fishboneMachine').value,
+                fishboneMethod: document.getElementById('fishboneMethod').value,
+                fishboneMaterial: document.getElementById('fishboneMaterial').value,
+                fishboneMeasurement: document.getElementById('fishboneMeasurement').value,
+                fishboneEnvironment: document.getElementById('fishboneEnvironment').value,
+                verifiedCauses: document.getElementById('verifiedCauses').value,
+                analysisFindings: document.getElementById('analysisFindings').value,
+                // Improve
+                selectedSolutions: document.getElementById('selectedSolutions').value,
+                implementationSteps: document.getElementById('implementationSteps').value,
+                pilotStart: document.getElementById('pilotStart').value,
+                fullImplementation: document.getElementById('fullImplementation').value,
+                pilotResults: document.getElementById('pilotResults').value,
+                beforeValue: document.getElementById('beforeValue').value,
+                afterValue: document.getElementById('afterValue').value,
+                improvementPct: document.getElementById('improvementPct').value,
+                // Control
+                docChanges: document.getElementById('docChanges').value,
+                trainingCompleted: document.getElementById('trainingCompleted').value,
+                finalValue: document.getElementById('finalValue').value,
+                goalAchievement: document.getElementById('goalAchievement').value,
+                actualImpact: document.getElementById('actualImpact').value,
+                lessonsLearned: document.getElementById('lessonsLearned').value,
+                // Timestamp
+                lastSaved: new Date().toISOString()
+            };
+
+            // Collect team members
+            data.teamMembers = [];
+            document.querySelectorAll('#teamList .form-input').forEach(input => {
+                if (input.value.trim()) data.teamMembers.push(input.value);
+            });
+
+            // Collect metrics
+            data.metrics = [];
+            document.querySelectorAll('#metricsList .metric-card').forEach(card => {
+                data.metrics.push({
+                    name: card.querySelector('.metric-name').value,
+                    baseline: card.querySelector('.metric-baseline').value,
+                    target: card.querySelector('.metric-target').value,
+                    unit: card.querySelector('.metric-unit').value
+                });
+            });
+
+            // Collect solutions
+            data.solutions = [];
+            document.querySelectorAll('#solutionsList .solution-card').forEach(card => {
+                data.solutions.push({
+                    description: card.querySelector('.solution-desc').value,
+                    cause: card.querySelector('.solution-cause').value,
+                    impact: card.querySelector('.solution-impact').value,
+                    effort: card.querySelector('.solution-effort').value,
+                    cost: card.querySelector('.solution-cost').value
+                });
+            });
+
+            // Collect controls
+            data.controls = [];
+            document.querySelectorAll('#controlsList .control-item').forEach(item => {
+                data.controls.push({
+                    what: item.querySelector('.control-what').value,
+                    target: item.querySelector('.control-target').value,
+                    method: item.querySelector('.control-method').value,
+                    frequency: item.querySelector('.control-frequency').value,
+                    owner: item.querySelector('.control-owner').value,
+                    reaction: item.querySelector('.control-reaction').value
+                });
+            });
+
+            projectData = data;
+            localStorage.setItem('dmaic_current_project', JSON.stringify(data));
+
+            setTimeout(() => {
+                status.innerHTML = '<span>●</span> Auto-saved';
+                status.className = 'save-status saved';
+            }, 500);
+        }
+
+        function loadSavedData() {
+            const saved = localStorage.getItem('dmaic_current_project');
+            if (!saved) return;
+
+            const data = JSON.parse(saved);
+            projectData = data;
+
+            // Restore simple fields
+            const simpleFields = [
+                'projectName', 'projectId', 'champion', 'projectLeader', 'startDate', 'targetDate',
+                'problemStatement', 'businessCase', 'annualImpact', 'impactType', 'inScope', 'outScope', 'goalStatement',
+                'processDescription', 'processStart', 'processEnd', 'dataCollection', 'dataSource', 'sampleSize',
+                'collectionFrequency', 'dataResponsible', 'processCapability',
+                'why0', 'why1', 'why2', 'why3', 'why4', 'why5',
+                'fishboneMan', 'fishboneMachine', 'fishboneMethod', 'fishboneMaterial', 'fishboneMeasurement', 'fishboneEnvironment',
+                'verifiedCauses', 'analysisFindings',
+                'selectedSolutions', 'implementationSteps', 'pilotStart', 'fullImplementation', 'pilotResults',
+                'beforeValue', 'afterValue', 'improvementPct',
+                'docChanges', 'trainingCompleted', 'finalValue', 'goalAchievement', 'actualImpact', 'lessonsLearned'
+            ];
+
+            simpleFields.forEach(field => {
+                const el = document.getElementById(field);
+                if (el && data[field]) el.value = data[field];
+            });
+
+            // Restore team members
+            if (data.teamMembers && data.teamMembers.length > 0) {
+                const list = document.getElementById('teamList');
+                list.innerHTML = '';
+                data.teamMembers.forEach(member => {
+                    const item = document.createElement('div');
+                    item.className = 'dynamic-item';
+                    item.innerHTML = `
+                        <input type="text" class="form-input" value="${member}">
+                        <button class="btn-icon" onclick="removeItem(this)">✕</button>
+                    `;
+                    list.appendChild(item);
+                });
+            }
+
+            // Restore metrics
+            if (data.metrics && data.metrics.length > 0) {
+                const list = document.getElementById('metricsList');
+                list.innerHTML = '';
+                data.metrics.forEach((metric, i) => {
+                    const card = document.createElement('div');
+                    card.className = 'metric-card';
+                    card.innerHTML = `
+                        <div class="metric-header">
+                            <span class="metric-title">${i === 0 ? 'Primary Metric' : 'Metric ' + (i + 1)}</span>
+                            <button class="btn-icon" onclick="removeMetric(this)" ${i === 0 ? 'style="display:none;"' : ''}>✕</button>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Metric Name</label>
+                            <input type="text" class="form-input metric-name" value="${metric.name || ''}">
+                        </div>
+                        <div class="metric-grid">
+                            <div class="form-group">
+                                <label class="form-label">Baseline Value</label>
+                                <input type="text" class="form-input metric-baseline" value="${metric.baseline || ''}">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Target Value</label>
+                                <input type="text" class="form-input metric-target" value="${metric.target || ''}">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Unit of Measure</label>
+                                <input type="text" class="form-input metric-unit" value="${metric.unit || ''}">
+                            </div>
+                        </div>
+                    `;
+                    list.appendChild(card);
+                });
+            }
+        }
+
+        // Preview Generation
+        function updatePreview() {
+            saveData();
+            const data = projectData;
+            const container = document.getElementById('previewContainer');
+
+            const formatDate = (dateStr) => {
+                if (!dateStr) return 'TBD';
+                return new Date(dateStr).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            };
+
+            container.innerHTML = `
+                <div class="preview-header" style="background: #065f46;">
+                    <h1>${data.projectName || 'DMAIC Project Report'}</h1>
+                    <div class="preview-meta">
+                        <span>Project ID: ${data.projectId || 'N/A'}</span>
+                        <span>Leader: ${data.projectLeader || 'TBD'}</span>
+                        <span>Date: ${formatDate(data.startDate)}</span>
+                    </div>
+                </div>
+                <div class="preview-body">
+                    <div class="preview-section">
+                        <h3 class="preview-section-title" style="color: #065f46; border-color: #10b981;">Define Phase</h3>
+                        <p><strong>Problem Statement:</strong> ${data.problemStatement || 'Not specified'}</p>
+                        <p><strong>Business Case:</strong> ${data.businessCase || 'Not specified'}</p>
+                        <p><strong>Estimated Impact:</strong> ${data.annualImpact || 'TBD'} (${data.impactType || 'Type not specified'})</p>
+                        <p><strong>Goal Statement:</strong> ${data.goalStatement || 'Not specified'}</p>
+                        <p><strong>Scope:</strong></p>
+                        <p>In Scope: ${data.inScope || 'Not defined'}</p>
+                        <p>Out of Scope: ${data.outScope || 'Not defined'}</p>
+                        <p><strong>Team:</strong> ${data.teamMembers?.join(', ') || 'Not specified'}</p>
+                    </div>
+
+                    <div class="preview-section">
+                        <h3 class="preview-section-title" style="color: #065f46; border-color: #10b981;">Measure Phase</h3>
+                        <p><strong>Process:</strong> ${data.processDescription || 'Not described'}</p>
+                        <p><strong>Process Boundaries:</strong> ${data.processStart || 'Start'} → ${data.processEnd || 'End'}</p>
+                        ${data.metrics && data.metrics.length > 0 ? `
+                            <table class="preview-table">
+                                <thead>
+                                    <tr style="background: #065f46;">
+                                        <th>Metric</th>
+                                        <th>Baseline</th>
+                                        <th>Target</th>
+                                        <th>Unit</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${data.metrics.map(m => `
+                                        <tr>
+                                            <td>${m.name || '-'}</td>
+                                            <td>${m.baseline || '-'}</td>
+                                            <td>${m.target || '-'}</td>
+                                            <td>${m.unit || '-'}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        ` : '<p>No metrics defined</p>'}
+                        <p><strong>Data Collection:</strong> ${data.dataCollection || 'Not specified'}</p>
+                    </div>
+
+                    <div class="preview-section">
+                        <h3 class="preview-section-title" style="color: #065f46; border-color: #10b981;">Analyze Phase</h3>
+                        <p><strong>5 Whys Analysis:</strong></p>
+                        <ol style="margin-left: 1.5rem; margin-bottom: 1rem;">
+                            ${data.why1 ? `<li>${data.why1}</li>` : ''}
+                            ${data.why2 ? `<li>${data.why2}</li>` : ''}
+                            ${data.why3 ? `<li>${data.why3}</li>` : ''}
+                            ${data.why4 ? `<li>${data.why4}</li>` : ''}
+                            ${data.why5 ? `<li><strong>Root Cause:</strong> ${data.why5}</li>` : ''}
+                        </ol>
+                        <p><strong>Verified Root Causes:</strong> ${data.verifiedCauses || 'Not specified'}</p>
+                        <p><strong>Analysis Findings:</strong> ${data.analysisFindings || 'Not specified'}</p>
+                    </div>
+
+                    <div class="preview-section">
+                        <h3 class="preview-section-title" style="color: #065f46; border-color: #10b981;">Improve Phase</h3>
+                        <p><strong>Selected Solutions:</strong> ${data.selectedSolutions || 'Not specified'}</p>
+                        <p><strong>Implementation Plan:</strong> ${data.implementationSteps || 'Not specified'}</p>
+                        <p><strong>Pilot Results:</strong> ${data.pilotResults || 'Not documented'}</p>
+                        <p><strong>Improvement:</strong> ${data.beforeValue || '?'} → ${data.afterValue || '?'} (${data.improvementPct || '?'})</p>
+                    </div>
+
+                    <div class="preview-section">
+                        <h3 class="preview-section-title" style="color: #065f46; border-color: #10b981;">Control Phase</h3>
+                        ${data.controls && data.controls.length > 0 ? `
+                            <table class="preview-table">
+                                <thead>
+                                    <tr style="background: #065f46;">
+                                        <th>Control Point</th>
+                                        <th>Target</th>
+                                        <th>Method</th>
+                                        <th>Frequency</th>
+                                        <th>Owner</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${data.controls.map(c => `
+                                        <tr>
+                                            <td>${c.what || '-'}</td>
+                                            <td>${c.target || '-'}</td>
+                                            <td>${c.method || '-'}</td>
+                                            <td>${c.frequency || '-'}</td>
+                                            <td>${c.owner || '-'}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        ` : '<p>No control points defined</p>'}
+                        <p><strong>Final Results:</strong> ${data.finalValue || 'TBD'} - ${data.goalAchievement || 'Status pending'}</p>
+                        <p><strong>Actual Financial Impact:</strong> ${data.actualImpact || 'TBD'}</p>
+                        <p><strong>Lessons Learned:</strong> ${data.lessonsLearned || 'Not documented'}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Help Modal
+        function openHelpModal() {
+            document.getElementById('helpModal').classList.add('active');
+        }
+        function closeHelpModal() {
+            document.getElementById('helpModal').classList.remove('active');
+        }
+
+        // Load Example Data
+        function loadExample() {
+            if (!confirm('Load example DMAIC project? This will replace current data.')) return;
+            
+            // Define Phase
+            document.getElementById('projectTitle').value = 'Reduce Customer Service Call Resolution Time';
+            document.getElementById('projectLeader').value = 'Jennifer Martinez';
+            document.getElementById('teamMembers').value = 'Tom Wilson (Supervisor), Sarah Lee (Analyst), Mike Johnson (IT), Lisa Chen (Training)';
+            document.getElementById('sponsor').value = 'David Thompson, VP Customer Experience';
+            document.getElementById('department').value = 'Customer Service';
+            document.getElementById('startDate').value = '2025-01-15';
+            document.getElementById('targetDate').value = '2025-06-30';
+            document.getElementById('problemStatement').value = 'Customer service call resolution time has increased from an average of 8 minutes to 12 minutes over the past 6 months, resulting in longer wait times, increased customer complaints (up 35%), and higher operational costs. This impacts customer satisfaction scores which have dropped from 4.2 to 3.6 out of 5.';
+            document.getElementById('projectScope').value = 'In scope: Inbound customer service calls, call routing process, agent training, knowledge base system. Out of scope: Outbound calls, chat support, email support, staffing levels.';
+            document.getElementById('projectGoal').value = 'Reduce average call resolution time from 12 minutes to 7 minutes (42% reduction) within 6 months while maintaining or improving first-call resolution rate.';
+            
+            // Measure Phase
+            document.getElementById('baseline').value = '12.3 minutes average';
+            document.getElementById('target').value = '7 minutes or less';
+            document.getElementById('dataSources').value = 'Call center analytics system, CRM database, customer surveys, agent performance reports';
+            document.getElementById('sampleSize').value = '2,500 calls over 4 weeks';
+            document.getElementById('measurementPlan').value = 'Weekly data pulls from call analytics, daily agent performance tracking, bi-weekly customer surveys, process time studies on sample calls';
+            
+            // Analyze Phase
+            document.getElementById('rootCauses').value = '1. Outdated knowledge base - agents spend 40% of call time searching for information\n2. Inefficient call routing - 25% of calls transferred at least once\n3. Lack of standardized processes for common issues\n4. Training gaps in new product features\n5. Slow CRM system load times (avg 8 seconds per screen)';
+            document.getElementById('analysisTools').value = 'Fishbone diagram for root cause identification, Pareto chart for issue frequency, Process mapping for current state, Time studies for activity breakdown, Regression analysis for correlation factors';
+            document.getElementById('keyFindings').value = 'Knowledge base searches account for 4.2 minutes of average call time. Top 20 issue types represent 80% of all calls. First-call resolution drops to 45% for transferred calls. New agents take 3x longer than experienced agents on same issues.';
+            
+            saveData();
+            closeHelpModal();
+            alert('Example DMAIC project loaded! Complete the Improve and Control phases, then preview.');
+        }
+
+        // Enhanced Export Functions
+        function exportPDF() {
+            document.getElementById('printProjectTitle').textContent = 
+                document.getElementById('projectTitle').value || 'DMAIC Project Report';
+            document.getElementById('printLeader').textContent = 
+                document.getElementById('projectLeader').value || '-';
+            document.getElementById('printDept').textContent = 
+                document.getElementById('department').value || '-';
+            document.getElementById('printStart').textContent = 
+                document.getElementById('startDate').value || '-';
+            document.getElementById('printTarget').textContent = 
+                document.getElementById('targetDate').value || '-';
+            
+            const problem = document.getElementById('problemStatement').value;
+            document.getElementById('printProblem').innerHTML = problem ? 
+                '<strong>Problem Statement:</strong> ' + problem : '';
+            
+            updatePreview();
+            window.print();
+        }
+
+        function printPreview() {
+            exportPDF();
+        }
+    </script>
+
+    <style>
+        @media print {
+            .nav, .sidebar, .step-navigation, .btn, .step-header, .modal-overlay { display: none !important; }
+            .main-layout { display: block; }
+            .content-area { margin: 0; padding: 0; max-width: 100%; }
+            .step-content { display: none !important; }
+            #step6 { display: block !important; }
+            .preview-container { box-shadow: none; }
+            .print-header { display: block !important; }
+            body { background: white; color: black; }
+        }
+    </style>
+</body>
+</html>

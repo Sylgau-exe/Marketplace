@@ -1,0 +1,1773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Charter - CharterPro</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1a365d;
+            --primary-light: #2c5282;
+            --primary-dark: #0f2744;
+            --accent: #c6a052;
+            --accent-light: #d4af61;
+            --accent-glow: rgba(198, 160, 82, 0.3);
+            --success: #38a169;
+            --success-bg: rgba(56, 161, 105, 0.1);
+            --warning: #d69e2e;
+            --warning-bg: rgba(214, 158, 46, 0.1);
+            --error: #e53e3e;
+            --error-bg: rgba(229, 62, 62, 0.1);
+            --info: #4299e1;
+            --bg: #0a0f1a;
+            --bg-card: #111827;
+            --bg-card-hover: #1a2332;
+            --text: #f7fafc;
+            --text-muted: #a0aec0;
+            --text-dim: #718096;
+            --border: #2d3748;
+            --gradient-gold: linear-gradient(135deg, #c6a052 0%, #d4af61 50%, #c6a052 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1rem 2rem;
+            background: rgba(10, 15, 26, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+
+        .nav-logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-gold);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .nav-logo-text {
+            font-family: 'Fraunces', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .platform-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 8px;
+            color: #a5b4fc;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .platform-link:hover {
+            background: rgba(99, 102, 241, 0.25);
+            color: #c7d2fe;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .save-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .save-status.saving {
+            color: var(--warning);
+        }
+
+        .save-status.saved {
+            color: var(--success);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--gradient-gold);
+            color: var(--primary-dark);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px var(--accent-glow);
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--text-dim);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            opacity: 0.9;
+        }
+
+        /* Main Layout */
+        .main-layout {
+            display: flex;
+            padding-top: 73px;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Steps */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            position: fixed;
+            top: 73px;
+            left: 0;
+            bottom: 0;
+            overflow-y: auto;
+            padding: 1.5rem 0;
+        }
+
+        .sidebar-title {
+            padding: 0 1.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+            margin-bottom: 1rem;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .step-item:hover {
+            background: var(--bg-card-hover);
+        }
+
+        .step-item.active {
+            background: var(--bg-card-hover);
+            border-left-color: var(--accent);
+        }
+
+        .step-item.completed .step-number {
+            background: var(--success);
+            color: white;
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+
+        .step-item.active .step-number {
+            background: var(--accent);
+            color: var(--primary-dark);
+        }
+
+        .step-info h4 {
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin-bottom: 0.15rem;
+        }
+
+        .step-info p {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+
+        /* Content Area */
+        .content-area {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem 3rem;
+            max-width: 900px;
+        }
+
+        .step-content {
+            display: none;
+        }
+
+        .step-content.active {
+            display: block;
+        }
+
+        .step-header {
+            margin-bottom: 2rem;
+        }
+
+        .step-header h2 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .step-header p {
+            color: var(--text-muted);
+        }
+
+        /* Form Elements */
+        .form-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-row.single {
+            grid-template-columns: 1fr;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-label .required {
+            color: var(--error);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        select.form-control {
+            cursor: pointer;
+        }
+
+        .form-hint {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            margin-top: 0.35rem;
+        }
+
+        /* Dynamic Lists */
+        .dynamic-list {
+            margin-top: 1rem;
+        }
+
+        .dynamic-item {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+            align-items: flex-start;
+        }
+
+        .dynamic-item input,
+        .dynamic-item textarea {
+            flex: 1;
+        }
+
+        .dynamic-item .btn-remove {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: var(--error-bg);
+            color: var(--error);
+            border: 1px solid var(--error);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .dynamic-item .btn-remove:hover {
+            background: var(--error);
+            color: white;
+        }
+
+        .btn-add {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: transparent;
+            border: 1px dashed var(--border);
+            border-radius: 8px;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .btn-add:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* Risk Table */
+        .risk-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .risk-table th,
+        .risk-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .risk-table th {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .risk-table input,
+        .risk-table select {
+            width: 100%;
+            padding: 0.5rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+
+        .risk-table input:focus,
+        .risk-table select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        /* Milestone Table */
+        .milestone-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .milestone-table th,
+        .milestone-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .milestone-table th {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .milestone-table input {
+            width: 100%;
+            padding: 0.5rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+
+        .milestone-table input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        /* Financial Metrics */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: 12px;
+            padding: 1.25rem;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--accent-light);
+        }
+
+        .metric-label {
+            font-size: 0.8rem;
+            opacity: 0.9;
+            margin-top: 0.25rem;
+        }
+
+        /* Navigation Buttons */
+        .step-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+        }
+
+        /* Preview Panel */
+        .preview-container {
+            margin-left: 280px;
+            padding: 2rem;
+        }
+
+        .preview-panel {
+            background: white;
+            color: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .preview-header {
+            text-align: center;
+            padding: 2rem;
+            border-bottom: 3px solid var(--primary);
+        }
+
+        .preview-logo {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .preview-title {
+            font-family: 'Fraunces', serif;
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .preview-subtitle {
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        .preview-meta {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .preview-body {
+            padding: 2rem;
+        }
+
+        .preview-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .preview-section-title {
+            font-family: 'Fraunces', serif;
+            font-size: 1rem;
+            color: var(--primary);
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .preview-section p {
+            line-height: 1.7;
+            margin-bottom: 0.5rem;
+        }
+
+        .preview-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .preview-metric {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .preview-metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-light);
+        }
+
+        .preview-metric-label {
+            font-size: 0.75rem;
+            opacity: 0.9;
+        }
+
+        .preview-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            margin: 0.75rem 0;
+        }
+
+        .preview-table th,
+        .preview-table td {
+            padding: 0.6rem;
+            text-align: left;
+            border: 1px solid #e0e0e0;
+        }
+
+        .preview-table th {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+
+        .preview-table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .preview-list {
+            margin-left: 1.5rem;
+        }
+
+        .preview-list li {
+            margin-bottom: 0.4rem;
+        }
+
+        /* Alert */
+        .alert {
+            padding: 1rem 1.25rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .alert-info {
+            background: var(--info);
+            background: rgba(66, 153, 225, 0.1);
+            border: 1px solid var(--info);
+            color: var(--info);
+        }
+
+        .alert-success {
+            background: var(--success-bg);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: white !important;
+                color: black !important;
+            }
+
+            .nav, .sidebar, .step-navigation, .btn, .no-print {
+                display: none !important;
+            }
+
+            .main-layout {
+                padding-top: 0;
+            }
+
+            .preview-container {
+                margin-left: 0;
+                padding: 0;
+            }
+
+            .preview-panel {
+                box-shadow: none;
+                border-radius: 0;
+            }
+
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            @page {
+                size: letter;
+                margin: 0.75in;
+            }
+
+            .preview-section {
+                page-break-inside: avoid;
+            }
+
+            .preview-table {
+                page-break-inside: avoid;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .sidebar {
+                display: none;
+            }
+
+            .content-area,
+            .preview-container {
+                margin-left: 0;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .metrics-grid,
+            .preview-metrics {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-content">
+            <a href="index.html" class="nav-logo">
+                <div class="nav-logo-icon">📋</div>
+                <span class="nav-logo-text">CharterPro</span>
+            </a>
+            <a href="/" class="platform-link">← All Tools</a>
+            <div class="nav-actions">
+                <div class="save-status" id="saveStatus">
+                    <span>●</span> Auto-saved
+                </div>
+                <a href="dashboard.html" class="btn btn-secondary">My Charters</a>
+                <button class="btn btn-primary" onclick="goToStep(7)">Preview & Export</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Layout -->
+    <div class="main-layout">
+        <!-- Sidebar Steps -->
+        <aside class="sidebar">
+            <div class="sidebar-title">Charter Sections</div>
+            
+            <div class="step-item active" onclick="goToStep(1)" data-step="1">
+                <div class="step-number">1</div>
+                <div class="step-info">
+                    <h4>Project Basics</h4>
+                    <p>Name, type, dates</p>
+                </div>
+            </div>
+            
+            <div class="step-item" onclick="goToStep(2)" data-step="2">
+                <div class="step-number">2</div>
+                <div class="step-info">
+                    <h4>Overview & Objectives</h4>
+                    <p>Description, goals</p>
+                </div>
+            </div>
+            
+            <div class="step-item" onclick="goToStep(3)" data-step="3">
+                <div class="step-number">3</div>
+                <div class="step-info">
+                    <h4>Scope</h4>
+                    <p>In scope, out of scope</p>
+                </div>
+            </div>
+            
+            <div class="step-item" onclick="goToStep(4)" data-step="4">
+                <div class="step-number">4</div>
+                <div class="step-info">
+                    <h4>Stakeholders</h4>
+                    <p>Sponsor, team, roles</p>
+                </div>
+            </div>
+            
+            <div class="step-item" onclick="goToStep(5)" data-step="5">
+                <div class="step-number">5</div>
+                <div class="step-info">
+                    <h4>Risks & Constraints</h4>
+                    <p>Risk assessment</p>
+                </div>
+            </div>
+            
+            <div class="step-item" onclick="goToStep(6)" data-step="6">
+                <div class="step-number">6</div>
+                <div class="step-info">
+                    <h4>Timeline & Budget</h4>
+                    <p>Milestones, financials</p>
+                </div>
+            </div>
+            
+            <div class="step-item" onclick="goToStep(7)" data-step="7">
+                <div class="step-number">7</div>
+                <div class="step-info">
+                    <h4>Preview & Export</h4>
+                    <p>Review and download</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Content Area -->
+        <main class="content-area">
+            <!-- Step 1: Project Basics -->
+            <div class="step-content active" data-step="1">
+                <div class="step-header">
+                    <h2>Project Basics</h2>
+                    <p>Start with the fundamental information about your project.</p>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">📋 Project Information</div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Project Name <span class="required">*</span></label>
+                        <input type="text" class="form-control" id="projectName" placeholder="e.g., Customer Portal 2.0" onchange="autoSave()">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Project Type <span class="required">*</span></label>
+                            <select class="form-control" id="projectType" onchange="autoSave()">
+                                <option value="">Select type...</option>
+                                <option value="Software Development">Software Development</option>
+                                <option value="Mobile Development">Mobile Development</option>
+                                <option value="Construction">Construction</option>
+                                <option value="Business Transformation">Business Transformation</option>
+                                <option value="Marketing / Creative">Marketing / Creative</option>
+                                <option value="Infrastructure">Infrastructure</option>
+                                <option value="Research & Development">Research & Development</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Priority Level</label>
+                            <select class="form-control" id="priority" onchange="autoSave()">
+                                <option value="High">High</option>
+                                <option value="Medium" selected>Medium</option>
+                                <option value="Low">Low</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Start Date</label>
+                            <input type="date" class="form-control" id="startDate" onchange="autoSave()">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Target End Date</label>
+                            <input type="date" class="form-control" id="endDate" onchange="autoSave()">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-navigation">
+                    <div></div>
+                    <button class="btn btn-primary" onclick="goToStep(2)">Next: Overview →</button>
+                </div>
+            </div>
+
+            <!-- Step 2: Overview & Objectives -->
+            <div class="step-content" data-step="2">
+                <div class="step-header">
+                    <h2>Overview & Objectives</h2>
+                    <p>Describe what this project is about and what it aims to achieve.</p>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">📝 Project Overview</div>
+                    <div class="form-group">
+                        <label class="form-label">Executive Summary <span class="required">*</span></label>
+                        <textarea class="form-control" id="overview" placeholder="Provide a high-level description of the project, its purpose, and expected outcomes..." onchange="autoSave()"></textarea>
+                        <p class="form-hint">This will appear at the top of your charter. Make it compelling and clear.</p>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">🎯 Project Objectives</div>
+                    <p class="form-hint" style="margin-bottom: 1rem;">List specific, measurable objectives this project will achieve.</p>
+                    
+                    <div class="dynamic-list" id="objectivesList">
+                        <div class="dynamic-item">
+                            <input type="text" class="form-control" placeholder="e.g., Reduce customer support tickets by 40%" onchange="autoSave()">
+                            <button class="btn-remove" onclick="removeItem(this)">×</button>
+                        </div>
+                    </div>
+                    <button class="btn-add" onclick="addObjective()">+ Add Objective</button>
+                </div>
+
+                <div class="step-navigation">
+                    <button class="btn btn-secondary" onclick="goToStep(1)">← Back</button>
+                    <button class="btn btn-primary" onclick="goToStep(3)">Next: Scope →</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Scope -->
+            <div class="step-content" data-step="3">
+                <div class="step-header">
+                    <h2>Project Scope</h2>
+                    <p>Define what is included and excluded from this project.</p>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">✅ In Scope</div>
+                    <div class="form-group">
+                        <label class="form-label">What's Included</label>
+                        <textarea class="form-control" id="inScope" placeholder="List deliverables, features, work packages that ARE part of this project..." onchange="autoSave()"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">❌ Out of Scope</div>
+                    <div class="form-group">
+                        <label class="form-label">What's Excluded</label>
+                        <textarea class="form-control" id="outOfScope" placeholder="List items explicitly NOT included in this project to set clear boundaries..." onchange="autoSave()"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">📋 Key Deliverables</div>
+                    <div class="dynamic-list" id="deliverablesList">
+                        <div class="dynamic-item">
+                            <input type="text" class="form-control" placeholder="e.g., Fully functional customer portal" onchange="autoSave()">
+                            <button class="btn-remove" onclick="removeItem(this)">×</button>
+                        </div>
+                    </div>
+                    <button class="btn-add" onclick="addDeliverable()">+ Add Deliverable</button>
+                </div>
+
+                <div class="step-navigation">
+                    <button class="btn btn-secondary" onclick="goToStep(2)">← Back</button>
+                    <button class="btn btn-primary" onclick="goToStep(4)">Next: Stakeholders →</button>
+                </div>
+            </div>
+
+            <!-- Step 4: Stakeholders -->
+            <div class="step-content" data-step="4">
+                <div class="step-header">
+                    <h2>Stakeholders & Team</h2>
+                    <p>Identify key people involved in the project.</p>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">👔 Project Leadership</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Executive Sponsor</label>
+                            <input type="text" class="form-control" id="sponsor" placeholder="e.g., Jennifer Martinez, CTO" onchange="autoSave()">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Project Manager</label>
+                            <input type="text" class="form-control" id="projectManager" placeholder="e.g., David Chen" onchange="autoSave()">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">👥 Key Stakeholders</div>
+                    <div class="dynamic-list" id="stakeholdersList">
+                        <div class="dynamic-item" style="flex-wrap: wrap; gap: 0.5rem;">
+                            <input type="text" class="form-control" style="flex: 2; min-width: 150px;" placeholder="Name & Title" onchange="autoSave()">
+                            <input type="text" class="form-control" style="flex: 1; min-width: 100px;" placeholder="Role" onchange="autoSave()">
+                            <button class="btn-remove" onclick="removeItem(this)">×</button>
+                        </div>
+                    </div>
+                    <button class="btn-add" onclick="addStakeholder()">+ Add Stakeholder</button>
+                </div>
+
+                <div class="step-navigation">
+                    <button class="btn btn-secondary" onclick="goToStep(3)">← Back</button>
+                    <button class="btn btn-primary" onclick="goToStep(5)">Next: Risks →</button>
+                </div>
+            </div>
+
+            <!-- Step 5: Risks & Constraints -->
+            <div class="step-content" data-step="5">
+                <div class="step-header">
+                    <h2>Risks & Constraints</h2>
+                    <p>Identify potential risks and project constraints.</p>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">⚠️ Risk Assessment</div>
+                    <table class="risk-table" id="riskTable">
+                        <thead>
+                            <tr>
+                                <th style="width: 35%;">Risk</th>
+                                <th style="width: 15%;">Impact</th>
+                                <th style="width: 40%;">Mitigation Strategy</th>
+                                <th style="width: 10%;"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input type="text" placeholder="Describe risk..." onchange="autoSave()"></td>
+                                <td>
+                                    <select onchange="autoSave()">
+                                        <option value="High">High</option>
+                                        <option value="Medium" selected>Medium</option>
+                                        <option value="Low">Low</option>
+                                    </select>
+                                </td>
+                                <td><input type="text" placeholder="How will you address this?" onchange="autoSave()"></td>
+                                <td><button class="btn-remove" onclick="removeRisk(this)">×</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <button class="btn-add" onclick="addRisk()" style="margin-top: 1rem;">+ Add Risk</button>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">🔒 Constraints</div>
+                    <div class="form-group">
+                        <label class="form-label">Project Constraints</label>
+                        <textarea class="form-control" id="constraints" placeholder="List any constraints such as budget limits, technology requirements, regulatory compliance, resource limitations..." onchange="autoSave()"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">📌 Assumptions</div>
+                    <div class="form-group">
+                        <label class="form-label">Key Assumptions</label>
+                        <textarea class="form-control" id="assumptions" placeholder="List assumptions you're making for this project to succeed..." onchange="autoSave()"></textarea>
+                    </div>
+                </div>
+
+                <div class="step-navigation">
+                    <button class="btn btn-secondary" onclick="goToStep(4)">← Back</button>
+                    <button class="btn btn-primary" onclick="goToStep(6)">Next: Timeline & Budget →</button>
+                </div>
+            </div>
+
+            <!-- Step 6: Timeline & Budget -->
+            <div class="step-content" data-step="6">
+                <div class="step-header">
+                    <h2>Timeline & Budget</h2>
+                    <p>Define milestones, budget, and financial projections.</p>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">📅 Project Milestones</div>
+                    <table class="milestone-table" id="milestoneTable">
+                        <thead>
+                            <tr>
+                                <th style="width: 40%;">Phase / Milestone</th>
+                                <th style="width: 20%;">Duration</th>
+                                <th style="width: 25%;">Target Date</th>
+                                <th style="width: 15%;"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input type="text" placeholder="e.g., Discovery & Design" onchange="autoSave()"></td>
+                                <td><input type="text" placeholder="e.g., 3 months" onchange="autoSave()"></td>
+                                <td><input type="text" placeholder="e.g., Apr 2025" onchange="autoSave()"></td>
+                                <td><button class="btn-remove" onclick="removeMilestone(this)">×</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <button class="btn-add" onclick="addMilestone()" style="margin-top: 1rem;">+ Add Milestone</button>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">💰 Budget & Financials</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Total Budget</label>
+                            <input type="text" class="form-control" id="budget" placeholder="e.g., $2,400,000" onchange="autoSave(); calculateROI()">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Expected Benefits (Annual)</label>
+                            <input type="text" class="form-control" id="benefits" placeholder="e.g., $3,200,000" onchange="autoSave(); calculateROI()">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Project Duration (Years)</label>
+                            <input type="number" class="form-control" id="duration" placeholder="e.g., 1.5" step="0.1" onchange="autoSave(); calculateROI()">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Benefit Period (Years)</label>
+                            <input type="number" class="form-control" id="benefitPeriod" placeholder="e.g., 3" onchange="autoSave(); calculateROI()">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">📊 Calculated Metrics</div>
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-value" id="roiValue">--%</div>
+                            <div class="metric-label">Return on Investment</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="paybackValue">-- yrs</div>
+                            <div class="metric-label">Payback Period</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="npvValue">$--</div>
+                            <div class="metric-label">Net Present Value</div>
+                        </div>
+                    </div>
+                    <p class="form-hint">These metrics are automatically calculated based on your budget and benefits inputs.</p>
+                </div>
+
+                <div class="step-navigation">
+                    <button class="btn btn-secondary" onclick="goToStep(5)">← Back</button>
+                    <button class="btn btn-primary" onclick="goToStep(7)">Preview Charter →</button>
+                </div>
+            </div>
+
+            <!-- Step 7: Preview & Export -->
+            <div class="step-content" data-step="7">
+                <div class="step-header">
+                    <h2>Preview & Export</h2>
+                    <p>Review your charter and export to PDF.</p>
+                </div>
+
+                <div class="alert alert-info no-print">
+                    <span>💡</span>
+                    <span>Click "Export to PDF" to save your charter. The print dialog will open - select "Save as PDF" as the destination.</span>
+                </div>
+
+                <div class="no-print" style="margin-bottom: 1.5rem; display: flex; gap: 1rem;">
+                    <button class="btn btn-success" onclick="exportToPDF()">📄 Export to PDF</button>
+                    <button class="btn btn-secondary" onclick="saveCharter()">💾 Save Charter</button>
+                </div>
+
+                <!-- Preview Panel -->
+                <div class="preview-panel" id="previewPanel">
+                    <div class="preview-header">
+                        <div class="preview-logo">📋</div>
+                        <h1 class="preview-title" id="previewTitle">Project Charter</h1>
+                        <p class="preview-subtitle" id="previewSubtitle">Project Type</p>
+                        <div class="preview-meta">
+                            <span id="previewDate">Date: --</span>
+                            <span id="previewPriority">Priority: --</span>
+                        </div>
+                    </div>
+                    <div class="preview-body" id="previewBody">
+                        <!-- Generated preview content -->
+                    </div>
+                </div>
+
+                <div class="step-navigation no-print">
+                    <button class="btn btn-secondary" onclick="goToStep(6)">← Back to Edit</button>
+                    <button class="btn btn-primary" onclick="exportToPDF()">📄 Export to PDF</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        let charterData = {};
+        let saveTimeout;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check authentication
+            const user = JSON.parse(localStorage.getItem('charterpro_user'));
+            if (!user) {
+                // Save template data so it's available after login
+                const templateData = localStorage.getItem('charterpro_template');
+                if (templateData) {
+                    // Keep template data for after login
+                    sessionStorage.setItem('charterpro_redirect', 'charter.html');
+                }
+                alert('Please log in to create a charter.');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Check subscription
+            if (!user.subscription || user.subscription.status !== 'active') {
+                // Clear any template data since they can't use it
+                localStorage.removeItem('charterpro_template');
+                alert('Please subscribe to a plan to create charters.');
+                window.location.href = 'pricing.html';
+                return;
+            }
+
+            // Check for template data
+            const templateData = localStorage.getItem('charterpro_template');
+            if (templateData) {
+                loadTemplate(JSON.parse(templateData));
+                localStorage.removeItem('charterpro_template');
+            } else {
+                // Load saved draft
+                const savedDraft = localStorage.getItem('charterpro_draft');
+                if (savedDraft) {
+                    loadDraft(JSON.parse(savedDraft));
+                }
+            }
+
+            // Set default dates
+            if (!document.getElementById('startDate').value) {
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('startDate').value = today;
+            }
+
+            updatePreview();
+        });
+
+        // Load template from examples
+        function loadTemplate(template) {
+            document.getElementById('projectName').value = template.title || '';
+            document.getElementById('projectType').value = template.type || '';
+            document.getElementById('overview').value = template.overview || '';
+            document.getElementById('sponsor').value = template.sponsor || '';
+            document.getElementById('projectManager').value = template.manager || '';
+            document.getElementById('inScope').value = template.scope || '';
+            document.getElementById('budget').value = template.budget || '';
+
+            // Load objectives
+            if (template.objectives && template.objectives.length > 0) {
+                const list = document.getElementById('objectivesList');
+                list.innerHTML = '';
+                template.objectives.forEach(obj => {
+                    addObjectiveWithValue(obj);
+                });
+            }
+
+            // Load risks
+            if (template.risks && template.risks.length > 0) {
+                const tbody = document.querySelector('#riskTable tbody');
+                tbody.innerHTML = '';
+                template.risks.forEach(risk => {
+                    addRiskWithValue(risk.risk, risk.impact, risk.mitigation);
+                });
+            }
+
+            // Load milestones
+            if (template.milestones && template.milestones.length > 0) {
+                const tbody = document.querySelector('#milestoneTable tbody');
+                tbody.innerHTML = '';
+                template.milestones.forEach(m => {
+                    addMilestoneWithValue(m.phase, m.duration, m.date);
+                });
+            }
+
+            calculateROI();
+            autoSave();
+        }
+
+        // Load draft
+        function loadDraft(draft) {
+            Object.keys(draft).forEach(key => {
+                const el = document.getElementById(key);
+                if (el) el.value = draft[key];
+            });
+
+            // Load dynamic lists
+            if (draft.objectives) {
+                const list = document.getElementById('objectivesList');
+                list.innerHTML = '';
+                draft.objectives.forEach(obj => addObjectiveWithValue(obj));
+            }
+
+            if (draft.deliverables) {
+                const list = document.getElementById('deliverablesList');
+                list.innerHTML = '';
+                draft.deliverables.forEach(d => addDeliverableWithValue(d));
+            }
+
+            if (draft.stakeholders) {
+                const list = document.getElementById('stakeholdersList');
+                list.innerHTML = '';
+                draft.stakeholders.forEach(s => addStakeholderWithValue(s.name, s.role));
+            }
+
+            if (draft.risks) {
+                const tbody = document.querySelector('#riskTable tbody');
+                tbody.innerHTML = '';
+                draft.risks.forEach(r => addRiskWithValue(r.risk, r.impact, r.mitigation));
+            }
+
+            if (draft.milestones) {
+                const tbody = document.querySelector('#milestoneTable tbody');
+                tbody.innerHTML = '';
+                draft.milestones.forEach(m => addMilestoneWithValue(m.phase, m.duration, m.date));
+            }
+
+            calculateROI();
+        }
+
+        // Auto-save
+        function autoSave() {
+            clearTimeout(saveTimeout);
+            
+            const status = document.getElementById('saveStatus');
+            status.innerHTML = '<span>●</span> Saving...';
+            status.className = 'save-status saving';
+
+            saveTimeout = setTimeout(() => {
+                const data = collectFormData();
+                localStorage.setItem('charterpro_draft', JSON.stringify(data));
+                
+                status.innerHTML = '<span>✓</span> Saved';
+                status.className = 'save-status saved';
+                
+                updatePreview();
+            }, 500);
+        }
+
+        // Collect form data
+        function collectFormData() {
+            return {
+                projectName: document.getElementById('projectName').value,
+                projectType: document.getElementById('projectType').value,
+                priority: document.getElementById('priority').value,
+                startDate: document.getElementById('startDate').value,
+                endDate: document.getElementById('endDate').value,
+                overview: document.getElementById('overview').value,
+                objectives: collectListItems('objectivesList'),
+                inScope: document.getElementById('inScope').value,
+                outOfScope: document.getElementById('outOfScope').value,
+                deliverables: collectListItems('deliverablesList'),
+                sponsor: document.getElementById('sponsor').value,
+                projectManager: document.getElementById('projectManager').value,
+                stakeholders: collectStakeholders(),
+                risks: collectRisks(),
+                constraints: document.getElementById('constraints').value,
+                assumptions: document.getElementById('assumptions').value,
+                milestones: collectMilestones(),
+                budget: document.getElementById('budget').value,
+                benefits: document.getElementById('benefits').value,
+                duration: document.getElementById('duration').value,
+                benefitPeriod: document.getElementById('benefitPeriod').value
+            };
+        }
+
+        function collectListItems(listId) {
+            const items = [];
+            document.querySelectorAll(`#${listId} .dynamic-item input`).forEach(input => {
+                if (input.value.trim()) items.push(input.value.trim());
+            });
+            return items;
+        }
+
+        function collectStakeholders() {
+            const items = [];
+            document.querySelectorAll('#stakeholdersList .dynamic-item').forEach(item => {
+                const inputs = item.querySelectorAll('input');
+                if (inputs[0].value.trim()) {
+                    items.push({ name: inputs[0].value.trim(), role: inputs[1]?.value.trim() || '' });
+                }
+            });
+            return items;
+        }
+
+        function collectRisks() {
+            const items = [];
+            document.querySelectorAll('#riskTable tbody tr').forEach(row => {
+                const inputs = row.querySelectorAll('input');
+                const select = row.querySelector('select');
+                if (inputs[0].value.trim()) {
+                    items.push({
+                        risk: inputs[0].value.trim(),
+                        impact: select.value,
+                        mitigation: inputs[1].value.trim()
+                    });
+                }
+            });
+            return items;
+        }
+
+        function collectMilestones() {
+            const items = [];
+            document.querySelectorAll('#milestoneTable tbody tr').forEach(row => {
+                const inputs = row.querySelectorAll('input');
+                if (inputs[0].value.trim()) {
+                    items.push({
+                        phase: inputs[0].value.trim(),
+                        duration: inputs[1].value.trim(),
+                        date: inputs[2].value.trim()
+                    });
+                }
+            });
+            return items;
+        }
+
+        // Navigation
+        function goToStep(step) {
+            document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.step-item').forEach(el => el.classList.remove('active'));
+
+            document.querySelector(`.step-content[data-step="${step}"]`).classList.add('active');
+            document.querySelector(`.step-item[data-step="${step}"]`).classList.add('active');
+
+            // Mark previous steps as completed
+            document.querySelectorAll('.step-item').forEach(el => {
+                if (parseInt(el.dataset.step) < step) {
+                    el.classList.add('completed');
+                }
+            });
+
+            currentStep = step;
+
+            if (step === 7) {
+                updatePreview();
+            }
+
+            window.scrollTo(0, 0);
+        }
+
+        // Dynamic list functions
+        function addObjective() {
+            addObjectiveWithValue('');
+        }
+
+        function addObjectiveWithValue(value) {
+            const list = document.getElementById('objectivesList');
+            const div = document.createElement('div');
+            div.className = 'dynamic-item';
+            div.innerHTML = `
+                <input type="text" class="form-control" placeholder="e.g., Achieve 99.9% uptime SLA" value="${escapeHtml(value)}" onchange="autoSave()">
+                <button class="btn-remove" onclick="removeItem(this)">×</button>
+            `;
+            list.appendChild(div);
+        }
+
+        function addDeliverable() {
+            addDeliverableWithValue('');
+        }
+
+        function addDeliverableWithValue(value) {
+            const list = document.getElementById('deliverablesList');
+            const div = document.createElement('div');
+            div.className = 'dynamic-item';
+            div.innerHTML = `
+                <input type="text" class="form-control" placeholder="e.g., User documentation" value="${escapeHtml(value)}" onchange="autoSave()">
+                <button class="btn-remove" onclick="removeItem(this)">×</button>
+            `;
+            list.appendChild(div);
+        }
+
+        function addStakeholder() {
+            addStakeholderWithValue('', '');
+        }
+
+        function addStakeholderWithValue(name, role) {
+            const list = document.getElementById('stakeholdersList');
+            const div = document.createElement('div');
+            div.className = 'dynamic-item';
+            div.style.cssText = 'flex-wrap: wrap; gap: 0.5rem;';
+            div.innerHTML = `
+                <input type="text" class="form-control" style="flex: 2; min-width: 150px;" placeholder="Name & Title" value="${escapeHtml(name)}" onchange="autoSave()">
+                <input type="text" class="form-control" style="flex: 1; min-width: 100px;" placeholder="Role" value="${escapeHtml(role)}" onchange="autoSave()">
+                <button class="btn-remove" onclick="removeItem(this)">×</button>
+            `;
+            list.appendChild(div);
+        }
+
+        function removeItem(btn) {
+            btn.parentElement.remove();
+            autoSave();
+        }
+
+        // Risk functions
+        function addRisk() {
+            addRiskWithValue('', 'Medium', '');
+        }
+
+        function addRiskWithValue(risk, impact, mitigation) {
+            const tbody = document.querySelector('#riskTable tbody');
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><input type="text" placeholder="Describe risk..." value="${escapeHtml(risk)}" onchange="autoSave()"></td>
+                <td>
+                    <select onchange="autoSave()">
+                        <option value="High" ${impact === 'High' ? 'selected' : ''}>High</option>
+                        <option value="Medium" ${impact === 'Medium' ? 'selected' : ''}>Medium</option>
+                        <option value="Low" ${impact === 'Low' ? 'selected' : ''}>Low</option>
+                    </select>
+                </td>
+                <td><input type="text" placeholder="Mitigation strategy..." value="${escapeHtml(mitigation)}" onchange="autoSave()"></td>
+                <td><button class="btn-remove" onclick="removeRisk(this)">×</button></td>
+            `;
+            tbody.appendChild(tr);
+        }
+
+        function removeRisk(btn) {
+            btn.closest('tr').remove();
+            autoSave();
+        }
+
+        // Milestone functions
+        function addMilestone() {
+            addMilestoneWithValue('', '', '');
+        }
+
+        function addMilestoneWithValue(phase, duration, date) {
+            const tbody = document.querySelector('#milestoneTable tbody');
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><input type="text" placeholder="Phase name..." value="${escapeHtml(phase)}" onchange="autoSave()"></td>
+                <td><input type="text" placeholder="Duration..." value="${escapeHtml(duration)}" onchange="autoSave()"></td>
+                <td><input type="text" placeholder="Target date..." value="${escapeHtml(date)}" onchange="autoSave()"></td>
+                <td><button class="btn-remove" onclick="removeMilestone(this)">×</button></td>
+            `;
+            tbody.appendChild(tr);
+        }
+
+        function removeMilestone(btn) {
+            btn.closest('tr').remove();
+            autoSave();
+        }
+
+        // Calculate ROI
+        function calculateROI() {
+            const budgetStr = document.getElementById('budget').value.replace(/[^0-9.]/g, '');
+            const benefitsStr = document.getElementById('benefits').value.replace(/[^0-9.]/g, '');
+            const duration = parseFloat(document.getElementById('duration').value) || 1;
+            const benefitPeriod = parseFloat(document.getElementById('benefitPeriod').value) || 3;
+
+            const budget = parseFloat(budgetStr) || 0;
+            const annualBenefits = parseFloat(benefitsStr) || 0;
+
+            if (budget > 0 && annualBenefits > 0) {
+                const totalBenefits = annualBenefits * benefitPeriod;
+                const roi = ((totalBenefits - budget) / budget) * 100;
+                const payback = budget / annualBenefits;
+                
+                // Simple NPV calculation (10% discount rate)
+                let npv = -budget;
+                for (let i = 1; i <= benefitPeriod; i++) {
+                    npv += annualBenefits / Math.pow(1.1, i);
+                }
+
+                document.getElementById('roiValue').textContent = roi.toFixed(1) + '%';
+                document.getElementById('paybackValue').textContent = payback.toFixed(1) + ' yrs';
+                document.getElementById('npvValue').textContent = '$' + formatNumber(Math.round(npv));
+            } else {
+                document.getElementById('roiValue').textContent = '--%';
+                document.getElementById('paybackValue').textContent = '-- yrs';
+                document.getElementById('npvValue').textContent = '$--';
+            }
+        }
+
+        // Update preview
+        function updatePreview() {
+            const data = collectFormData();
+            
+            document.getElementById('previewTitle').textContent = data.projectName || 'Project Charter';
+            document.getElementById('previewSubtitle').textContent = data.projectType || 'Project Type';
+            document.getElementById('previewDate').textContent = 'Date: ' + (data.startDate ? new Date(data.startDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : '--');
+            document.getElementById('previewPriority').textContent = 'Priority: ' + (data.priority || '--');
+
+            let html = '';
+
+            // Overview
+            if (data.overview) {
+                html += `
+                    <div class="preview-section">
+                        <h3 class="preview-section-title">Project Overview</h3>
+                        <p>${escapeHtml(data.overview)}</p>
+                    </div>
+                `;
+            }
+
+            // Financial metrics
+            const roi = document.getElementById('roiValue').textContent;
+            const payback = document.getElementById('paybackValue').textContent;
+            const npv = document.getElementById('npvValue').textContent;
+            
+            if (data.budget || roi !== '--%') {
+                html += `
+                    <div class="preview-section">
+                        <h3 class="preview-section-title">Financial Summary</h3>
+                        <div class="preview-metrics">
+                            <div class="preview-metric">
+                                <div class="preview-metric-value">${roi}</div>
+                                <div class="preview-metric-label">ROI</div>
+                            </div>
+                            <div class="preview-metric">
+                                <div class="preview-metric-value">${data.budget || '--'}</div>
+                                <div class="preview-metric-label">Budget</div>
+                            </div>
+                            <div class="preview-metric">
+                                <div class="preview-metric-value">${payback}</div>
+                                <div class="preview-metric-label">Payback</div>
+                            </div>
+                        </div>
+                        <table class="preview-table">
+                            <tr><th>Metric</th><th>Value</th></tr>
+                            <tr><td>Net Present Value</td><td>${npv}</td></tr>
+                            <tr><td>Executive Sponsor</td><td>${escapeHtml(data.sponsor) || '--'}</td></tr>
+                            <tr><td>Project Manager</td><td>${escapeHtml(data.projectManager) || '--'}</td></tr>
+                        </table>
+                    </div>
+                `;
+            }
+
+            // Objectives
+            if (data.objectives && data.objectives.length > 0) {
+                html += `
+                    <div class="preview-section">
+                        <h3 class="preview-section-title">Objectives</h3>
+                        <ul class="preview-list">
+                            ${data.objectives.map(o => `<li>${escapeHtml(o)}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+
+            // Scope
+            if (data.inScope || data.outOfScope) {
+                html += `
+                    <div class="preview-section">
+                        <h3 class="preview-section-title">Scope</h3>
+                        ${data.inScope ? `<p><strong>In Scope:</strong> ${escapeHtml(data.inScope)}</p>` : ''}
+                        ${data.outOfScope ? `<p><strong>Out of Scope:</strong> ${escapeHtml(data.outOfScope)}</p>` : ''}
+                    </div>
+                `;
+            }
+
+            // Deliverables
+            if (data.deliverables && data.deliverables.length > 0) {
+                html += `
+                    <div class="preview-section">
+                        <h3 class="preview-section-title">Key Deliverables</h3>
+                        <ul class="preview-list">
+                            ${data.deliverables.map(d => `<li>${escapeHtml(d)}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+
+            // Risks
+            if (data.risks && data.risks.length > 0 && data.risks[0].risk) {
+                html += `
+                    <div class="preview-section">
+                        <h3 class="preview-section-title">Risk Assessment</h3>
+                        <table class="preview-table">
+                            <tr><th>Risk</th><th>Impact</th><th>Mitigation</th></tr>
+                            ${data.risks.filter(r => r.risk).map(r => `
+                                <tr>
+                                    <td>${escapeHtml(r.risk)}</td>
+                                    <td>${r.impact}</td>
+                                    <td>${escapeHtml(r.mitigation)}</td>
+                                </tr>
+                            `).join('')}
+                        </table>
+                    </div>
+                `;
+            }
+
+            // Timeline
+            if (data.milestones && data.milestones.length > 0 && data.milestones[0].phase) {
+                html += `
+                    <div class="preview-section">
+                        <h3 class="preview-section-title">Project Timeline</h3>
+                        <table class="preview-table">
+                            <tr><th>Phase</th><th>Duration</th><th>Target</th></tr>
+                            ${data.milestones.filter(m => m.phase).map(m => `
+                                <tr>
+                                    <td>${escapeHtml(m.phase)}</td>
+                                    <td>${escapeHtml(m.duration)}</td>
+                                    <td>${escapeHtml(m.date)}</td>
+                                </tr>
+                            `).join('')}
+                        </table>
+                    </div>
+                `;
+            }
+
+            // Constraints & Assumptions
+            if (data.constraints || data.assumptions) {
+                html += `
+                    <div class="preview-section">
+                        <h3 class="preview-section-title">Constraints & Assumptions</h3>
+                        ${data.constraints ? `<p><strong>Constraints:</strong> ${escapeHtml(data.constraints)}</p>` : ''}
+                        ${data.assumptions ? `<p><strong>Assumptions:</strong> ${escapeHtml(data.assumptions)}</p>` : ''}
+                    </div>
+                `;
+            }
+
+            document.getElementById('previewBody').innerHTML = html || '<p style="color: #666; text-align: center; padding: 2rem;">Start filling out the charter to see the preview.</p>';
+        }
+
+        // Export to PDF
+        function exportToPDF() {
+            updatePreview();
+            document.body.classList.add('printing');
+            window.print();
+            window.onafterprint = () => {
+                document.body.classList.remove('printing');
+            };
+        }
+
+        // Save charter
+        function saveCharter() {
+            const data = collectFormData();
+            const user = JSON.parse(localStorage.getItem('charterpro_user'));
+            
+            const charter = {
+                id: 'charter_' + Date.now(),
+                userId: user ? user.id : 'guest',
+                ...data,
+                roi: document.getElementById('roiValue').textContent,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+
+            const charters = JSON.parse(localStorage.getItem('charterpro_charters') || '[]');
+            charters.push(charter);
+            localStorage.setItem('charterpro_charters', JSON.stringify(charters));
+
+            // Clear draft
+            localStorage.removeItem('charterpro_draft');
+
+            alert('Charter saved successfully!');
+            
+            if (user) {
+                window.location.href = 'dashboard.html';
+            }
+        }
+
+        // Utility functions
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+    </script>
+</body>
+</html>

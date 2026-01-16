@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Example Charters - CharterPro</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1a365d;
+            --primary-light: #2c5282;
+            --primary-dark: #0f2744;
+            --accent: #c6a052;
+            --accent-light: #d4af61;
+            --accent-glow: rgba(198, 160, 82, 0.3);
+            --success: #38a169;
+            --success-bg: rgba(56, 161, 105, 0.1);
+            --warning: #d69e2e;
+            --error: #e53e3e;
+            --info: #4299e1;
+            --bg: #0a0f1a;
+            --bg-card: #111827;
+            --bg-card-hover: #1a2332;
+            --text: #f7fafc;
+            --text-muted: #a0aec0;
+            --text-dim: #718096;
+            --border: #2d3748;
+            --gradient-gold: linear-gradient(135deg, #c6a052 0%, #d4af61 50%, #c6a052 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1rem 2rem;
+            background: rgba(10, 15, 26, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+
+        .nav-logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-gold);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .nav-logo-text {
+            font-family: 'Fraunces', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .platform-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 8px;
+            color: #a5b4fc;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .platform-link:hover {
+            background: rgba(99, 102, 241, 0.25);
+            color: #c7d2fe;
+        }
+
+        .nav-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--accent);
+        }
+
+        .nav-cta {
+            background: var(--gradient-gold);
+            color: var(--primary-dark);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .nav-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px var(--accent-glow);
+        }
+
+        /* Page Header */
+        .page-header {
+            padding: 8rem 2rem 4rem;
+            text-align: center;
+            background: linear-gradient(180deg, var(--bg) 0%, var(--bg-card) 100%);
+        }
+
+        .page-header h1 {
+            font-family: 'Fraunces', serif;
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .page-header h1 span {
+            background: var(--gradient-gold);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-header p {
+            color: var(--text-muted);
+            font-size: 1.25rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Filter Bar */
+        .filter-bar {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 3rem;
+        }
+
+        .filter-btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            color: var(--text-muted);
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover {
+            background: var(--bg-card-hover);
+            color: var(--text);
+        }
+
+        .filter-btn.active {
+            background: var(--accent);
+            color: var(--primary-dark);
+            border-color: var(--accent);
+        }
+
+        /* Examples Grid */
+        .examples-section {
+            padding: 0 2rem 6rem;
+        }
+
+        .examples-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        /* Example Card */
+        .example-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .example-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .example-preview {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            padding: 2rem;
+            position: relative;
+            min-height: 200px;
+        }
+
+        .example-preview-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--accent);
+            color: var(--primary-dark);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .example-preview-content {
+            color: white;
+        }
+
+        .example-preview-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .example-preview h3 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .example-preview p {
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+        .example-preview-stats {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .example-stat {
+            text-align: center;
+        }
+
+        .example-stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-light);
+        }
+
+        .example-stat-label {
+            font-size: 0.75rem;
+            opacity: 0.7;
+        }
+
+        .example-body {
+            padding: 1.5rem;
+        }
+
+        .example-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .example-desc {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .example-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .example-tag {
+            background: var(--bg);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .example-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            flex: 1;
+        }
+
+        .btn-primary {
+            background: var(--gradient-gold);
+            color: var(--primary-dark);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px var(--accent-glow);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--text-dim);
+        }
+
+        /* Preview Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-family: 'Fraunces', serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text);
+            font-size: 1.25rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: var(--error);
+            border-color: var(--error);
+        }
+
+        .modal-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0;
+        }
+
+        /* Charter Preview Styles */
+        .charter-preview {
+            background: white;
+            color: #1a1a2e;
+            padding: 3rem;
+        }
+
+        .charter-header {
+            text-align: center;
+            padding-bottom: 2rem;
+            border-bottom: 3px solid var(--primary);
+            margin-bottom: 2rem;
+        }
+
+        .charter-logo {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .charter-title {
+            font-family: 'Fraunces', serif;
+            font-size: 1.75rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .charter-subtitle {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .charter-meta {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .charter-section {
+            margin-bottom: 2rem;
+        }
+
+        .charter-section-title {
+            font-family: 'Fraunces', serif;
+            font-size: 1.1rem;
+            color: var(--primary);
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .charter-section p {
+            margin-bottom: 0.75rem;
+            line-height: 1.7;
+        }
+
+        .charter-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+
+        .charter-table th,
+        .charter-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid #e0e0e0;
+        }
+
+        .charter-table th {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+
+        .charter-table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .charter-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .charter-metric {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 1.25rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .charter-metric-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--accent-light);
+        }
+
+        .charter-metric-label {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+
+        .modal-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: var(--bg-card);
+            padding: 6rem 2rem;
+            text-align: center;
+        }
+
+        .cta-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .cta-content h2 {
+            font-family: 'Fraunces', serif;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .cta-content p {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        /* Footer */
+        .footer {
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-dim);
+            border-top: 1px solid var(--border);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .examples-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .charter-metrics {
+                grid-template-columns: 1fr;
+            }
+
+            .charter-preview {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-content">
+            <a href="index.html" class="nav-logo">
+                <div class="nav-logo-icon">📋</div>
+                <span class="nav-logo-text">CharterPro</span>
+            </a>
+            <div class="nav-links">
+                <a href="/" class="platform-link">← Platform Home</a>
+                <a href="index.html#features" class="nav-link">Features</a>
+                <a href="examples.html" class="nav-link active">Examples</a>
+                <a href="index.html#pricing" class="nav-link">Pricing</a>
+                <a href="login.html" class="nav-link">Login</a>
+                <a href="pricing.html" class="nav-cta">Get Started</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <header class="page-header">
+        <h1>Example <span>Project Charters</span></h1>
+        <p>Browse real-world examples across different industries and project types to inspire your next charter.</p>
+    </header>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+        <button class="filter-btn active" onclick="filterExamples('all')">All Examples</button>
+        <button class="filter-btn" onclick="filterExamples('software')">Software</button>
+        <button class="filter-btn" onclick="filterExamples('construction')">Construction</button>
+        <button class="filter-btn" onclick="filterExamples('business')">Business</button>
+        <button class="filter-btn" onclick="filterExamples('creative')">Creative</button>
+    </div>
+
+    <!-- Examples Grid -->
+    <section class="examples-section">
+        <div class="examples-grid" id="examplesGrid">
+            <!-- Example 1: Software -->
+            <div class="example-card" data-category="software">
+                <div class="example-preview">
+                    <span class="example-preview-badge">Software</span>
+                    <div class="example-preview-content">
+                        <div class="example-preview-icon">💻</div>
+                        <h3>Customer Portal 2.0</h3>
+                        <p>Enterprise web application modernization</p>
+                        <div class="example-preview-stats">
+                            <div class="example-stat">
+                                <div class="example-stat-value">127%</div>
+                                <div class="example-stat-label">ROI</div>
+                            </div>
+                            <div class="example-stat">
+                                <div class="example-stat-value">$2.4M</div>
+                                <div class="example-stat-label">Budget</div>
+                            </div>
+                            <div class="example-stat">
+                                <div class="example-stat-value">18mo</div>
+                                <div class="example-stat-label">Duration</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="example-body">
+                    <h4 class="example-title">Customer Portal Modernization</h4>
+                    <p class="example-desc">Complete overhaul of legacy customer portal with React frontend, microservices backend, and enhanced security.</p>
+                    <div class="example-tags">
+                        <span class="example-tag">React</span>
+                        <span class="example-tag">Microservices</span>
+                        <span class="example-tag">AWS</span>
+                    </div>
+                    <div class="example-actions">
+                        <button class="btn btn-secondary" onclick="previewCharter('software1')">Preview</button>
+                        <button class="btn btn-primary" onclick="useTemplate('software1')">Use Template</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Example 2: Construction -->
+            <div class="example-card" data-category="construction">
+                <div class="example-preview" style="background: linear-gradient(135deg, #2d5016 0%, #4a7c23 100%);">
+                    <span class="example-preview-badge">Construction</span>
+                    <div class="example-preview-content">
+                        <div class="example-preview-icon">🏗️</div>
+                        <h3>Office Complex Phase 2</h3>
+                        <p>Commercial real estate development</p>
+                        <div class="example-preview-stats">
+                            <div class="example-stat">
+                                <div class="example-stat-value">89%</div>
+                                <div class="example-stat-label">ROI</div>
+                            </div>
+                            <div class="example-stat">
+                                <div class="example-stat-value">$18M</div>
+                                <div class="example-stat-label">Budget</div>
+                            </div>
+                            <div class="example-stat">
+                                <div class="example-stat-value">24mo</div>
+                                <div class="example-stat-label">Duration</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="example-body">
+                    <h4 class="example-title">Corporate Office Expansion</h4>
+                    <p class="example-desc">New 150,000 sq ft office building with LEED certification, underground parking, and modern amenities.</p>
+                    <div class="example-tags">
+                        <span class="example-tag">Commercial</span>
+                        <span class="example-tag">LEED</span>
+                        <span class="example-tag">Mixed-Use</span>
+                    </div>
+                    <div class="example-actions">
+                        <button class="btn btn-secondary" onclick="previewCharter('construction1')">Preview</button>
+                        <button class="btn btn-primary" onclick="useTemplate('construction1')">Use Template</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Example 3: Business -->
+            <div class="example-card" data-category="business">
+                <div class="example-preview" style="background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);">
+                    <span class="example-preview-badge">Business</span>
+                    <div class="example-preview-content">
+                        <div class="example-preview-icon">📊</div>
+                        <h3>Digital Transformation</h3>
+                        <p>Enterprise-wide process optimization</p>
+                        <div class="example-preview-stats">
+                            <div class="example-stat">
+                                <div class="example-stat-value">215%</div>
+                                <div class="example-stat-label">ROI</div>
+                            </div>
+                            <div class="example-stat">
+                                <div class="example-stat-value">$5.2M</div>
+                                <div class="example-stat-label">Budget</div>
+                            </div>
+                            <div class="example-stat">
+                                <div class="example-stat-value">36mo</div>
+                                <div class="example-stat-label">Duration</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="example-body">
+                    <h4 class="example-title">Enterprise Digital Transformation</h4>
+                    <p class="example-desc">Comprehensive business process automation including ERP implementation, workflow digitization, and AI integration.</p>
+                    <div class="example-tags">
+                        <span class="example-tag">ERP</span>
+                        <span class="example-tag">Automation</span>
+                        <span class="example-tag">AI/ML</span>
+                    </div>
+                    <div class="example-actions">
+                        <button class="btn btn-secondary" onclick="previewCharter('business1')">Preview</button>
+                        <button class="btn btn-primary" onclick="useTemplate('business1')">Use Template</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Example 4: Creative -->
+            <div class="example-card" data-category="creative">
+                <div class="example-preview" style="background: linear-gradient(135deg, #dc2626 0%, #f97316 100%);">
+                    <span class="example-preview-badge">Creative</span>
+                    <div class="example-preview-content">
+                        <div class="example-preview-icon">🎨</div>
+                        <h3>Brand Refresh 2025</h3>
+                        <p>Complete corporate identity overhaul</p>
+                        <div class="example-preview-stats">
+                            <div class="example-stat">
+                                <div class="example-stat-value">156%</div>
+                                <div class="example-stat-label">ROI</div>
+                            </div>
+                            <div class="example-stat">
+                                <div class="example-stat-value">$450K</div>
+                                <div class="example-stat-label">Budget</div>
+                            </div>
+                            <div class="example-stat">
+                                <div class="example-stat-value">6mo</div>
+                                <div class="example-stat-label">Duration</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="example-body">
+                    <h4 class="example-title">Corporate Brand Refresh</h4>
+                    <p class="example-desc">New visual identity, brand guidelines, website redesign, and marketing collateral across all channels.</p>
+                    <div class="example-tags">
+                        <span class="example-tag">Branding</span>
+                        <span class="example-tag">Design</span>
+                        <span class="example-tag">Marketing</span>
+                    </div>
+                    <div class="example-actions">
+                        <button class="btn btn-secondary" onclick="previewCharter('creative1')">Preview</button>
+                        <button class="btn btn-primary" onclick="useTemplate('creative1')">Use Template</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Example 5: Software -->
+            <div class="example-card" data-category="software">
+                <div class="example-preview" style="background: linear-gradient(135deg, #0891b2 0%, #22d3ee 100%);">
+                    <span class="example-preview-badge">Software</span>
+                    <div class="example-preview-content">
+                        <div class="example-preview-icon">📱</div>
+                        <h3>Mobile App Launch</h3>
+                        <p>iOS and Android native applications</p>
+                        <div class="example-preview-stats">
+                            <div class="example-stat">
+                                <div class="example-stat-value">340%</div>
+                                <div class="example-stat-label">ROI</div>
+                            </div>
+                            <div class="example-stat">
+                                <div class="example-stat-value">$800K</div>
+                                <div class="example-stat-label">Budget</div>
+                            </div>
+                            <div class="example-stat">
+                                <div class="example-stat-value">12mo</div>
+                                <div class="example-stat-label">Duration</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="example-body">
+                    <h4 class="example-title">Consumer Mobile App</h4>
+                    <p class="example-desc">Native iOS and Android apps with offline capability, push notifications, and seamless backend integration.</p>
+                    <div class="example-tags">
+                        <span class="example-tag">iOS</span>
+                        <span class="example-tag">Android</span>
+                        <span class="example-tag">Mobile</span>
+                    </div>
+                    <div class="example-actions">
+                        <button class="btn btn-secondary" onclick="previewCharter('software2')">Preview</button>
+                        <button class="btn btn-primary" onclick="useTemplate('software2')">Use Template</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Example 6: Business -->
+            <div class="example-card" data-category="business">
+                <div class="example-preview" style="background: linear-gradient(135deg, #059669 0%, #10b981 100%);">
+                    <span class="example-preview-badge">Business</span>
+                    <div class="example-preview-content">
+                        <div class="example-preview-icon">🌍</div>
+                        <h3>Market Expansion</h3>
+                        <p>European market entry strategy</p>
+                        <div class="example-preview-stats">
+                            <div class="example-stat">
+                                <div class="example-stat-value">178%</div>
+                                <div class="example-stat-label">ROI</div>
+                            </div>
+                            <div class="example-stat">
+                                <div class="example-stat-value">$3.1M</div>
+                                <div class="example-stat-label">Budget</div>
+                            </div>
+                            <div class="example-stat">
+                                <div class="example-stat-value">18mo</div>
+                                <div class="example-stat-label">Duration</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="example-body">
+                    <h4 class="example-title">European Market Entry</h4>
+                    <p class="example-desc">Strategic expansion into UK, Germany, and France including localization, partnerships, and compliance setup.</p>
+                    <div class="example-tags">
+                        <span class="example-tag">Strategy</span>
+                        <span class="example-tag">International</span>
+                        <span class="example-tag">Growth</span>
+                    </div>
+                    <div class="example-actions">
+                        <button class="btn btn-secondary" onclick="previewCharter('business2')">Preview</button>
+                        <button class="btn btn-primary" onclick="useTemplate('business2')">Use Template</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="cta-content">
+            <h2>Ready to create your own charter?</h2>
+            <p>Start with a template or build from scratch. Either way, you'll have a professional charter in minutes.</p>
+            <a href="charter.html" class="btn btn-primary">Create Your Charter →</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2025 CharterPro. All rights reserved.</p>
+    </footer>
+
+    <!-- Preview Modal -->
+    <div class="modal-overlay" id="previewModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Project Charter Preview</h3>
+                <button class="modal-close" onclick="closePreview()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="charter-preview" id="charterContent">
+                    <!-- Charter content loaded here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closePreview()">Close</button>
+                <button class="btn btn-primary" id="modalUseTemplate" onclick="useCurrentTemplate()">Use This Template</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Example charter data
+        const charterData = {
+            software1: {
+                title: 'Customer Portal 2.0',
+                subtitle: 'Enterprise Web Application Modernization',
+                type: 'Software Development',
+                sponsor: 'Jennifer Martinez, CTO',
+                manager: 'David Chen',
+                date: 'January 2025',
+                budget: '$2,400,000',
+                duration: '18 months',
+                roi: '127.5%',
+                payback: '1.8 years',
+                npv: '$1,850,000',
+                overview: 'This project will modernize our legacy customer portal built in 2015, replacing outdated technologies with a modern React frontend and microservices backend. The new portal will improve customer satisfaction, reduce support tickets by 40%, and enable self-service capabilities that will generate $3.2M in annual cost savings.',
+                objectives: [
+                    'Migrate 100% of existing functionality to new platform',
+                    'Achieve 99.9% uptime SLA',
+                    'Reduce average page load time to under 2 seconds',
+                    'Implement SSO and MFA for enhanced security',
+                    'Enable mobile-responsive design for all features'
+                ],
+                scope: 'The project includes frontend development, backend API services, database migration, security implementation, testing, and deployment. Excludes third-party integrations beyond current scope and mobile native apps.',
+                risks: [
+                    { risk: 'Data migration complexity', impact: 'High', mitigation: 'Phased migration with rollback capability' },
+                    { risk: 'User adoption resistance', impact: 'Medium', mitigation: 'Change management and training program' },
+                    { risk: 'Integration dependencies', impact: 'High', mitigation: 'Early API contract definition' }
+                ],
+                milestones: [
+                    { phase: 'Discovery & Design', duration: '3 months', date: 'Apr 2025' },
+                    { phase: 'Backend Development', duration: '6 months', date: 'Oct 2025' },
+                    { phase: 'Frontend Development', duration: '5 months', date: 'Mar 2026' },
+                    { phase: 'Testing & QA', duration: '2 months', date: 'May 2026' },
+                    { phase: 'Deployment & Launch', duration: '2 months', date: 'Jul 2026' }
+                ]
+            },
+            construction1: {
+                title: 'Office Complex Phase 2',
+                subtitle: 'Corporate Headquarters Expansion',
+                type: 'Commercial Construction',
+                sponsor: 'Robert Williams, CEO',
+                manager: 'Sarah Thompson',
+                date: 'January 2025',
+                budget: '$18,000,000',
+                duration: '24 months',
+                roi: '89%',
+                payback: '4.2 years',
+                npv: '$8,200,000',
+                overview: 'Construction of a new 150,000 square foot office building to accommodate company growth and consolidate satellite offices. The LEED Gold certified building will feature modern amenities, underground parking for 400 vehicles, and flexible workspace design to support hybrid work models.',
+                objectives: [
+                    'Complete construction within 24-month timeline',
+                    'Achieve LEED Gold certification',
+                    'Accommodate 800+ employees',
+                    'Reduce per-employee facility costs by 25%',
+                    'Create collaborative workspace environment'
+                ],
+                scope: 'Full construction including site preparation, foundation, structure, MEP systems, interior buildout, parking structure, and landscaping. Excludes furniture procurement and IT infrastructure.',
+                risks: [
+                    { risk: 'Supply chain delays', impact: 'High', mitigation: 'Early material procurement and alternative suppliers' },
+                    { risk: 'Weather disruptions', impact: 'Medium', mitigation: 'Schedule buffer and contingency planning' },
+                    { risk: 'Permit delays', impact: 'Medium', mitigation: 'Pre-application meetings with city planners' }
+                ],
+                milestones: [
+                    { phase: 'Permitting & Site Prep', duration: '4 months', date: 'May 2025' },
+                    { phase: 'Foundation & Structure', duration: '8 months', date: 'Jan 2026' },
+                    { phase: 'MEP & Envelope', duration: '6 months', date: 'Jul 2026' },
+                    { phase: 'Interior Buildout', duration: '4 months', date: 'Nov 2026' },
+                    { phase: 'Commissioning', duration: '2 months', date: 'Jan 2027' }
+                ]
+            },
+            business1: {
+                title: 'Digital Transformation Initiative',
+                subtitle: 'Enterprise-Wide Process Automation',
+                type: 'Business Transformation',
+                sponsor: 'Michael Foster, COO',
+                manager: 'Amanda Liu',
+                date: 'January 2025',
+                budget: '$5,200,000',
+                duration: '36 months',
+                roi: '215%',
+                payback: '2.1 years',
+                npv: '$7,400,000',
+                overview: 'A comprehensive digital transformation program to modernize business processes across all departments. The initiative includes ERP implementation, workflow automation, AI-powered analytics, and employee digital upskilling. Expected to reduce operational costs by $4.8M annually and improve decision-making speed by 60%.',
+                objectives: [
+                    'Implement cloud-based ERP across all business units',
+                    'Automate 80% of repetitive manual processes',
+                    'Deploy AI analytics for real-time business insights',
+                    'Train 100% of employees on digital tools',
+                    'Achieve 50% reduction in process cycle times'
+                ],
+                scope: 'Includes ERP selection and implementation, process reengineering, automation development, AI/ML model deployment, change management, and training. Excludes hardware refresh and physical infrastructure changes.',
+                risks: [
+                    { risk: 'Change resistance', impact: 'High', mitigation: 'Executive sponsorship and change champions program' },
+                    { risk: 'Integration complexity', impact: 'High', mitigation: 'Phased rollout with integration testing' },
+                    { risk: 'Scope creep', impact: 'Medium', mitigation: 'Strict change control process' }
+                ],
+                milestones: [
+                    { phase: 'Assessment & Planning', duration: '4 months', date: 'May 2025' },
+                    { phase: 'ERP Implementation', duration: '12 months', date: 'May 2026' },
+                    { phase: 'Process Automation', duration: '10 months', date: 'Mar 2027' },
+                    { phase: 'AI/Analytics Deployment', duration: '6 months', date: 'Sep 2027' },
+                    { phase: 'Optimization & Handover', duration: '4 months', date: 'Jan 2028' }
+                ]
+            },
+            creative1: {
+                title: 'Brand Refresh 2025',
+                subtitle: 'Corporate Identity Transformation',
+                type: 'Creative / Marketing',
+                sponsor: 'Lisa Park, CMO',
+                manager: 'James Wilson',
+                date: 'January 2025',
+                budget: '$450,000',
+                duration: '6 months',
+                roi: '156%',
+                payback: '1.4 years',
+                npv: '$520,000',
+                overview: 'Complete refresh of corporate brand identity to better reflect our evolved market position and appeal to younger demographics. Project encompasses new visual identity, brand guidelines, website redesign, and comprehensive marketing collateral refresh across all channels.',
+                objectives: [
+                    'Develop new logo and visual identity system',
+                    'Create comprehensive brand guidelines',
+                    'Redesign corporate website with new branding',
+                    'Update all marketing collateral and templates',
+                    'Achieve 25% improvement in brand recognition'
+                ],
+                scope: 'Includes brand strategy, visual identity design, brand guidelines documentation, website redesign, marketing collateral templates, and brand launch campaign. Excludes ongoing content creation and advertising spend.',
+                risks: [
+                    { risk: 'Stakeholder alignment', impact: 'High', mitigation: 'Early stakeholder workshops and approval gates' },
+                    { risk: 'Brand recognition loss', impact: 'Medium', mitigation: 'Evolutionary design approach with testing' },
+                    { risk: 'Timeline pressure', impact: 'Medium', mitigation: 'Prioritized deliverables and phased launch' }
+                ],
+                milestones: [
+                    { phase: 'Discovery & Strategy', duration: '1 month', date: 'Feb 2025' },
+                    { phase: 'Identity Design', duration: '2 months', date: 'Apr 2025' },
+                    { phase: 'Guidelines & Assets', duration: '1 month', date: 'May 2025' },
+                    { phase: 'Website Redesign', duration: '1.5 months', date: 'Jun 2025' },
+                    { phase: 'Launch & Rollout', duration: '0.5 months', date: 'Jul 2025' }
+                ]
+            },
+            software2: {
+                title: 'Consumer Mobile App',
+                subtitle: 'Native iOS and Android Development',
+                type: 'Mobile Development',
+                sponsor: 'Tom Richards, VP Product',
+                manager: 'Emily Zhang',
+                date: 'January 2025',
+                budget: '$800,000',
+                duration: '12 months',
+                roi: '340%',
+                payback: '0.9 years',
+                npv: '$2,100,000',
+                overview: 'Development of native mobile applications for iOS and Android platforms to extend our digital presence and capture the growing mobile user segment. The apps will feature offline capability, push notifications, biometric authentication, and seamless synchronization with our web platform.',
+                objectives: [
+                    'Launch on iOS App Store and Google Play Store',
+                    'Achieve 4.5+ star rating within first 6 months',
+                    'Reach 100,000 downloads in first year',
+                    'Enable 80% of core platform features on mobile',
+                    'Achieve 60% monthly active user retention'
+                ],
+                scope: 'Native iOS and Android app development, backend API enhancements, push notification infrastructure, analytics integration, and app store optimization. Excludes tablet-specific optimizations and wearable integrations.',
+                risks: [
+                    { risk: 'App store rejection', impact: 'High', mitigation: 'Early guideline review and compliance testing' },
+                    { risk: 'Performance issues', impact: 'Medium', mitigation: 'Continuous performance monitoring and optimization' },
+                    { risk: 'Platform fragmentation', impact: 'Medium', mitigation: 'Target latest OS versions with graceful degradation' }
+                ],
+                milestones: [
+                    { phase: 'Design & Architecture', duration: '2 months', date: 'Mar 2025' },
+                    { phase: 'iOS Development', duration: '4 months', date: 'Jul 2025' },
+                    { phase: 'Android Development', duration: '4 months', date: 'Nov 2025' },
+                    { phase: 'Testing & QA', duration: '1.5 months', date: 'Dec 2025' },
+                    { phase: 'Launch & Marketing', duration: '0.5 months', date: 'Jan 2026' }
+                ]
+            },
+            business2: {
+                title: 'European Market Entry',
+                subtitle: 'Strategic International Expansion',
+                type: 'Business Development',
+                sponsor: 'Karen Mitchell, CEO',
+                manager: 'Marcus Schmidt',
+                date: 'January 2025',
+                budget: '$3,100,000',
+                duration: '18 months',
+                roi: '178%',
+                payback: '2.3 years',
+                npv: '$3,800,000',
+                overview: 'Strategic expansion into European markets starting with UK, Germany, and France. The initiative includes market research, regulatory compliance, localization, partnership development, and establishing local operations. Target: €15M revenue within 3 years of launch.',
+                objectives: [
+                    'Establish legal entities in UK, Germany, and France',
+                    'Achieve full GDPR and local regulatory compliance',
+                    'Localize product for each target market',
+                    'Build partner network with 20+ channel partners',
+                    'Generate €5M revenue in first full year'
+                ],
+                scope: 'Market entry strategy, legal entity setup, compliance framework, product localization, partnership program, and local team hiring. Excludes manufacturing facilities and physical retail presence.',
+                risks: [
+                    { risk: 'Regulatory complexity', impact: 'High', mitigation: 'Engage local legal counsel and compliance experts' },
+                    { risk: 'Cultural misalignment', impact: 'Medium', mitigation: 'Hire local leadership and cultural consultants' },
+                    { risk: 'Currency fluctuation', impact: 'Medium', mitigation: 'Hedging strategy and EUR pricing model' }
+                ],
+                milestones: [
+                    { phase: 'Market Research', duration: '3 months', date: 'Apr 2025' },
+                    { phase: 'Legal & Compliance', duration: '4 months', date: 'Aug 2025' },
+                    { phase: 'Localization', duration: '4 months', date: 'Dec 2025' },
+                    { phase: 'Partnership Development', duration: '4 months', date: 'Apr 2026' },
+                    { phase: 'Market Launch', duration: '3 months', date: 'Jul 2026' }
+                ]
+            }
+        };
+
+        // Preview charter
+        function previewCharter(charterId) {
+            const data = charterData[charterId];
+            if (!data) {
+                alert('Charter data not found');
+                return;
+            }
+
+            document.getElementById('modalTitle').textContent = data.title + ' - Charter Preview';
+            
+            const content = document.getElementById('charterContent');
+            content.innerHTML = `
+                <div class="charter-header">
+                    <div class="charter-logo">📋</div>
+                    <h1 class="charter-title">${data.title}</h1>
+                    <p class="charter-subtitle">${data.subtitle}</p>
+                    <div class="charter-meta">
+                        <span><strong>Type:</strong> ${data.type}</span>
+                        <span><strong>Date:</strong> ${data.date}</span>
+                    </div>
+                </div>
+
+                <div class="charter-section">
+                    <h2 class="charter-section-title">Project Overview</h2>
+                    <p>${data.overview}</p>
+                </div>
+
+                <div class="charter-section">
+                    <h2 class="charter-section-title">Financial Summary</h2>
+                    <div class="charter-metrics">
+                        <div class="charter-metric">
+                            <div class="charter-metric-value">${data.roi}</div>
+                            <div class="charter-metric-label">Return on Investment</div>
+                        </div>
+                        <div class="charter-metric">
+                            <div class="charter-metric-value">${data.budget}</div>
+                            <div class="charter-metric-label">Total Budget</div>
+                        </div>
+                        <div class="charter-metric">
+                            <div class="charter-metric-value">${data.payback}</div>
+                            <div class="charter-metric-label">Payback Period</div>
+                        </div>
+                    </div>
+                    <table class="charter-table">
+                        <tr>
+                            <th>Metric</th>
+                            <th>Value</th>
+                        </tr>
+                        <tr>
+                            <td>Net Present Value (NPV)</td>
+                            <td>${data.npv}</td>
+                        </tr>
+                        <tr>
+                            <td>Project Duration</td>
+                            <td>${data.duration}</td>
+                        </tr>
+                        <tr>
+                            <td>Executive Sponsor</td>
+                            <td>${data.sponsor}</td>
+                        </tr>
+                        <tr>
+                            <td>Project Manager</td>
+                            <td>${data.manager}</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="charter-section">
+                    <h2 class="charter-section-title">Objectives</h2>
+                    <ul style="margin-left: 1.5rem;">
+                        ${data.objectives.map(obj => `<li style="margin-bottom: 0.5rem;">${obj}</li>`).join('')}
+                    </ul>
+                </div>
+
+                <div class="charter-section">
+                    <h2 class="charter-section-title">Scope</h2>
+                    <p>${data.scope}</p>
+                </div>
+
+                <div class="charter-section">
+                    <h2 class="charter-section-title">Risk Assessment</h2>
+                    <table class="charter-table">
+                        <tr>
+                            <th>Risk</th>
+                            <th>Impact</th>
+                            <th>Mitigation Strategy</th>
+                        </tr>
+                        ${data.risks.map(r => `
+                            <tr>
+                                <td>${r.risk}</td>
+                                <td>${r.impact}</td>
+                                <td>${r.mitigation}</td>
+                            </tr>
+                        `).join('')}
+                    </table>
+                </div>
+
+                <div class="charter-section">
+                    <h2 class="charter-section-title">Project Timeline</h2>
+                    <table class="charter-table">
+                        <tr>
+                            <th>Phase</th>
+                            <th>Duration</th>
+                            <th>Target Completion</th>
+                        </tr>
+                        ${data.milestones.map(m => `
+                            <tr>
+                                <td>${m.phase}</td>
+                                <td>${m.duration}</td>
+                                <td>${m.date}</td>
+                            </tr>
+                        `).join('')}
+                    </table>
+                </div>
+            `;
+
+            document.getElementById('previewModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Close preview
+        function closePreview() {
+            document.getElementById('previewModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Filter examples
+        function filterExamples(category) {
+            // Update active button
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Filter cards
+            document.querySelectorAll('.example-card').forEach(card => {
+                if (category === 'all' || card.dataset.category === category) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Close modal on overlay click
+        document.getElementById('previewModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePreview();
+            }
+        });
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closePreview();
+            }
+        });
+
+        // Track current preview for modal use template button
+        let currentPreviewId = null;
+
+        // Use template - save data and redirect to charter page
+        function useTemplate(charterId) {
+            const data = charterData[charterId];
+            if (!data) {
+                alert('Template not found');
+                return;
+            }
+
+            // Save template data to localStorage
+            localStorage.setItem('charterpro_template', JSON.stringify(data));
+            
+            // Redirect to charter creation page
+            window.location.href = 'charter.html';
+        }
+
+        // Use current template from modal
+        function useCurrentTemplate() {
+            if (currentPreviewId) {
+                useTemplate(currentPreviewId);
+            }
+        }
+
+        // Update previewCharter to track current preview
+        const originalPreviewCharter = previewCharter;
+        previewCharter = function(charterId) {
+            currentPreviewId = charterId;
+            originalPreviewCharter(charterId);
+        };
+    </script>
+</body>
+</html>

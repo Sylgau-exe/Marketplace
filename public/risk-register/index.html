@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Risk Register - Project Risk Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #991b1b;
+            --accent: #ef4444;
+            --accent-light: #f87171;
+            --accent-glow: rgba(239, 68, 68, 0.3);
+            --bg: #0a0f1a;
+            --bg-card: #111827;
+            --text: #f7fafc;
+            --text-muted: #a0aec0;
+            --border: #2d3748;
+            --gradient-red: linear-gradient(135deg, #ef4444 0%, #f87171 50%, #ef4444 100%);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+
+        .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 1rem 2rem; background: rgba(10, 15, 26, 0.95); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+        .nav-content { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .nav-logo { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; }
+        .nav-logo-icon { width: 40px; height: 40px; background: var(--gradient-red); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
+        .nav-logo-text { font-family: 'Fraunces', serif; font-size: 1.5rem; font-weight: 700; color: var(--text); }
+        .nav-links { display: flex; align-items: center; gap: 2rem; }
+        .platform-link { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 8px; color: #a5b4fc; text-decoration: none; font-size: 0.85rem; }
+        .nav-link { color: var(--text-muted); text-decoration: none; font-weight: 500; }
+        .nav-cta { background: var(--gradient-red); color: white; padding: 0.75rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.2s; }
+        .nav-cta:hover { transform: translateY(-2px); box-shadow: 0 4px 20px var(--accent-glow); }
+
+        .hero { padding: 10rem 2rem 6rem; text-align: center; background: radial-gradient(ellipse at top, rgba(239, 68, 68, 0.1) 0%, transparent 60%); }
+        .hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 50px; font-size: 0.85rem; margin-bottom: 2rem; }
+        .hero-badge-dot { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .hero h1 { font-family: 'Fraunces', serif; font-size: 3.5rem; font-weight: 800; line-height: 1.1; margin-bottom: 1.5rem; max-width: 900px; margin-left: auto; margin-right: auto; }
+        .hero h1 span { background: var(--gradient-red); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .hero-subtitle { font-size: 1.25rem; color: var(--text-muted); max-width: 700px; margin: 0 auto 2.5rem; }
+        .hero-cta { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+        .btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 1rem 2rem; border-radius: 10px; font-weight: 600; text-decoration: none; transition: all 0.2s; font-size: 1rem; }
+        .btn-primary { background: var(--gradient-red); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 20px var(--accent-glow); }
+        .btn-secondary { background: transparent; color: var(--text); border: 2px solid var(--border); }
+
+        .matrix-section { padding: 4rem 2rem; max-width: 800px; margin: 0 auto; }
+        .section-title { font-family: 'Fraunces', serif; font-size: 2.5rem; text-align: center; margin-bottom: 1rem; }
+        .section-subtitle { text-align: center; color: var(--text-muted); max-width: 600px; margin: 0 auto 3rem; }
+
+        .matrix-demo { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; }
+        .matrix-grid { display: grid; grid-template-columns: 40px repeat(5, 1fr); grid-template-rows: repeat(5, 50px) 30px; gap: 4px; }
+        .matrix-cell { display: flex; align-items: center; justify-content: center; border-radius: 6px; font-size: 0.85rem; font-weight: 600; }
+        .matrix-cell.critical { background: rgba(220, 38, 38, 0.8); }
+        .matrix-cell.high { background: rgba(245, 158, 11, 0.8); }
+        .matrix-cell.medium { background: rgba(234, 179, 8, 0.6); }
+        .matrix-cell.low { background: rgba(34, 197, 94, 0.6); }
+        .matrix-label { display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: var(--text-dim); }
+        .matrix-y-label { writing-mode: vertical-rl; transform: rotate(180deg); }
+
+        .features-section { padding: 6rem 2rem; background: var(--bg-card); }
+        .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; max-width: 1200px; margin: 0 auto; }
+        .feature-card { padding: 2rem; }
+        .feature-icon { width: 50px; height: 50px; background: rgba(239, 68, 68, 0.15); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 1rem; }
+        .feature-card h3 { font-size: 1.1rem; margin-bottom: 0.5rem; }
+        .feature-card p { color: var(--text-muted); font-size: 0.95rem; }
+
+        .cta-section { padding: 6rem 2rem; text-align: center; }
+        .cta-box { max-width: 600px; margin: 0 auto; background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 3rem; }
+        .cta-box h2 { font-family: 'Fraunces', serif; font-size: 2rem; margin-bottom: 1rem; }
+        .cta-box p { color: var(--text-muted); margin-bottom: 2rem; }
+
+        .footer { background: var(--bg-card); border-top: 1px solid var(--border); padding: 2rem; }
+        .footer-content { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .footer-links { display: flex; gap: 2rem; }
+        .footer-link { color: var(--text-muted); text-decoration: none; }
+        .footer-copy { color: var(--text-dim); font-size: 0.875rem; }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hero h1 { font-size: 2.5rem; }
+            .features-grid { grid-template-columns: 1fr; }
+            .footer-content { flex-direction: column; gap: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-content">
+            <a href="index.html" class="nav-logo">
+                <div class="nav-logo-icon">⚠️</div>
+                <span class="nav-logo-text">Risk Register</span>
+            </a>
+            <div class="nav-links">
+                <a href="/" class="platform-link">← Platform Home</a>
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#matrix" class="nav-link">Risk Matrix</a>
+                <a href="register.html" class="nav-cta">Start Register →</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-badge">
+            <span class="hero-badge-dot"></span>
+            Risk Management • Project Protection
+        </div>
+        <h1>Identify & Manage <span>Project Risks</span> Proactively</h1>
+        <p class="hero-subtitle">
+            Create comprehensive risk registers with probability-impact scoring, heat maps, and mitigation tracking. Protect your projects from the unexpected.
+        </p>
+        <div class="hero-cta">
+            <a href="register.html" class="btn btn-primary">Create Risk Register →</a>
+            <a href="#matrix" class="btn btn-secondary">See Risk Matrix</a>
+        </div>
+    </section>
+
+    <section class="matrix-section" id="matrix">
+        <h2 class="section-title">Visual Risk Assessment</h2>
+        <p class="section-subtitle">Score risks using the industry-standard probability × impact matrix.</p>
+        
+        <div class="matrix-demo">
+            <div class="matrix-grid">
+                <div class="matrix-label matrix-y-label">Probability</div>
+                <div class="matrix-cell critical">5</div>
+                <div class="matrix-cell critical">10</div>
+                <div class="matrix-cell critical">15</div>
+                <div class="matrix-cell critical">20</div>
+                <div class="matrix-cell critical">25</div>
+                
+                <div class="matrix-label"></div>
+                <div class="matrix-cell medium">4</div>
+                <div class="matrix-cell high">8</div>
+                <div class="matrix-cell high">12</div>
+                <div class="matrix-cell critical">16</div>
+                <div class="matrix-cell critical">20</div>
+                
+                <div class="matrix-label"></div>
+                <div class="matrix-cell low">3</div>
+                <div class="matrix-cell medium">6</div>
+                <div class="matrix-cell high">9</div>
+                <div class="matrix-cell high">12</div>
+                <div class="matrix-cell critical">15</div>
+                
+                <div class="matrix-label"></div>
+                <div class="matrix-cell low">2</div>
+                <div class="matrix-cell medium">4</div>
+                <div class="matrix-cell medium">6</div>
+                <div class="matrix-cell high">8</div>
+                <div class="matrix-cell high">10</div>
+                
+                <div class="matrix-label"></div>
+                <div class="matrix-cell low">1</div>
+                <div class="matrix-cell low">2</div>
+                <div class="matrix-cell low">3</div>
+                <div class="matrix-cell medium">4</div>
+                <div class="matrix-cell medium">5</div>
+                
+                <div class="matrix-label"></div>
+                <div class="matrix-label">1</div>
+                <div class="matrix-label">2</div>
+                <div class="matrix-label">3</div>
+                <div class="matrix-label">4</div>
+                <div class="matrix-label">5</div>
+            </div>
+            <div style="text-align: center; margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-dim);">Impact →</div>
+        </div>
+    </section>
+
+    <section class="features-section" id="features">
+        <h2 class="section-title">Complete Risk Management</h2>
+        <p class="section-subtitle">Everything you need to identify, assess, and control project risks.</p>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Risk Heat Map</h3>
+                <p>Visual 5×5 probability-impact matrix shows risk distribution at a glance.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3>Risk Scoring</h3>
+                <p>Automatic scoring from 1-25 with Critical, High, Medium, Low classifications.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📋</div>
+                <h3>Category Tracking</h3>
+                <p>Organize risks by Technical, Schedule, Cost, Resource, and External categories.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🛡️</div>
+                <h3>Mitigation Plans</h3>
+                <p>Document mitigation strategies and contingency plans for each risk.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">👤</div>
+                <h3>Owner Assignment</h3>
+                <p>Assign risk owners and track accountability for mitigation actions.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📄</div>
+                <h3>PDF Export</h3>
+                <p>Generate professional risk register reports for stakeholder review.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section">
+        <div class="cta-box">
+            <h2>Protect Your Project</h2>
+            <p>Start identifying and managing risks before they become issues.</p>
+            <a href="register.html" class="btn btn-primary">Create Risk Register →</a>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <a href="index.html" class="nav-logo">
+                <div class="nav-logo-icon">⚠️</div>
+                <span class="nav-logo-text">Risk Register</span>
+            </a>
+            <div class="footer-links">
+                <a href="/" class="footer-link">Platform Home</a>
+                <a href="register.html" class="footer-link">Start Register</a>
+            </div>
+            <span class="footer-copy">© 2025 ProjectManagerTool. All rights reserved.</span>
+        </div>
+    </footer>
+</body>
+</html>
