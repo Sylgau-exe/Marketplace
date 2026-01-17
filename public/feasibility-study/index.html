@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feasibility Study Builder - ProjectManagerTool</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0891b2;
+            --primary-light: #22d3ee;
+            --primary-dark: #0e7490;
+            --bg: #0a0f1a;
+            --bg-card: #111827;
+            --text: #f7fafc;
+            --text-muted: #a0aec0;
+            --border: #2d3748;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+
+        /* Navigation */
+        .nav { padding: 1rem 2rem; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--bg); z-index: 100; }
+        .nav-content { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .nav-logo { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; }
+        .nav-logo-icon { width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
+        .nav-logo-text { font-family: 'Fraunces', serif; font-size: 1.25rem; font-weight: 700; color: var(--text); }
+        .nav-links { display: flex; gap: 2rem; align-items: center; }
+        .nav-link { color: var(--text-muted); text-decoration: none; font-weight: 500; transition: color 0.2s; }
+        .nav-link:hover { color: var(--text); }
+
+        .btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.5rem; border-radius: 8px; font-family: inherit; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.2s; border: none; text-decoration: none; }
+        .btn-primary { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(8, 145, 178, 0.4); }
+        .btn-secondary { background: transparent; color: var(--text); border: 1px solid var(--border); }
+        .btn-secondary:hover { border-color: var(--primary); color: var(--primary-light); }
+        .btn-lg { padding: 1rem 2rem; font-size: 1.1rem; }
+
+        /* Hero */
+        .hero { padding: 5rem 2rem; text-align: center; background: linear-gradient(180deg, var(--bg) 0%, rgba(8, 145, 178, 0.05) 100%); }
+        .hero-content { max-width: 800px; margin: 0 auto; }
+        .hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: rgba(8, 145, 178, 0.15); border: 1px solid rgba(8, 145, 178, 0.3); border-radius: 50px; color: var(--primary-light); font-size: 0.85rem; font-weight: 600; margin-bottom: 1.5rem; }
+        .hero-title { font-family: 'Fraunces', serif; font-size: 3rem; font-weight: 800; line-height: 1.1; margin-bottom: 1.5rem; }
+        .hero-title span { background: linear-gradient(135deg, var(--primary-light), #67e8f9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero-description { font-size: 1.25rem; color: var(--text-muted); margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto; }
+        .hero-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+        /* Features */
+        .features { padding: 5rem 2rem; }
+        .features-content { max-width: 1200px; margin: 0 auto; }
+        .section-title { font-family: 'Fraunces', serif; font-size: 2rem; font-weight: 700; text-align: center; margin-bottom: 3rem; }
+
+        .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+        .feature-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; transition: all 0.3s; }
+        .feature-card:hover { border-color: var(--primary); transform: translateY(-4px); }
+        .feature-icon { width: 56px; height: 56px; background: rgba(8, 145, 178, 0.15); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 1.25rem; }
+        .feature-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; }
+        .feature-description { color: var(--text-muted); font-size: 0.95rem; }
+
+        /* Sections Showcase */
+        .sections-showcase { padding: 5rem 2rem; background: var(--bg-card); }
+        .sections-content { max-width: 1200px; margin: 0 auto; }
+        .sections-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+        .section-item { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; display: flex; align-items: center; gap: 0.75rem; }
+        .section-number { width: 28px; height: 28px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 600; flex-shrink: 0; }
+        .section-name { font-size: 0.9rem; font-weight: 500; }
+
+        /* CTA */
+        .cta { padding: 5rem 2rem; text-align: center; }
+        .cta-content { max-width: 600px; margin: 0 auto; }
+        .cta-title { font-family: 'Fraunces', serif; font-size: 2rem; margin-bottom: 1rem; }
+        .cta-description { color: var(--text-muted); margin-bottom: 2rem; }
+
+        /* Footer */
+        .footer { padding: 2rem; border-top: 1px solid var(--border); text-align: center; color: var(--text-muted); font-size: 0.9rem; }
+
+        @media (max-width: 1024px) {
+            .features-grid { grid-template-columns: repeat(2, 1fr); }
+            .sections-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hero-title { font-size: 2rem; }
+            .features-grid { grid-template-columns: 1fr; }
+            .sections-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-content">
+            <a href="/" class="nav-logo">
+                <div class="nav-logo-icon">📊</div>
+                <span class="nav-logo-text">FS Builder</span>
+            </a>
+            <div class="nav-links">
+                <a href="/dashboard/" class="nav-link">Dashboard</a>
+                <a href="/pricing" class="nav-link">Pricing</a>
+                <a href="study.html" class="btn btn-primary">Start Building →</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">📊 New Tool • Beta</div>
+            <h1 class="hero-title">Build Professional <span>Feasibility Studies</span></h1>
+            <p class="hero-description">Create comprehensive feasibility studies to justify investment decisions. Analyze alternatives, assess risks, and build compelling business cases.</p>
+            <div class="hero-actions">
+                <a href="study.html" class="btn btn-primary btn-lg">Start Free Study →</a>
+                <a href="#features" class="btn btn-secondary btn-lg">Learn More</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="features" id="features">
+        <div class="features-content">
+            <h2 class="section-title">Everything You Need for a Complete Feasibility Study</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📋</div>
+                    <h3 class="feature-title">Structured Workflow</h3>
+                    <p class="feature-description">Follow a proven 16-step process that covers all aspects of a professional feasibility study, from project details to final recommendations.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚖️</div>
+                    <h3 class="feature-title">Alternative Analysis</h3>
+                    <p class="feature-description">Compare multiple alternatives including status quo. Document pros, cons, risks, and benefits for each option systematically.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3 class="feature-title">Investment Analysis</h3>
+                    <p class="feature-description">Document cost/benefit analysis, NPV, payback period, and ROI calculations to support your investment recommendation.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚠️</div>
+                    <h3 class="feature-title">Risk Assessment</h3>
+                    <p class="feature-description">Identify and assess risks for each alternative with impact ratings and mitigation strategies.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💾</div>
+                    <h3 class="feature-title">Auto-Save</h3>
+                    <p class="feature-description">Your work is automatically saved as you type. Come back anytime to continue where you left off.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📄</div>
+                    <h3 class="feature-title">PDF Export</h3>
+                    <p class="feature-description">Generate professional PDF documents ready for executive review and approval processes.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="sections-showcase">
+        <div class="sections-content">
+            <h2 class="section-title">16 Comprehensive Sections</h2>
+            <div class="sections-grid">
+                <div class="section-item">
+                    <span class="section-number">1</span>
+                    <span class="section-name">Project Details</span>
+                </div>
+                <div class="section-item">
+                    <span class="section-number">2</span>
+                    <span class="section-name">Contact Information</span>
+                </div>
+                <div class="section-item">
+                    <span class="section-number">3</span>
+                    <span class="section-name">Goals & Objectives</span>
+                </div>
+                <div class="section-item">
+                    <span class="section-number">4</span>
+                    <span class="section-name">Project Description</span>
+                </div>
+                <div class="section-item">
+                    <span class="section-number">5</span>
+                    <span class="section-name">Strategic Fit</span>
+                </div>
+                <div class="section-item">
+                    <span class="section-number">6</span>
+                    <span class="section-name">Alternatives</span>
+                </div>
+                <div class="section-item">
+                    <span class="section-number">7</span>
+                    <span class="section-name">Analysis Criteria</span>
+                </div>
+                <div class="section-item">
+                    <span class="section-number">8</span>
+                    <span class="section-name">Risks Analysis</span>
+                </div>
+                <div class="section-item">
+                    <span class="section-number">9</span>
+                    <span class="section-name">Cost/Benefit Analysis</span>
+                </div>
+                <div class="section-item">
+                    <span class="section-number">10</span>
+                    <span class="section-name">Investment Analysis</span>
+                </div>
+                <div class="section-item">
+                    <span class="section-number">11</span>
+                    <span class="section-name">Recommendation</span>
+                </div>
+                <div class="section-item">
+                    <span class="section-number">12</span>
+                    <span class="section-name">Costs Breakdown</span>
+                </div>
+                <div class="section-item">
+                    <span class="section-number">13</span>
+                    <span class="section-name">Feasibility & Impact</span>
+                </div>
+                <div class="section-item">
+                    <span class="section-number">14</span>
+                    <span class="section-name">Project Structure</span>
+                </div>
+                <div class="section-item">
+                    <span class="section-number">15</span>
+                    <span class="section-name">Deliverables & Schedule</span>
+                </div>
+                <div class="section-item">
+                    <span class="section-number">16</span>
+                    <span class="section-name">Assumptions</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta">
+        <div class="cta-content">
+            <h2 class="cta-title">Ready to Build Your Feasibility Study?</h2>
+            <p class="cta-description">Start now with our guided wizard. No account required. Your work is saved automatically in your browser.</p>
+            <a href="study.html" class="btn btn-primary btn-lg">Start Free Study →</a>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <p>© 2025 ProjectManagerTool. All rights reserved.</p>
+    </footer>
+</body>
+</html>

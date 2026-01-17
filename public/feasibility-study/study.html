@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feasibility Study - ProjectManagerTool</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0891b2;
+            --primary-light: #22d3ee;
+            --primary-dark: #0e7490;
+            --accent: #06b6d4;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --bg: #0a0f1a;
+            --bg-card: #111827;
+            --bg-sidebar: #0d1117;
+            --text: #f7fafc;
+            --text-muted: #a0aec0;
+            --text-dim: #718096;
+            --border: #2d3748;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; min-height: 100vh; }
+
+        .app-layout { display: flex; min-height: 100vh; }
+
+        /* Sidebar */
+        .sidebar { width: 280px; background: var(--bg-sidebar); border-right: 1px solid var(--border); position: fixed; top: 0; left: 0; bottom: 0; overflow-y: auto; display: flex; flex-direction: column; }
+        .sidebar-header { padding: 1.5rem; border-bottom: 1px solid var(--border); }
+        .sidebar-logo { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; }
+        .sidebar-logo-icon { width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
+        .sidebar-logo-text { font-family: 'Fraunces', serif; font-size: 1.25rem; font-weight: 700; color: var(--text); }
+        .sidebar-badge { background: var(--warning); color: #000; font-size: 0.65rem; padding: 0.15rem 0.4rem; border-radius: 4px; margin-left: 0.5rem; font-weight: 700; }
+
+        .sidebar-nav { flex: 1; padding: 1rem 0; overflow-y: auto; }
+        .nav-section { padding: 0.5rem 1rem; margin-top: 0.5rem; }
+        .nav-section-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-dim); margin-bottom: 0.5rem; font-weight: 600; }
+        .nav-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 1rem; margin: 0.15rem 0.5rem; color: var(--text-muted); text-decoration: none; transition: all 0.2s; border-radius: 8px; cursor: pointer; font-size: 0.9rem; }
+        .nav-item:hover { background: rgba(8, 145, 178, 0.1); color: var(--text); }
+        .nav-item.active { background: rgba(8, 145, 178, 0.15); color: var(--primary-light); }
+        .nav-item.completed { color: var(--success); }
+        .nav-item.completed::after { content: '✓'; margin-left: auto; font-size: 0.8rem; }
+        .nav-icon { width: 20px; text-align: center; font-size: 0.9rem; }
+        .nav-number { width: 20px; height: 20px; border-radius: 50%; background: var(--border); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 600; }
+        .nav-item.active .nav-number { background: var(--primary); color: white; }
+        .nav-item.completed .nav-number { background: var(--success); color: white; }
+
+        .sidebar-footer { padding: 1rem; border-top: 1px solid var(--border); }
+        .progress-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-bottom: 0.5rem; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--primary-light)); transition: width 0.3s; }
+        .progress-text { font-size: 0.8rem; color: var(--text-dim); text-align: center; }
+
+        /* Main Content */
+        .main-content { flex: 1; margin-left: 280px; display: flex; flex-direction: column; }
+        
+        .top-bar { padding: 1rem 2rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: var(--bg-card); }
+        .top-bar-title { font-size: 1.1rem; font-weight: 600; }
+        .top-bar-actions { display: flex; gap: 0.75rem; }
+
+        .btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.6rem 1.2rem; border-radius: 8px; font-family: inherit; font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: all 0.2s; border: none; text-decoration: none; }
+        .btn-primary { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: white; }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(8, 145, 178, 0.3); }
+        .btn-secondary { background: transparent; color: var(--text); border: 1px solid var(--border); }
+        .btn-secondary:hover { border-color: var(--primary); color: var(--primary-light); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-sm { padding: 0.4rem 0.8rem; font-size: 0.8rem; }
+
+        .content { flex: 1; padding: 2rem; overflow-y: auto; }
+
+        /* Section Styles */
+        .section { display: none; }
+        .section.active { display: block; }
+
+        .section-header { margin-bottom: 1.5rem; }
+        .section-title { font-family: 'Fraunces', serif; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .section-description { color: var(--text-muted); font-size: 0.95rem; }
+
+        .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
+        .card-title { font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+        .card-title-icon { color: var(--primary-light); }
+
+        /* Form Styles */
+        .form-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; margin-bottom: 1.25rem; }
+        .form-row.three { grid-template-columns: repeat(3, 1fr); }
+        .form-row.single { grid-template-columns: 1fr; }
+        .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
+        .form-label { font-size: 0.9rem; font-weight: 500; color: var(--text-muted); }
+        .form-label .required { color: var(--error); }
+        .form-input, .form-select, .form-textarea { width: 100%; padding: 0.75rem 1rem; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-family: inherit; font-size: 0.95rem; transition: all 0.2s; }
+        .form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.15); }
+        .form-textarea { min-height: 120px; resize: vertical; }
+        .form-hint { font-size: 0.8rem; color: var(--text-dim); }
+
+        /* Priority Selector */
+        .priority-selector { display: flex; gap: 1rem; }
+        .priority-option { flex: 1; padding: 1rem; border: 2px solid var(--border); border-radius: 8px; cursor: pointer; text-align: center; transition: all 0.2s; }
+        .priority-option:hover { border-color: var(--text-dim); }
+        .priority-option.selected { border-color: var(--primary); background: rgba(8, 145, 178, 0.1); }
+        .priority-option.high { border-color: var(--error); background: rgba(239, 68, 68, 0.1); }
+        .priority-option.moderate { border-color: var(--warning); background: rgba(245, 158, 11, 0.1); }
+        .priority-option.low { border-color: var(--success); background: rgba(34, 197, 94, 0.1); }
+        .priority-label { font-weight: 600; }
+
+        /* Alternatives List */
+        .alternatives-list { display: flex; flex-direction: column; gap: 1rem; }
+        .alternative-item { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; }
+        .alternative-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+        .alternative-number { width: 28px; height: 28px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.85rem; }
+        .alternative-title { flex: 1; }
+        .alternative-remove { background: none; border: none; color: var(--error); cursor: pointer; padding: 0.25rem; }
+
+        /* Cost Breakdown */
+        .cost-section { margin-bottom: 1.5rem; }
+        .cost-section-title { font-weight: 600; margin-bottom: 0.75rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+        .cost-items { display: flex; flex-direction: column; gap: 0.75rem; }
+        .cost-item { display: flex; gap: 1rem; align-items: center; }
+        .cost-item .form-input { flex: 1; }
+        .cost-item .amount { width: 150px; }
+
+        /* Navigation Buttons */
+        .section-nav { display: flex; justify-content: space-between; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+
+        /* Print Styles */
+        @media print {
+            .sidebar, .top-bar, .section-nav, .btn { display: none !important; }
+            .main-content { margin-left: 0 !important; }
+            .section { display: block !important; page-break-inside: avoid; }
+            .card { border: 1px solid #ddd; box-shadow: none; }
+            body { background: white; color: black; }
+        }
+
+        /* Help Modal */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; }
+        .modal-overlay.show { display: flex; }
+        .modal { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; width: 90%; max-width: 700px; max-height: 85vh; overflow: hidden; display: flex; flex-direction: column; }
+        .modal-header { padding: 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .modal-title { font-family: 'Fraunces', serif; font-size: 1.25rem; font-weight: 700; }
+        .modal-close { background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; }
+        .modal-body { padding: 1.5rem; overflow-y: auto; flex: 1; }
+        .modal-body h3 { color: var(--primary-light); margin: 1.5rem 0 0.75rem; font-size: 1.1rem; }
+        .modal-body h3:first-child { margin-top: 0; }
+        .modal-body p, .modal-body li { color: var(--text-muted); margin-bottom: 0.5rem; }
+        .modal-body ul { padding-left: 1.5rem; }
+
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; }
+            .form-row { grid-template-columns: 1fr; }
+            .form-row.three { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="/" class="sidebar-logo">
+                    <div class="sidebar-logo-icon">📊</div>
+                    <span class="sidebar-logo-text">FS Builder</span>
+                    <span class="sidebar-badge">Beta</span>
+                </a>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Project Information</div>
+                </div>
+                <div class="nav-item active" data-section="project-info">
+                    <span class="nav-number">1</span> Project Details
+                </div>
+                <div class="nav-item" data-section="contacts">
+                    <span class="nav-number">2</span> Contact Information
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Background (from OA)</div>
+                </div>
+                <div class="nav-item" data-section="goals">
+                    <span class="nav-number">3</span> Goals & Objectives
+                </div>
+                <div class="nav-item" data-section="description">
+                    <span class="nav-number">4</span> Project Description
+                </div>
+                <div class="nav-item" data-section="strategic">
+                    <span class="nav-number">5</span> Strategic Fit
+                </div>
+                <div class="nav-item" data-section="alternatives">
+                    <span class="nav-number">6</span> Alternatives
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Feasibility Analysis</div>
+                </div>
+                <div class="nav-item" data-section="criteria">
+                    <span class="nav-number">7</span> Analysis Criteria
+                </div>
+                <div class="nav-item" data-section="risks">
+                    <span class="nav-number">8</span> Risks Analysis
+                </div>
+                <div class="nav-item" data-section="costs">
+                    <span class="nav-number">9</span> Cost/Benefit Analysis
+                </div>
+                <div class="nav-item" data-section="investment">
+                    <span class="nav-number">10</span> Investment Analysis
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Recommendation</div>
+                </div>
+                <div class="nav-item" data-section="recommendation">
+                    <span class="nav-number">11</span> Recommendation
+                </div>
+                <div class="nav-item" data-section="breakdown">
+                    <span class="nav-number">12</span> Costs Breakdown
+                </div>
+                <div class="nav-item" data-section="feasibility">
+                    <span class="nav-number">13</span> Feasibility & Impact
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Planning</div>
+                </div>
+                <div class="nav-item" data-section="structure">
+                    <span class="nav-number">14</span> Project Structure
+                </div>
+                <div class="nav-item" data-section="deliverables">
+                    <span class="nav-number">15</span> Deliverables & Schedule
+                </div>
+                <div class="nav-item" data-section="assumptions">
+                    <span class="nav-number">16</span> Assumptions
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Export</div>
+                </div>
+                <div class="nav-item" data-section="review">
+                    <span class="nav-icon">📄</span> Review & Export
+                </div>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                </div>
+                <div class="progress-text"><span id="progressText">0</span>% Complete</div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="top-bar">
+                <h1 class="top-bar-title" id="currentSectionTitle">Project Details</h1>
+                <div class="top-bar-actions">
+                    <button class="btn btn-secondary btn-sm" onclick="loadExample()">📥 Load Example</button>
+                    <button class="btn btn-secondary btn-sm" onclick="showHelp()">❓ Help</button>
+                    <button class="btn btn-secondary btn-sm" onclick="clearAll()">🗑️ Clear</button>
+                    <a href="/dashboard/" class="btn btn-secondary btn-sm">← Dashboard</a>
+                </div>
+            </div>
+
+            <div class="content">
+                <!-- Section 1: Project Details -->
+                <div class="section active" id="section-project-info">
+                    <div class="section-header">
+                        <h2 class="section-title">Project Details</h2>
+                        <p class="section-description">Enter the basic information about your feasibility study.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-title"><span class="card-title-icon">📋</span> Basic Information</div>
+                        <div class="form-row single">
+                            <div class="form-group">
+                                <label class="form-label">Working Title <span class="required">*</span></label>
+                                <input type="text" class="form-input" id="workingTitle" placeholder="Enter the project working title">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Prepared By <span class="required">*</span></label>
+                                <input type="text" class="form-input" id="preparedBy" placeholder="Your name">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Business Unit <span class="required">*</span></label>
+                                <input type="text" class="form-input" id="businessUnit" placeholder="Department or business unit">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Date</label>
+                                <input type="date" class="form-input" id="studyDate">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Version</label>
+                                <input type="text" class="form-input" id="version" placeholder="1.0">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title"><span class="card-title-icon">✅</span> Approval</div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Approved By</label>
+                                <input type="text" class="form-input" id="approvedBy" placeholder="Vice-President name">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Approval Date</label>
+                                <input type="date" class="form-input" id="approvalDate">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Reviewed By (Optional)</label>
+                                <input type="text" class="form-input" id="reviewedBy" placeholder="Reviewer name">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Review Date</label>
+                                <input type="date" class="form-input" id="reviewDate">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="section-nav">
+                        <div></div>
+                        <button class="btn btn-primary" onclick="nextSection()">Next: Contact Information →</button>
+                    </div>
+                </div>
+
+                <!-- Section 2: Contact Information -->
+                <div class="section" id="section-contacts">
+                    <div class="section-header">
+                        <h2 class="section-title">Contact Information</h2>
+                        <p class="section-description">Key contacts for this feasibility study.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-title"><span class="card-title-icon">👤</span> Business Process Owner</div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Name</label>
+                                <input type="text" class="form-input" id="ownerName" placeholder="Business Process Owner name">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-input" id="ownerEmail" placeholder="email@company.com">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Phone</label>
+                                <input type="tel" class="form-input" id="ownerPhone" placeholder="+1 (555) 123-4567">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Fax</label>
+                                <input type="tel" class="form-input" id="ownerFax" placeholder="+1 (555) 123-4568">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title"><span class="card-title-icon">📞</span> Study Coordinator</div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Name</label>
+                                <input type="text" class="form-input" id="coordName" placeholder="Study Coordinator name">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-input" id="coordEmail" placeholder="email@company.com">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Phone</label>
+                                <input type="tel" class="form-input" id="coordPhone" placeholder="+1 (555) 123-4567">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Fax</label>
+                                <input type="tel" class="form-input" id="coordFax" placeholder="+1 (555) 123-4568">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="section-nav">
+                        <button class="btn btn-secondary" onclick="prevSection()">← Previous</button>
+                        <button class="btn btn-primary" onclick="nextSection()">Next: Goals & Objectives →</button>
+                    </div>
+                </div>
+
+                <!-- Section 3: Goals & Objectives -->
+                <div class="section" id="section-goals">
+                    <div class="section-header">
+                        <h2 class="section-title">Goals & Objectives</h2>
+                        <p class="section-description">Define what the investment plan will accomplish. This should correspond to the Opportunity Assessment document.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-title"><span class="card-title-icon">🎯</span> Investment Plan Goals</div>
+                        <div class="form-row single">
+                            <div class="form-group">
+                                <label class="form-label">Goals & Objectives Statement <span class="required">*</span></label>
+                                <textarea class="form-textarea" id="goalsObjectives" placeholder="Provide a high-level statement of what the Business Plan will accomplish..." style="min-height: 200px;"></textarea>
+                                <span class="form-hint">Describe the high-level goals and expected outcomes of the investment plan.</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="section-nav">
+                        <button class="btn btn-secondary" onclick="prevSection()">← Previous</button>
+                        <button class="btn btn-primary" onclick="nextSection()">Next: Project Description →</button>
+                    </div>
+                </div>
+
+                <!-- Section 4: Project Description -->
+                <div class="section" id="section-description">
+                    <div class="section-header">
+                        <h2 class="section-title">Project Description</h2>
+                        <p class="section-description">Describe the problem or opportunity being addressed.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-title"><span class="card-title-icon">📝</span> Problem/Opportunity Statement</div>
+                        <div class="form-row single">
+                            <div class="form-group">
+                                <label class="form-label">Project Description <span class="required">*</span></label>
+                                <textarea class="form-textarea" id="projectDescription" placeholder="Describe the problem or opportunity to be addressed, identifying the root cause or supporting criteria. Provide objective evidence to support this background information. Identify the desired outcome." style="min-height: 200px;"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title"><span class="card-title-icon">⚡</span> Recommended Priority</div>
+                        <div class="priority-selector">
+                            <div class="priority-option" data-priority="high" onclick="selectPriority('high')">
+                                <div class="priority-label">🔴 High</div>
+                                <div style="font-size: 0.8rem; color: var(--text-dim); margin-top: 0.25rem;">Critical / Urgent</div>
+                            </div>
+                            <div class="priority-option" data-priority="moderate" onclick="selectPriority('moderate')">
+                                <div class="priority-label">🟡 Moderate</div>
+                                <div style="font-size: 0.8rem; color: var(--text-dim); margin-top: 0.25rem;">Important</div>
+                            </div>
+                            <div class="priority-option" data-priority="low" onclick="selectPriority('low')">
+                                <div class="priority-label">🟢 Low</div>
+                                <div style="font-size: 0.8rem; color: var(--text-dim); margin-top: 0.25rem;">Nice to have</div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="priority" value="">
+                    </div>
+                    <div class="section-nav">
+                        <button class="btn btn-secondary" onclick="prevSection()">← Previous</button>
+                        <button class="btn btn-primary" onclick="nextSection()">Next: Strategic Fit →</button>
+                    </div>
+                </div>
+
+                <!-- Section 5: Strategic Fit -->
+                <div class="section" id="section-strategic">
+                    <div class="section-header">
+                        <h2 class="section-title">Strategic Fit & Business Context</h2>
+                        <p class="section-description">Explain how this project aligns with corporate strategy.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-title"><span class="card-title-icon">🎯</span> Strategic Fit</div>
+                        <div class="form-row single">
+                            <div class="form-group">
+                                <label class="form-label">Strategic Alignment <span class="required">*</span></label>
+                                <textarea class="form-textarea" id="strategicFit" placeholder="Show how the Business Plan will support the Corporate strategic plan, business objectives and/or social role."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title"><span class="card-title-icon">🏢</span> Business Context</div>
+                        <div class="form-row single">
+                            <div class="form-group">
+                                <label class="form-label">Current Business Context <span class="required">*</span></label>
+                                <textarea class="form-textarea" id="businessContext" placeholder="Describe the current business context and why the Corporation should invest in the Business Plan at this time."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title"><span class="card-title-icon">🔗</span> Project Interrelations</div>
+                        <div class="form-row single">
+                            <div class="form-group">
+                                <label class="form-label">Interactions & Dependencies</label>
+                                <textarea class="form-textarea" id="interrelations" placeholder="Identify interactions, cross-impacts or synergies the Business Plan will have with other initiatives or other Business Units. Assess size of impact where possible."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="section-nav">
+                        <button class="btn btn-secondary" onclick="prevSection()">← Previous</button>
+                        <button class="btn btn-primary" onclick="nextSection()">Next: Alternatives →</button>
+                    </div>
+                </div>
+
+                <!-- Section 6: Alternatives -->
+                <div class="section" id="section-alternatives">
+                    <div class="section-header">
+                        <h2 class="section-title">Alternatives Considered</h2>
+                        <p class="section-description">List all alternatives including Status Quo. Summarize pros & cons, risks, benefits, and timelines.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-title"><span class="card-title-icon">📋</span> Alternative Options</div>
+                        <div class="alternatives-list" id="alternativesList">
+                            <div class="alternative-item" data-index="0">
+                                <div class="alternative-header">
+                                    <span class="alternative-number">1</span>
+                                    <input type="text" class="form-input alternative-title" placeholder="Status Quo (Do Nothing)" value="Status Quo">
+                                </div>
+                                <div class="form-group" style="margin-bottom: 1rem;">
+                                    <label class="form-label">Description</label>
+                                    <textarea class="form-textarea" placeholder="Describe this alternative, including pros & cons, associated risks, expected benefits, and timeline."></textarea>
+                                </div>
+                            </div>
+                            <div class="alternative-item" data-index="1">
+                                <div class="alternative-header">
+                                    <span class="alternative-number">2</span>
+                                    <input type="text" class="form-input alternative-title" placeholder="Alternative name">
+                                    <button class="alternative-remove" onclick="removeAlternative(1)">✕</button>
+                                </div>
+                                <div class="form-group" style="margin-bottom: 1rem;">
+                                    <label class="form-label">Description</label>
+                                    <textarea class="form-textarea" placeholder="Describe this alternative, including pros & cons, associated risks, expected benefits, and timeline."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-secondary" onclick="addAlternative()" style="margin-top: 1rem;">+ Add Alternative</button>
+                    </div>
+                    <div class="section-nav">
+                        <button class="btn btn-secondary" onclick="prevSection()">← Previous</button>
+                        <button class="btn btn-primary" onclick="nextSection()">Next: Analysis Criteria →</button>
+                    </div>
+                </div>
+
+                <!-- Section 7: Analysis Criteria -->
+                <div class="section" id="section-criteria">
+                    <div class="section-header">
+                        <h2 class="section-title">Criteria for Analysis</h2>
+                        <p class="section-description">Identify the key criteria used for the Feasibility Study and validate the framework.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-title"><span class="card-title-icon">📊</span> Evaluation Criteria</div>
+                        <div class="form-row single">
+                            <div class="form-group">
+                                <label class="form-label">Analysis Criteria <span class="required">*</span></label>
+                                <textarea class="form-textarea" id="analysisCriteria" placeholder="Identify the key criteria used for the Feasibility Study, and support their inclusion in the analysis. Establish the merits of tangible, intangible and conditional benefits. Validate the framework of the study." style="min-height: 200px;"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="section-nav">
+                        <button class="btn btn-secondary" onclick="prevSection()">← Previous</button>
+                        <button class="btn btn-primary" onclick="nextSection()">Next: Risks Analysis →</button>
+                    </div>
+                </div>
+
+                <!-- Section 8: Risks Analysis -->
+                <div class="section" id="section-risks">
+                    <div class="section-header">
+                        <h2 class="section-title">Risks Analysis</h2>
+                        <p class="section-description">For each alternative, identify risk factors, impact assessment, and mitigation strategies.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-title"><span class="card-title-icon">⚠️</span> Risk Assessment</div>
+                        <div class="form-row single">
+                            <div class="form-group">
+                                <label class="form-label">Risks Analysis <span class="required">*</span></label>
+                                <textarea class="form-textarea" id="risksAnalysis" placeholder="For each alternative, identify risk factors and provide an assessment of impact (high, moderate, low) and mitigation strategies." style="min-height: 250px;"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="section-nav">
+                        <button class="btn btn-secondary" onclick="prevSection()">← Previous</button>
+                        <button class="btn btn-primary" onclick="nextSection()">Next: Cost/Benefit Analysis →</button>
+                    </div>
+                </div>
+
+                <!-- Section 9: Cost/Benefit Analysis -->
+                <div class="section" id="section-costs">
+                    <div class="section-header">
+                        <h2 class="section-title">Cost/Benefit Analysis</h2>
+                        <p class="section-description">Evaluate each alternative including tangible and intangible benefits.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-title"><span class="card-title-icon">💰</span> Cost/Benefit Evaluation</div>
+                        <div class="form-row single">
+                            <div class="form-group">
+                                <label class="form-label">Cost/Benefit Analysis <span class="required">*</span></label>
+                                <textarea class="form-textarea" id="costBenefitAnalysis" placeholder="Evaluate each alternative including tangible and intangible benefits. Contact Finance for support in this analysis." style="min-height: 250px;"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="section-nav">
+                        <button class="btn btn-secondary" onclick="prevSection()">← Previous</button>
+                        <button class="btn btn-primary" onclick="nextSection()">Next: Investment Analysis →</button>
+                    </div>
+                </div>
+
+                <!-- Section 10: Investment Analysis -->
+                <div class="section" id="section-investment">
+                    <div class="section-header">
+                        <h2 class="section-title">Investment Analysis</h2>
+                        <p class="section-description">Define measurement and comparison criteria aligned with business strategy.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-title"><span class="card-title-icon">📈</span> Investment Evaluation</div>
+                        <div class="form-row single">
+                            <div class="form-group">
+                                <label class="form-label">Investment Analysis <span class="required">*</span></label>
+                                <textarea class="form-textarea" id="investmentAnalysis" placeholder="Define measurement and comparison criteria (aligned with the business strategy) used to evaluate the investment alternatives. Include payback period, NPV, and other relevant financial metrics. Contact Finance for support in this analysis." style="min-height: 250px;"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="section-nav">
+                        <button class="btn btn-secondary" onclick="prevSection()">← Previous</button>
+                        <button class="btn btn-primary" onclick="nextSection()">Next: Recommendation →</button>
+                    </div>
+                </div>
+
+                <!-- Section 11: Recommendation -->
+                <div class="section" id="section-recommendation">
+                    <div class="section-header">
+                        <h2 class="section-title">Recommendation</h2>
+                        <p class="section-description">Identify the most appropriate solution and explain the rationale.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-title"><span class="card-title-icon">✅</span> Recommended Solution</div>
+                        <div class="form-row single">
+                            <div class="form-group">
+                                <label class="form-label">Recommendation <span class="required">*</span></label>
+                                <textarea class="form-textarea" id="recommendation" placeholder="Identify the most appropriate solution for the Business Plan, given the analysis criteria. Explain the rationale for the recommendation." style="min-height: 250px;"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="section-nav">
+                        <button class="btn btn-secondary" onclick="prevSection()">← Previous</button>
+                        <button class="btn btn-primary" onclick="nextSection()">Next: Costs Breakdown →</button>
+                    </div>
+                </div>
+
+                <!-- Section 12: Costs Breakdown -->
+                <div class="section" id="section-breakdown">
+                    <div class="section-header">
+                        <h2 class="section-title">Costs Breakdown</h2>
+                        <p class="section-description">Identify how costs will affect the Business Unit and monitoring metrics.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-title"><span class="card-title-icon">💵</span> Direct Costs</div>
+                        <div class="form-row single">
+                            <div class="form-group">
+                                <label class="form-label">Direct Costs</label>
+                                <textarea class="form-textarea" id="directCosts" placeholder="List all direct costs associated with the recommended solution..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title"><span class="card-title-icon">🔄</span> Direct On-going Costs</div>
+                        <div class="form-row single">
+                            <div class="form-group">
+                                <label class="form-label">Recurring Costs</label>
+                                <textarea class="form-textarea" id="ongoingCosts" placeholder="List all recurring/on-going costs..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title"><span class="card-title-icon">👁️</span> Indirect & Hidden Costs</div>
+                        <div class="form-row single">
+                            <div class="form-group">
+                                <label class="form-label">Indirect Costs</label>
+                                <textarea class="form-textarea" id="indirectCosts" placeholder="List indirect and hidden costs..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title"><span class="card-title-icon">🏢</span> Corporation-wide Costs</div>
+                        <div class="form-row single">
+                            <div class="form-group">
+                                <label class="form-label">Organization-wide Costs</label>
+                                <textarea class="form-textarea" id="corpCosts" placeholder="List any corporation-wide costs..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="section-nav">
+                        <button class="btn btn-secondary" onclick="prevSection()">← Previous</button>
+                        <button class="btn btn-primary" onclick="nextSection()">Next: Feasibility & Impact →</button>
+                    </div>
+                </div>
+
+                <!-- Section 13: Feasibility & Impact -->
+                <div class="section" id="section-feasibility">
+                    <div class="section-header">
+                        <h2 class="section-title">Feasibility & Impact Management</h2>
+                        <p class="section-description">Confirm practicality and describe expected impacts.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-title"><span class="card-title-icon">✅</span> Feasibility Assessment</div>
+                        <div class="form-row single">
+                            <div class="form-group">
+                                <label class="form-label">Feasibility & Impact Management <span class="required">*</span></label>
+                                <textarea class="form-textarea" id="feasibilityImpact" placeholder="Confirm the practicality of the recommended solution and describe the expected impact on other business processes, the internal environment and external considerations. Show how these impacts will be managed." style="min-height: 250px;"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="section-nav">
+                        <button class="btn btn-secondary" onclick="prevSection()">← Previous</button>
+                        <button class="btn btn-primary" onclick="nextSection()">Next: Project Structure →</button>
+                    </div>
+                </div>
+
+                <!-- Section 14: Project Structure -->
+                <div class="section" id="section-structure">
+                    <div class="section-header">
+                        <h2 class="section-title">Project Structure & Resources</h2>
+                        <p class="section-description">Propose management structure and identify needed resources.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-title"><span class="card-title-icon">📋</span> Planning Requirements</div>
+                        <div class="form-row single">
+                            <div class="form-group">
+                                <label class="form-label">Planning Requirements</label>
+                                <textarea class="form-textarea" id="planningRequirements" placeholder="List all requirements in terms of funds and resources needed to prepare the detailed project plan."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title"><span class="card-title-icon">👥</span> Project Structure</div>
+                        <div class="form-row single">
+                            <div class="form-group">
+                                <label class="form-label">Structure & Resources <span class="required">*</span></label>
+                                <textarea class="form-textarea" id="projectStructure" placeholder="Propose a structure for the management of the Business Plan and identify the needed resources. Estimate the total project costs in terms of Operating and Capital funds. Note: This estimate will be used for obtaining the funding." style="min-height: 200px;"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="section-nav">
+                        <button class="btn btn-secondary" onclick="prevSection()">← Previous</button>
+                        <button class="btn btn-primary" onclick="nextSection()">Next: Deliverables & Schedule →</button>
+                    </div>
+                </div>
+
+                <!-- Section 15: Deliverables & Schedule -->
+                <div class="section" id="section-deliverables">
+                    <div class="section-header">
+                        <h2 class="section-title">Project Deliverables & Rollout Schedule</h2>
+                        <p class="section-description">Propose advancement schedule and list major deliverables.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-title"><span class="card-title-icon">📅</span> Schedule & Deliverables</div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Expected Start Date</label>
+                                <input type="date" class="form-input" id="startDate">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Expected Completion Date</label>
+                                <input type="date" class="form-input" id="completionDate">
+                            </div>
+                        </div>
+                        <div class="form-row single">
+                            <div class="form-group">
+                                <label class="form-label">Deliverables & Schedule <span class="required">*</span></label>
+                                <textarea class="form-textarea" id="deliverables" placeholder="Propose an advancement schedule for the Business Plan showing the remaining gates to completion. List the major deliverables and anticipated delivery dates." style="min-height: 200px;"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="section-nav">
+                        <button class="btn btn-secondary" onclick="prevSection()">← Previous</button>
+                        <button class="btn btn-primary" onclick="nextSection()">Next: Assumptions →</button>
+                    </div>
+                </div>
+
+                <!-- Section 16: Assumptions -->
+                <div class="section" id="section-assumptions">
+                    <div class="section-header">
+                        <h2 class="section-title">Assumptions</h2>
+                        <p class="section-description">List any assumptions made in the analysis.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-title"><span class="card-title-icon">📝</span> Assumptions & Conditions</div>
+                        <div class="form-row single">
+                            <div class="form-group">
+                                <label class="form-label">Assumptions</label>
+                                <textarea class="form-textarea" id="assumptions" placeholder="List any assumptions made in the analysis. Include conditions and other important considerations." style="min-height: 200px;"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="section-nav">
+                        <button class="btn btn-secondary" onclick="prevSection()">← Previous</button>
+                        <button class="btn btn-primary" onclick="nextSection()">Next: Review & Export →</button>
+                    </div>
+                </div>
+
+                <!-- Section 17: Review & Export -->
+                <div class="section" id="section-review">
+                    <div class="section-header">
+                        <h2 class="section-title">Review & Export</h2>
+                        <p class="section-description">Review your feasibility study and export to PDF.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-title"><span class="card-title-icon">📊</span> Study Summary</div>
+                        <div id="summaryContent" style="color: var(--text-muted);">
+                            <!-- Generated summary -->
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title"><span class="card-title-icon">📤</span> Export Options</div>
+                        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                            <button class="btn btn-primary" onclick="exportPDF()">📄 Export to PDF</button>
+                            <button class="btn btn-secondary" onclick="saveToLocal()">💾 Save Draft</button>
+                        </div>
+                    </div>
+                    <div class="section-nav">
+                        <button class="btn btn-secondary" onclick="prevSection()">← Previous</button>
+                        <button class="btn btn-success" onclick="exportPDF()">✅ Complete & Export</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Help Modal -->
+    <div class="modal-overlay" id="helpModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">📊 Feasibility Study Builder - Help</h2>
+                <button class="modal-close" onclick="closeHelp()">×</button>
+            </div>
+            <div class="modal-body">
+                <h3>What is a Feasibility Study?</h3>
+                <p>A Feasibility Study (FS) investigates the impacts, benefits, and costs of a proposed Investment Plan. It follows an Opportunity Assessment and is used to gain executive endorsement and secure funding.</p>
+
+                <h3>Objectives</h3>
+                <ul>
+                    <li>Justify a decision to undertake an Investment Plan based on detailed analysis (technical, economical, financial, human)</li>
+                    <li>Identify the solution best satisfying the criteria from the Opportunity Assessment</li>
+                    <li>Assess financial and business feasibility and resource requirements</li>
+                    <li>Assess risks and critical variables</li>
+                    <li>Assess impact on the organization</li>
+                </ul>
+
+                <h3>How to Use This Tool</h3>
+                <ul>
+                    <li><strong>Navigate:</strong> Use the left sidebar to move between sections</li>
+                    <li><strong>Auto-save:</strong> Your work is automatically saved as you type</li>
+                    <li><strong>Load Example:</strong> Click to see a sample feasibility study</li>
+                    <li><strong>Export:</strong> Generate a professional PDF document</li>
+                </ul>
+
+                <h3>Key Sections</h3>
+                <ul>
+                    <li><strong>Background:</strong> Carried forward from Opportunity Assessment (highlight any changes)</li>
+                    <li><strong>Analysis:</strong> Criteria, risks, cost/benefit, and investment analysis</li>
+                    <li><strong>Recommendation:</strong> Your recommended solution with rationale</li>
+                    <li><strong>Planning:</strong> Structure, resources, deliverables, and schedule</li>
+                </ul>
+
+                <h3>Key Terms</h3>
+                <ul>
+                    <li><strong>Initiator:</strong> Person who identifies the problem or opportunity</li>
+                    <li><strong>Business Owner:</strong> Authority to make decisions about affected processes</li>
+                    <li><strong>FS Coordinator:</strong> Person tasked with preparing the study</li>
+                    <li><strong>Gate:</strong> Approval checkpoint to proceed to the next phase</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Section management
+        const sections = [
+            'project-info', 'contacts', 'goals', 'description', 'strategic', 'alternatives',
+            'criteria', 'risks', 'costs', 'investment', 'recommendation', 'breakdown',
+            'feasibility', 'structure', 'deliverables', 'assumptions', 'review'
+        ];
+        const sectionTitles = {
+            'project-info': 'Project Details',
+            'contacts': 'Contact Information',
+            'goals': 'Goals & Objectives',
+            'description': 'Project Description',
+            'strategic': 'Strategic Fit & Business Context',
+            'alternatives': 'Alternatives Considered',
+            'criteria': 'Criteria for Analysis',
+            'risks': 'Risks Analysis',
+            'costs': 'Cost/Benefit Analysis',
+            'investment': 'Investment Analysis',
+            'recommendation': 'Recommendation',
+            'breakdown': 'Costs Breakdown',
+            'feasibility': 'Feasibility & Impact Management',
+            'structure': 'Project Structure & Resources',
+            'deliverables': 'Deliverables & Schedule',
+            'assumptions': 'Assumptions',
+            'review': 'Review & Export'
+        };
+        let currentSection = 0;
+        let alternativeCount = 2;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadFromLocal();
+            setupAutoSave();
+            updateProgress();
+            updateNavigation();
+
+            // Navigation clicks
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const section = this.dataset.section;
+                    if (section) {
+                        goToSection(sections.indexOf(section));
+                    }
+                });
+            });
+
+            // Set default date
+            if (!document.getElementById('studyDate').value) {
+                document.getElementById('studyDate').value = new Date().toISOString().split('T')[0];
+            }
+        });
+
+        function goToSection(index) {
+            if (index < 0 || index >= sections.length) return;
+            currentSection = index;
+            
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById('section-' + sections[index]).classList.add('active');
+            
+            document.getElementById('currentSectionTitle').textContent = sectionTitles[sections[index]];
+            updateNavigation();
+            
+            if (sections[index] === 'review') {
+                generateSummary();
+            }
+        }
+
+        function nextSection() {
+            saveToLocal();
+            goToSection(currentSection + 1);
+        }
+
+        function prevSection() {
+            goToSection(currentSection - 1);
+        }
+
+        function updateNavigation() {
+            document.querySelectorAll('.nav-item').forEach((item, i) => {
+                item.classList.remove('active');
+                if (item.dataset.section === sections[currentSection]) {
+                    item.classList.add('active');
+                }
+            });
+        }
+
+        function updateProgress() {
+            const inputs = document.querySelectorAll('.form-input, .form-textarea, .form-select');
+            let filled = 0;
+            let total = 0;
+            
+            inputs.forEach(input => {
+                if (input.id && !input.id.includes('alternative')) {
+                    total++;
+                    if (input.value && input.value.trim()) filled++;
+                }
+            });
+            
+            const percent = Math.round((filled / total) * 100);
+            document.getElementById('progressFill').style.width = percent + '%';
+            document.getElementById('progressText').textContent = percent;
+        }
+
+        // Priority selection
+        function selectPriority(priority) {
+            document.querySelectorAll('.priority-option').forEach(opt => {
+                opt.classList.remove('selected', 'high', 'moderate', 'low');
+            });
+            const selected = document.querySelector(`.priority-option[data-priority="${priority}"]`);
+            selected.classList.add('selected', priority);
+            document.getElementById('priority').value = priority;
+            saveToLocal();
+        }
+
+        // Alternatives management
+        function addAlternative() {
+            alternativeCount++;
+            const list = document.getElementById('alternativesList');
+            const div = document.createElement('div');
+            div.className = 'alternative-item';
+            div.dataset.index = alternativeCount - 1;
+            div.innerHTML = `
+                <div class="alternative-header">
+                    <span class="alternative-number">${alternativeCount}</span>
+                    <input type="text" class="form-input alternative-title" placeholder="Alternative name">
+                    <button class="alternative-remove" onclick="removeAlternative(${alternativeCount - 1})">✕</button>
+                </div>
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-textarea" placeholder="Describe this alternative, including pros & cons, associated risks, expected benefits, and timeline."></textarea>
+                </div>
+            `;
+            list.appendChild(div);
+        }
+
+        function removeAlternative(index) {
+            const item = document.querySelector(`.alternative-item[data-index="${index}"]`);
+            if (item && alternativeCount > 2) {
+                item.remove();
+                renumberAlternatives();
+            }
+        }
+
+        function renumberAlternatives() {
+            const items = document.querySelectorAll('.alternative-item');
+            items.forEach((item, i) => {
+                item.dataset.index = i;
+                item.querySelector('.alternative-number').textContent = i + 1;
+                const removeBtn = item.querySelector('.alternative-remove');
+                if (removeBtn) {
+                    removeBtn.onclick = () => removeAlternative(i);
+                }
+            });
+            alternativeCount = items.length;
+        }
+
+        // Auto-save
+        function setupAutoSave() {
+            let saveTimeout;
+            document.querySelectorAll('.form-input, .form-textarea, .form-select').forEach(input => {
+                input.addEventListener('input', function() {
+                    clearTimeout(saveTimeout);
+                    saveTimeout = setTimeout(() => {
+                        saveToLocal();
+                        updateProgress();
+                    }, 500);
+                });
+            });
+        }
+
+        function saveToLocal() {
+            const data = {
+                // Project Info
+                workingTitle: document.getElementById('workingTitle').value,
+                preparedBy: document.getElementById('preparedBy').value,
+                businessUnit: document.getElementById('businessUnit').value,
+                studyDate: document.getElementById('studyDate').value,
+                version: document.getElementById('version').value,
+                approvedBy: document.getElementById('approvedBy').value,
+                approvalDate: document.getElementById('approvalDate').value,
+                reviewedBy: document.getElementById('reviewedBy').value,
+                reviewDate: document.getElementById('reviewDate').value,
+                // Contacts
+                ownerName: document.getElementById('ownerName').value,
+                ownerEmail: document.getElementById('ownerEmail').value,
+                ownerPhone: document.getElementById('ownerPhone').value,
+                ownerFax: document.getElementById('ownerFax').value,
+                coordName: document.getElementById('coordName').value,
+                coordEmail: document.getElementById('coordEmail').value,
+                coordPhone: document.getElementById('coordPhone').value,
+                coordFax: document.getElementById('coordFax').value,
+                // Content
+                goalsObjectives: document.getElementById('goalsObjectives').value,
+                projectDescription: document.getElementById('projectDescription').value,
+                priority: document.getElementById('priority').value,
+                strategicFit: document.getElementById('strategicFit').value,
+                businessContext: document.getElementById('businessContext').value,
+                interrelations: document.getElementById('interrelations').value,
+                analysisCriteria: document.getElementById('analysisCriteria').value,
+                risksAnalysis: document.getElementById('risksAnalysis').value,
+                costBenefitAnalysis: document.getElementById('costBenefitAnalysis').value,
+                investmentAnalysis: document.getElementById('investmentAnalysis').value,
+                recommendation: document.getElementById('recommendation').value,
+                directCosts: document.getElementById('directCosts').value,
+                ongoingCosts: document.getElementById('ongoingCosts').value,
+                indirectCosts: document.getElementById('indirectCosts').value,
+                corpCosts: document.getElementById('corpCosts').value,
+                feasibilityImpact: document.getElementById('feasibilityImpact').value,
+                planningRequirements: document.getElementById('planningRequirements').value,
+                projectStructure: document.getElementById('projectStructure').value,
+                startDate: document.getElementById('startDate').value,
+                completionDate: document.getElementById('completionDate').value,
+                deliverables: document.getElementById('deliverables').value,
+                assumptions: document.getElementById('assumptions').value,
+                // Alternatives
+                alternatives: getAlternatives(),
+                lastSaved: new Date().toISOString()
+            };
+            localStorage.setItem('feasibility_study', JSON.stringify(data));
+        }
+
+        function getAlternatives() {
+            const alternatives = [];
+            document.querySelectorAll('.alternative-item').forEach(item => {
+                alternatives.push({
+                    title: item.querySelector('.alternative-title').value,
+                    description: item.querySelector('.form-textarea').value
+                });
+            });
+            return alternatives;
+        }
+
+        function loadFromLocal() {
+            const data = localStorage.getItem('feasibility_study');
+            if (!data) return;
+            
+            const parsed = JSON.parse(data);
+            
+            // Load all fields
+            Object.keys(parsed).forEach(key => {
+                const el = document.getElementById(key);
+                if (el && parsed[key]) {
+                    el.value = parsed[key];
+                }
+            });
+
+            // Load priority
+            if (parsed.priority) {
+                selectPriority(parsed.priority);
+            }
+
+            // Load alternatives
+            if (parsed.alternatives && parsed.alternatives.length > 0) {
+                const list = document.getElementById('alternativesList');
+                list.innerHTML = '';
+                parsed.alternatives.forEach((alt, i) => {
+                    const div = document.createElement('div');
+                    div.className = 'alternative-item';
+                    div.dataset.index = i;
+                    div.innerHTML = `
+                        <div class="alternative-header">
+                            <span class="alternative-number">${i + 1}</span>
+                            <input type="text" class="form-input alternative-title" placeholder="${i === 0 ? 'Status Quo (Do Nothing)' : 'Alternative name'}" value="${alt.title || ''}">
+                            ${i > 0 ? `<button class="alternative-remove" onclick="removeAlternative(${i})">✕</button>` : ''}
+                        </div>
+                        <div class="form-group" style="margin-bottom: 1rem;">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-textarea" placeholder="Describe this alternative...">${alt.description || ''}</textarea>
+                        </div>
+                    `;
+                    list.appendChild(div);
+                });
+                alternativeCount = parsed.alternatives.length;
+            }
+        }
+
+        function clearAll() {
+            if (!confirm('Are you sure you want to clear all data? This cannot be undone.')) return;
+            localStorage.removeItem('feasibility_study');
+            location.reload();
+        }
+
+        // Help modal
+        function showHelp() {
+            document.getElementById('helpModal').classList.add('show');
+        }
+
+        function closeHelp() {
+            document.getElementById('helpModal').classList.remove('show');
+        }
+
+        // Load example data
+        function loadExample() {
+            if (!confirm('Load example data? This will replace your current work.')) return;
+            
+            const example = {
+                workingTitle: "Enterprise Resource Planning (ERP) System Modernization",
+                preparedBy: "Sarah Johnson",
+                businessUnit: "Information Technology",
+                studyDate: new Date().toISOString().split('T')[0],
+                version: "1.0",
+                approvedBy: "Michael Chen",
+                ownerName: "David Williams",
+                ownerEmail: "d.williams@company.com",
+                ownerPhone: "+1 (555) 234-5678",
+                coordName: "Sarah Johnson",
+                coordEmail: "s.johnson@company.com",
+                coordPhone: "+1 (555) 345-6789",
+                goalsObjectives: "The primary goal of this Investment Plan is to modernize the organization's Enterprise Resource Planning (ERP) system to:\n\n• Improve operational efficiency by 30% through automated workflows\n• Reduce manual data entry errors by 80%\n• Enable real-time reporting and analytics capabilities\n• Support the company's digital transformation initiative\n• Consolidate 5 legacy systems into a single integrated platform",
+                projectDescription: "The current ERP system was implemented 12 years ago and has reached end-of-life status. The vendor has announced end of support by Q4 2025. Key issues include:\n\n• System performance degradation affecting daily operations\n• Integration challenges with modern applications\n• Limited mobile access capabilities\n• High maintenance costs ($500K annually)\n• Inability to support new regulatory requirements\n\nThe desired outcome is a modern, cloud-based ERP solution that addresses these limitations while providing a foundation for future growth.",
+                priority: "high",
+                strategicFit: "This initiative directly supports the Corporate Strategic Plan 2024-2028, specifically:\n\n• Digital Transformation Pillar: Modernizing core business systems\n• Operational Excellence Goal: Streamlining processes and reducing costs\n• Customer Experience Objective: Enabling better service delivery through improved data access\n\nThe ERP modernization is listed as a Tier 1 priority in the IT Roadmap and has been endorsed by the Executive Leadership Team.",
+                businessContext: "Several factors make this the optimal time for investment:\n\n1. Current system end-of-life: Vendor support ending Q4 2025\n2. Competitive pressure: Competitors have already modernized their systems\n3. Regulatory changes: New compliance requirements require system updates\n4. Workforce expectations: Remote work requires cloud-based access\n5. Integration needs: New CRM and analytics tools require modern APIs",
+                interrelations: "This project will interact with:\n\n• Finance Department: New GL structure and reporting capabilities\n• HR: Integrated payroll and workforce management\n• Supply Chain: Inventory and procurement modules\n• Sales: CRM integration and order management\n• IT Security: New authentication and access controls\n\nKey stakeholders from each department will participate in the requirements and testing phases.",
+                analysisCriteria: "The following criteria were used to evaluate alternatives:\n\n1. Total Cost of Ownership (5-year horizon)\n2. Implementation timeline and business disruption\n3. Functional fit with business requirements (scored 1-5)\n4. Vendor stability and market position\n5. Integration capabilities with existing systems\n6. User experience and adoption likelihood\n7. Scalability for future growth\n8. Compliance and security features\n\nWeighting: Cost (25%), Functionality (30%), Risk (20%), Timeline (15%), Strategic Fit (10%)",
+                risksAnalysis: "Alternative 1 (Status Quo) Risks:\n• Critical: System failure risk increases each year\n• High: Compliance violations due to missing features\n• High: Inability to integrate with new systems\n\nAlternative 2 (Cloud ERP - SAP S/4HANA) Risks:\n• Moderate: Implementation complexity\n• Moderate: Change management challenges\n• Low: Vendor lock-in\nMitigation: Phased implementation, comprehensive training program\n\nAlternative 3 (Cloud ERP - Oracle Fusion) Risks:\n• Moderate: Higher implementation cost\n• Moderate: Learning curve for IT team\n• Low: Integration complexity\nMitigation: Engage certified implementation partner",
+                costBenefitAnalysis: "Tangible Benefits (Annual, post-implementation):\n• Labor cost reduction: $400,000\n• Maintenance savings: $350,000\n• Error reduction savings: $150,000\n• Process efficiency gains: $500,000\nTotal Annual Benefits: $1,400,000\n\nIntangible Benefits:\n• Improved employee satisfaction\n• Better decision-making through real-time data\n• Enhanced customer experience\n• Competitive advantage\n\n5-Year Cost Comparison:\n• Status Quo: $4.5M (including risk costs)\n• SAP S/4HANA: $3.2M\n• Oracle Fusion: $3.8M",
+                investmentAnalysis: "Financial Analysis (5-year horizon):\n\nSAP S/4HANA:\n• Initial Investment: $2,100,000\n• Annual Operating Cost: $220,000\n• NPV: $2,450,000\n• Payback Period: 2.3 years\n• ROI: 167%\n\nOracle Fusion:\n• Initial Investment: $2,500,000\n• Annual Operating Cost: $260,000\n• NPV: $1,890,000\n• Payback Period: 2.8 years\n• ROI: 142%\n\nBased on the financial analysis, SAP S/4HANA provides superior value.",
+                recommendation: "RECOMMENDATION: Proceed with SAP S/4HANA Cloud implementation\n\nRationale:\n1. Best NPV and ROI among evaluated alternatives\n2. Shorter payback period (2.3 years)\n3. Strong functional fit score (4.5/5.0)\n4. Proven track record in our industry\n5. Robust partner ecosystem in our region\n6. Better integration capabilities with existing Microsoft tools\n\nThe recommended solution addresses all critical requirements while providing the best long-term value. The implementation partner (Accenture) has been pre-selected based on their experience with similar transformations.\n\nThis recommendation has been validated by the IT Steering Committee and Finance Department.",
+                directCosts: "• Software licenses: $800,000 (Year 1)\n• Implementation services: $900,000\n• Hardware/Infrastructure: $150,000\n• Data migration: $150,000\n• Training: $100,000\n\nTotal Direct Costs: $2,100,000",
+                ongoingCosts: "• Annual license fees: $180,000\n• Support and maintenance: $40,000\n• Hosting/Cloud services: (included in license)\n\nTotal Annual Recurring: $220,000",
+                indirectCosts: "• Productivity loss during transition: $200,000\n• Temporary staffing: $75,000\n• Contingency (10%): $237,500\n\nTotal Indirect Costs: $512,500",
+                corpCosts: "• IT infrastructure upgrades: $50,000\n• Network bandwidth increase: $10,000/year\n• Security enhancements: $25,000\n\nTotal Corporation-wide: $85,000",
+                feasibilityImpact: "Technical Feasibility: CONFIRMED\n• SAP has confirmed system requirements can be met\n• Network assessment completed - adequate bandwidth\n• Cloud readiness assessment: 85% score\n\nOrganizational Impact:\n• 450 users will require training\n• 12 business processes will be redesigned\n• 3 legacy systems will be decommissioned\n\nImpact Management:\n• Change Management lead assigned (Jane Smith)\n• Communication plan developed\n• Training program designed (40 hours per user)\n• Parallel run period: 3 months\n• Hypercare support: 6 months post go-live",
+                planningRequirements: "Planning Phase Requirements:\n\n• Project Manager: 1 FTE (12 months)\n• Business Analysts: 2 FTE (6 months)\n• Technical Architect: 1 FTE (3 months)\n• Change Management Lead: 0.5 FTE (12 months)\n\nPlanning Budget: $350,000\n\nDeliverables:\n• Detailed project plan\n• Requirements specification\n• Solution design document\n• Change management strategy\n• Training curriculum",
+                projectStructure: "Governance Structure:\n\n• Executive Sponsor: Michael Chen (VP Operations)\n• Steering Committee: Monthly reviews\n• Project Manager: TBD (to be recruited)\n• Working Committee: Weekly standups\n\nProject Team:\n• Core Team: 8 FTE\n• Extended Team: 15 part-time resources\n• Vendor Team: 6 consultants\n\nBudget Summary:\n• Capital: $2,100,000\n• Operating: $512,500 (Year 1 indirect)\n• Contingency: $262,500\nTotal Project Budget: $2,875,000",
+                startDate: new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0],
+                completionDate: new Date(Date.now() + 545*24*60*60*1000).toISOString().split('T')[0],
+                deliverables: "Gate 2 (Mandate & Global Plan): Q1 2025\n• Detailed project plan\n• Approved budget and resources\n• Vendor contract signed\n\nGate 3 (Design Complete): Q2 2025\n• Solution design approved\n• Integration specifications\n• Test strategy\n\nGate 4 (Build Complete): Q4 2025\n• System configured\n• Integrations developed\n• User acceptance testing complete\n\nGate 5 (Go-Live): Q1 2026\n• Production deployment\n• Training completed\n• Hypercare initiated\n\nGate 6 (Close): Q3 2026\n• Benefits realization report\n• Lessons learned documented\n• Project closure",
+                assumptions: "Key Assumptions:\n\n1. Executive sponsorship will be maintained throughout the project\n2. Business resources will be available as planned (15% capacity)\n3. No major regulatory changes during implementation\n4. Vendor pricing remains as quoted for 12 months\n5. Current IT infrastructure can support the new system\n6. Data quality in legacy systems is sufficient for migration\n7. No major organizational restructuring during project\n8. Economic conditions remain stable\n9. Key personnel remain with the organization\n10. Implementation partner maintains adequate staffing\n\nConditions:\n• Funding approval required before Gate 2\n• Board approval required for contracts over $1M\n• Union consultation required for process changes",
+                alternatives: [
+                    { title: "Status Quo", description: "Continue using the current ERP system with increased maintenance and support costs. Risks include system failure, compliance issues, and inability to integrate with modern applications. This option delays the inevitable while costs and risks increase annually." },
+                    { title: "SAP S/4HANA Cloud (Recommended)", description: "Implement SAP's flagship cloud ERP solution. Pros: Industry leader, comprehensive functionality, strong partner ecosystem, best ROI. Cons: Complex implementation, requires experienced partner. Timeline: 18 months." },
+                    { title: "Oracle Fusion Cloud", description: "Implement Oracle's cloud ERP solution. Pros: Strong financial modules, good analytics. Cons: Higher total cost, smaller local partner network. Timeline: 20 months." }
+                ]
+            };
+
+            localStorage.setItem('feasibility_study', JSON.stringify(example));
+            location.reload();
+        }
+
+        // Generate summary for review section
+        function generateSummary() {
+            const data = JSON.parse(localStorage.getItem('feasibility_study') || '{}');
+            const summary = document.getElementById('summaryContent');
+            
+            summary.innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
+                    <div><strong>Project:</strong> ${data.workingTitle || 'Not specified'}</div>
+                    <div><strong>Prepared By:</strong> ${data.preparedBy || 'Not specified'}</div>
+                    <div><strong>Business Unit:</strong> ${data.businessUnit || 'Not specified'}</div>
+                    <div><strong>Priority:</strong> ${(data.priority || 'Not specified').charAt(0).toUpperCase() + (data.priority || '').slice(1)}</div>
+                    <div><strong>Start Date:</strong> ${data.startDate || 'Not specified'}</div>
+                    <div><strong>Completion Date:</strong> ${data.completionDate || 'Not specified'}</div>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <strong>Recommendation:</strong>
+                    <p style="margin-top: 0.5rem; white-space: pre-wrap;">${(data.recommendation || 'Not specified').substring(0, 500)}${(data.recommendation || '').length > 500 ? '...' : ''}</p>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <strong>Alternatives Considered:</strong> ${data.alternatives ? data.alternatives.length : 0}
+                </div>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <div style="padding: 0.75rem 1rem; background: var(--bg); border-radius: 8px;">
+                        <strong>Sections Completed:</strong> ${calculateCompletedSections()}/16
+                    </div>
+                </div>
+            `;
+        }
+
+        function calculateCompletedSections() {
+            const data = JSON.parse(localStorage.getItem('feasibility_study') || '{}');
+            let completed = 0;
+            
+            if (data.workingTitle && data.preparedBy) completed++;
+            if (data.ownerName || data.coordName) completed++;
+            if (data.goalsObjectives) completed++;
+            if (data.projectDescription) completed++;
+            if (data.strategicFit && data.businessContext) completed++;
+            if (data.alternatives && data.alternatives.length > 0) completed++;
+            if (data.analysisCriteria) completed++;
+            if (data.risksAnalysis) completed++;
+            if (data.costBenefitAnalysis) completed++;
+            if (data.investmentAnalysis) completed++;
+            if (data.recommendation) completed++;
+            if (data.directCosts || data.ongoingCosts) completed++;
+            if (data.feasibilityImpact) completed++;
+            if (data.projectStructure) completed++;
+            if (data.deliverables) completed++;
+            if (data.assumptions) completed++;
+            
+            return completed;
+        }
+
+        // Export to PDF
+        function exportPDF() {
+            saveToLocal();
+            
+            // Track export
+            let exports = parseInt(localStorage.getItem('fs_exports') || '0');
+            localStorage.setItem('fs_exports', exports + 1);
+            
+            window.print();
+        }
+    </script>
+</body>
+</html>
