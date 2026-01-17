@@ -480,6 +480,10 @@
     </div>
 
     <script>
+        // Supabase configuration
+        const SUPABASE_URL = 'https://wfoyzgnowlpgpexygajs.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_uP0MT3tN5yMg2S490we5-w_UOAgnJi4';
+
         // Admin credentials - In production, this would be server-side authentication
         const ADMIN_CREDENTIALS = {
             id: 'admin',
@@ -541,54 +545,128 @@
             document.getElementById('adminPassword').value = '';
         }
 
-        function loadAdminData() {
-            // In production, this would fetch from your backend
-            // For demo, we'll use mock data and localStorage
-            
-            // Mock user data - replace with actual API calls
-            const mockUsers = [
-                { email: 'john@acme.com', plan: 'unlimited', tools: 'All', joined: '2026-01-15', status: 'Active' },
-                { email: 'sarah@techcorp.io', plan: 'professional', tools: '5', joined: '2026-01-14', status: 'Active' },
-                { email: 'mike@startup.co', plan: 'starter', tools: '1', joined: '2026-01-13', status: 'Active' },
-                { email: 'lisa@enterprise.com', plan: 'professional', tools: '5', joined: '2026-01-12', status: 'Active' },
-                { email: 'david@consulting.io', plan: 'free', tools: '0', joined: '2026-01-11', status: 'Active' },
-            ];
+        async function loadAdminData() {
+            try {
+                // Fetch users from Supabase
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/users?select=*&order=created_at.desc`, {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                });
 
-            // Populate users table
-            const usersTable = document.getElementById('usersTable');
-            usersTable.innerHTML = mockUsers.map(user => `
-                <tr>
-                    <td>${user.email}</td>
-                    <td><span class="badge badge-${user.plan}">${user.plan.charAt(0).toUpperCase() + user.plan.slice(1)}</span></td>
-                    <td>${user.tools}</td>
-                    <td>${user.joined}</td>
-                    <td>${user.status}</td>
-                </tr>
-            `).join('');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch users');
+                }
 
-            // Calculate stats
-            const planCounts = {
-                starter: 12,
-                professional: 28,
-                unlimited: 8
-            };
+                const users = await response.json();
 
-            const totalPaid = planCounts.starter + planCounts.professional + planCounts.unlimited;
-            const monthlyRevenue = (planCounts.starter * 9) + (planCounts.professional * 19) + (planCounts.unlimited * 49);
+                // Calculate stats
+                const stats = {
+                    total: users.length,
+                    free: users.filter(u => u.plan === 'free').length,
+                    starter: users.filter(u => u.plan === 'starter').length,
+                    professional: users.filter(u => u.plan === 'professional').length,
+                    unlimited: users.filter(u => u.plan === 'unlimited').length,
+                    enterprise: users.filter(u => u.plan === 'enterprise').length,
+                };
 
-            // Update stats
-            document.getElementById('totalUsers').textContent = '156';
-            document.getElementById('paidUsers').textContent = totalPaid;
-            document.getElementById('monthlyRevenue').textContent = '$' + monthlyRevenue.toLocaleString();
-            document.getElementById('totalProjects').textContent = '342';
+                stats.paid = stats.starter + stats.professional + stats.unlimited + stats.enterprise;
+                stats.mrr = (stats.starter * 9) + (stats.professional * 19) + (stats.unlimited * 49);
 
-            // Update plan breakdown
-            document.getElementById('starterCount').textContent = planCounts.starter;
-            document.getElementById('starterRevenue').textContent = '$' + (planCounts.starter * 9);
-            document.getElementById('proCount').textContent = planCounts.professional;
-            document.getElementById('proRevenue').textContent = '$' + (planCounts.professional * 19);
-            document.getElementById('unlimitedCount').textContent = planCounts.unlimited;
-            document.getElementById('unlimitedRevenue').textContent = '$' + (planCounts.unlimited * 49);
+                // Update stats display
+                document.getElementById('totalUsers').textContent = stats.total;
+                document.getElementById('paidUsers').textContent = stats.paid;
+                document.getElementById('monthlyRevenue').textContent = '$' + stats.mrr.toLocaleString();
+                document.getElementById('totalProjects').textContent = '—'; // Would need separate tracking
+
+                // Update plan breakdown
+                document.getElementById('starterCount').textContent = stats.starter;
+                document.getElementById('starterRevenue').textContent = '$' + (stats.starter * 9);
+                document.getElementById('proCount').textContent = stats.professional;
+                document.getElementById('proRevenue').textContent = '$' + (stats.professional * 19);
+                document.getElementById('unlimitedCount').textContent = stats.unlimited;
+                document.getElementById('unlimitedRevenue').textContent = '$' + (stats.unlimited * 49);
+
+                // Populate users table
+                const usersTable = document.getElementById('usersTable');
+                
+                if (users.length === 0) {
+                    usersTable.innerHTML = `
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                                No users registered yet
+                            </td>
+                        </tr>
+                    `;
+                } else {
+                    usersTable.innerHTML = users.slice(0, 20).map(user => `
+                        <tr>
+                            <td>${user.email}</td>
+                            <td><span class="badge badge-${user.plan}">${user.plan.charAt(0).toUpperCase() + user.plan.slice(1)}</span></td>
+                            <td>${user.selected_tools?.length || 0}</td>
+                            <td>${new Date(user.created_at).toLocaleDateString()}</td>
+                            <td>
+                                <select onchange="updateUserPlan('${user.email}', this.value)" style="
+                                    background: rgba(255,255,255,0.1);
+                                    border: 1px solid var(--border);
+                                    color: white;
+                                    padding: 4px 8px;
+                                    border-radius: 4px;
+                                    font-size: 0.8rem;
+                                ">
+                                    <option value="free" ${user.plan === 'free' ? 'selected' : ''}>Free</option>
+                                    <option value="starter" ${user.plan === 'starter' ? 'selected' : ''}>Starter</option>
+                                    <option value="professional" ${user.plan === 'professional' ? 'selected' : ''}>Professional</option>
+                                    <option value="unlimited" ${user.plan === 'unlimited' ? 'selected' : ''}>Unlimited</option>
+                                </select>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+
+            } catch (err) {
+                console.error('Error loading admin data:', err);
+                document.getElementById('usersTable').innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; color: #fca5a5; padding: 2rem;">
+                            Error loading data: ${err.message}
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        async function updateUserPlan(email, newPlan) {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/users?email=eq.${encodeURIComponent(email)}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify({
+                        plan: newPlan,
+                        updated_at: new Date().toISOString()
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to update user');
+                }
+
+                // Reload data to reflect changes
+                loadAdminData();
+                
+                // Show success message
+                alert(`User ${email} updated to ${newPlan} plan`);
+
+            } catch (err) {
+                console.error('Error updating user:', err);
+                alert('Failed to update user: ' + err.message);
+            }
         }
 
         // Initialize
