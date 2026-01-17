@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - ProjectManagerTool</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --accent: #8b5cf6;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --bg: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-dark: #0f172a;
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --text-dim: #94a3b8;
+            --border: #e2e8f0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; min-height: 100vh; }
+
+        /* Navigation */
+        .nav { background: var(--bg-dark); padding: 1rem 2rem; position: sticky; top: 0; z-index: 100; }
+        .nav-content { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .nav-logo { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; }
+        .nav-logo-icon { width: 36px; height: 36px; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+        .nav-logo-text { font-family: 'Fraunces', serif; font-size: 1.25rem; font-weight: 700; color: white; }
+        .nav-links { display: flex; align-items: center; gap: 1.5rem; }
+        .nav-link { color: rgba(255,255,255,0.7); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color 0.2s; }
+        .nav-link:hover { color: white; }
+        .nav-link.active { color: white; }
+
+        .btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.6rem 1.2rem; border-radius: 8px; font-family: inherit; font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: all 0.2s; border: none; text-decoration: none; }
+        .btn-primary { background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: white; }
+        .btn-secondary { background: rgba(255,255,255,0.1); color: white; }
+
+        .main { max-width: 1400px; margin: 0 auto; padding: 2rem; }
+
+        /* Header */
+        .page-header { margin-bottom: 2rem; }
+        .greeting { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.25rem; }
+        .page-title { font-family: 'Fraunces', serif; font-size: 1.75rem; font-weight: 700; }
+
+        /* Stats Grid */
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-card { background: var(--bg-card); border-radius: 12px; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+        .stat-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem; }
+        .stat-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
+        .stat-value { font-family: 'Fraunces', serif; font-size: 2rem; font-weight: 700; margin-bottom: 0.25rem; }
+        .stat-label { color: var(--text-muted); font-size: 0.9rem; }
+
+        /* Quick Actions */
+        .quick-actions { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 2rem; }
+        .quick-action { background: var(--bg-card); border-radius: 12px; padding: 1.25rem; text-align: center; text-decoration: none; color: var(--text); transition: all 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.08); border: 2px solid transparent; }
+        .quick-action:hover { border-color: var(--primary); transform: translateY(-2px); }
+        .quick-action-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin: 0 auto 0.75rem; }
+        .quick-action-label { font-weight: 600; font-size: 0.9rem; }
+        .quick-action-status { font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 20px; margin-top: 0.5rem; display: inline-block; }
+        .status-live { background: rgba(34, 197, 94, 0.15); color: #16a34a; }
+        .status-beta { background: rgba(245, 158, 11, 0.15); color: #d97706; }
+
+        /* Section */
+        .section { margin-bottom: 2rem; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .section-title { font-family: 'Fraunces', serif; font-size: 1.25rem; font-weight: 700; }
+        .section-link { color: var(--primary); text-decoration: none; font-size: 0.9rem; font-weight: 500; }
+
+        /* Projects Grid */
+        .projects-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+        .project-card { background: var(--bg-card); border-radius: 12px; padding: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); transition: all 0.2s; border-left: 4px solid; }
+        .project-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .project-header { display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1rem; }
+        .project-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0; }
+        .project-info { flex: 1; min-width: 0; }
+        .project-title { font-weight: 600; margin-bottom: 0.25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .project-tool { font-size: 0.8rem; color: var(--text-muted); }
+        .project-meta { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: var(--text-dim); }
+        .project-actions { display: flex; gap: 0.5rem; margin-top: 1rem; }
+        .project-btn { padding: 0.4rem 0.75rem; border-radius: 6px; font-size: 0.8rem; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--text-muted); transition: all 0.2s; text-decoration: none; }
+        .project-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .project-btn-primary { background: var(--primary); color: white; border-color: var(--primary); }
+        .project-btn-primary:hover { background: var(--primary-light); }
+
+        /* Empty State */
+        .empty-state { text-align: center; padding: 3rem; background: var(--bg-card); border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+        .empty-icon { font-size: 3rem; margin-bottom: 1rem; }
+        .empty-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; }
+        .empty-text { color: var(--text-muted); margin-bottom: 1.5rem; }
+
+        /* Tool Colors */
+        .charterpro { background: rgba(99, 102, 241, 0.1); border-color: #6366f1; }
+        .dmaic { background: rgba(16, 185, 129, 0.1); border-color: #10b981; }
+        .roi { background: rgba(245, 158, 11, 0.1); border-color: #f59e0b; }
+        .tco { background: rgba(139, 92, 246, 0.1); border-color: #8b5cf6; }
+        .risk { background: rgba(239, 68, 68, 0.1); border-color: #ef4444; }
+
+        @media (max-width: 1200px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .projects-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .quick-actions { grid-template-columns: repeat(3, 1fr); }
+            .projects-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-content">
+            <a href="/" class="nav-logo">
+                <div class="nav-logo-icon">🚀</div>
+                <span class="nav-logo-text">ProjectManagerTool</span>
+            </a>
+            <div class="nav-links">
+                <a href="/dashboard/" class="nav-link active">Dashboard</a>
+                <a href="/pricing" class="nav-link">Pricing</a>
+                <a href="/admin/" class="nav-link">Admin</a>
+            </div>
+            <a href="/invite/" class="btn btn-primary">Get Beta Access</a>
+        </div>
+    </nav>
+
+    <main class="main">
+        <div class="page-header">
+            <p class="greeting" id="greeting">Good morning 👋</p>
+            <h1 class="page-title">Your Dashboard</h1>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon" style="background: rgba(99, 102, 241, 0.1);">📊</div>
+                </div>
+                <div class="stat-value" id="totalProjects">0</div>
+                <div class="stat-label">Total Projects</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon" style="background: rgba(34, 197, 94, 0.1);">📋</div>
+                </div>
+                <div class="stat-value" id="chartersCount">0</div>
+                <div class="stat-label">Project Charters</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon" style="background: rgba(245, 158, 11, 0.1);">💰</div>
+                </div>
+                <div class="stat-value" id="analysesCount">0</div>
+                <div class="stat-label">Financial Analyses</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon" style="background: rgba(239, 68, 68, 0.1);">⚠️</div>
+                </div>
+                <div class="stat-value" id="risksCount">0</div>
+                <div class="stat-label">Risks Tracked</div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">Create New</h2>
+            </div>
+            <div class="quick-actions">
+                <a href="/charterpro/charter.html" class="quick-action">
+                    <div class="quick-action-icon charterpro">📋</div>
+                    <div class="quick-action-label">Project Charter</div>
+                    <span class="quick-action-status status-live">Live</span>
+                </a>
+                <a href="/dmaic/dmaic.html" class="quick-action">
+                    <div class="quick-action-icon dmaic">🔄</div>
+                    <div class="quick-action-label">DMAIC Project</div>
+                    <span class="quick-action-status status-beta">Beta</span>
+                </a>
+                <a href="/roi/calculator.html" class="quick-action">
+                    <div class="quick-action-icon roi">💰</div>
+                    <div class="quick-action-label">ROI Analysis</div>
+                    <span class="quick-action-status status-beta">Beta</span>
+                </a>
+                <a href="/tco/calculator.html" class="quick-action">
+                    <div class="quick-action-icon tco">🧮</div>
+                    <div class="quick-action-label">TCO Analysis</div>
+                    <span class="quick-action-status status-beta">Beta</span>
+                </a>
+                <a href="/risk-register/register.html" class="quick-action">
+                    <div class="quick-action-icon risk">⚠️</div>
+                    <div class="quick-action-label">Risk Register</div>
+                    <span class="quick-action-status status-beta">Beta</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Recent Projects -->
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">Recent Projects</h2>
+            </div>
+            <div class="projects-grid" id="projectsGrid">
+                <!-- Populated by JavaScript -->
+            </div>
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <div class="empty-icon">📁</div>
+                <h3 class="empty-title">No projects yet</h3>
+                <p class="empty-text">Get started by creating your first project using any of the tools above.</p>
+                <a href="/charterpro/charter.html" class="btn btn-primary">Create First Project</a>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function loadDashboardData() {
+            const projects = [];
+            let chartersCount = 0;
+            let analysesCount = 0;
+            let risksCount = 0;
+
+            // CharterPro projects
+            const charters = JSON.parse(localStorage.getItem('charterpro_projects') || '[]');
+            chartersCount = charters.length;
+            charters.forEach(c => {
+                projects.push({
+                    id: c.id || Date.now(),
+                    title: c.projectName || 'Untitled Charter',
+                    tool: 'CharterPro',
+                    toolClass: 'charterpro',
+                    icon: '📋',
+                    date: c.lastSaved,
+                    link: '/charterpro/charter.html'
+                });
+            });
+
+            // DMAIC projects
+            const dmaicProjects = JSON.parse(localStorage.getItem('dmaic_projects') || '[]');
+            const dmaicCurrent = localStorage.getItem('dmaic_current_project');
+            if (dmaicCurrent) {
+                const dmaic = JSON.parse(dmaicCurrent);
+                projects.push({
+                    id: 'dmaic-current',
+                    title: dmaic.projectName || 'Untitled DMAIC',
+                    tool: 'DMAIC Generator',
+                    toolClass: 'dmaic',
+                    icon: '🔄',
+                    date: dmaic.lastSaved,
+                    link: '/dmaic/dmaic.html'
+                });
+            }
+            dmaicProjects.forEach(d => {
+                projects.push({
+                    id: d.id,
+                    title: d.projectName || 'Untitled DMAIC',
+                    tool: 'DMAIC Generator',
+                    toolClass: 'dmaic',
+                    icon: '🔄',
+                    date: d.lastSaved,
+                    link: '/dmaic/dmaic.html'
+                });
+            });
+
+            // ROI Analysis
+            const roiData = localStorage.getItem('roi_current_project');
+            if (roiData) {
+                const roi = JSON.parse(roiData);
+                projects.push({
+                    id: 'roi-current',
+                    title: roi.projectName || 'Untitled ROI Analysis',
+                    tool: 'ROI Calculator',
+                    toolClass: 'roi',
+                    icon: '💰',
+                    date: roi.lastSaved,
+                    link: '/roi/calculator.html'
+                });
+                analysesCount++;
+            }
+
+            // TCO Analysis
+            const tcoData = localStorage.getItem('tco_current');
+            if (tcoData) {
+                const tco = JSON.parse(tcoData);
+                projects.push({
+                    id: 'tco-current',
+                    title: tco.assetName || 'Untitled TCO Analysis',
+                    tool: 'TCO Calculator',
+                    toolClass: 'tco',
+                    icon: '🧮',
+                    date: tco.lastSaved,
+                    link: '/tco/calculator.html'
+                });
+                analysesCount++;
+            }
+
+            // Risk Register
+            const riskData = localStorage.getItem('risk_register');
+            if (riskData) {
+                const risk = JSON.parse(riskData);
+                risksCount = risk.risks ? risk.risks.length : 0;
+                projects.push({
+                    id: 'risk-register',
+                    title: risk.projectName || 'Risk Register',
+                    tool: 'Risk Register',
+                    toolClass: 'risk',
+                    icon: '⚠️',
+                    date: new Date().toISOString(),
+                    link: '/risk-register/register.html',
+                    extra: `${risksCount} risks`
+                });
+            }
+
+            // Update stats
+            document.getElementById('totalProjects').textContent = projects.length;
+            document.getElementById('chartersCount').textContent = chartersCount;
+            document.getElementById('analysesCount').textContent = analysesCount;
+            document.getElementById('risksCount').textContent = risksCount;
+
+            // Render projects
+            renderProjects(projects);
+        }
+
+        function renderProjects(projects) {
+            const grid = document.getElementById('projectsGrid');
+            const empty = document.getElementById('emptyState');
+
+            if (projects.length === 0) {
+                grid.style.display = 'none';
+                empty.style.display = 'block';
+                return;
+            }
+
+            grid.style.display = 'grid';
+            empty.style.display = 'none';
+
+            // Sort by date
+            projects.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+
+            grid.innerHTML = projects.slice(0, 9).map(p => `
+                <div class="project-card" style="border-left-color: var(--${p.toolClass === 'charterpro' ? 'primary' : p.toolClass === 'dmaic' ? 'success' : p.toolClass === 'roi' ? 'warning' : p.toolClass === 'tco' ? 'accent' : 'error'});">
+                    <div class="project-header">
+                        <div class="project-icon ${p.toolClass}">${p.icon}</div>
+                        <div class="project-info">
+                            <div class="project-title">${p.title}</div>
+                            <div class="project-tool">${p.tool}</div>
+                        </div>
+                    </div>
+                    <div class="project-meta">
+                        <span>${formatDate(p.date)}</span>
+                        ${p.extra ? `<span>${p.extra}</span>` : ''}
+                    </div>
+                    <div class="project-actions">
+                        <a href="${p.link}" class="project-btn project-btn-primary">Open</a>
+                        <button class="project-btn" onclick="deleteProject('${p.id}', '${p.toolClass}')">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return 'Unknown';
+            const date = new Date(dateStr);
+            const now = new Date();
+            const diff = now - date;
+            
+            if (diff < 60000) return 'Just now';
+            if (diff < 3600000) return Math.floor(diff / 60000) + ' min ago';
+            if (diff < 86400000) return Math.floor(diff / 3600000) + ' hours ago';
+            if (diff < 604800000) return Math.floor(diff / 86400000) + ' days ago';
+            return date.toLocaleDateString();
+        }
+
+        function deleteProject(id, tool) {
+            if (!confirm('Are you sure you want to delete this project?')) return;
+
+            if (tool === 'charterpro') {
+                const projects = JSON.parse(localStorage.getItem('charterpro_projects') || '[]');
+                const filtered = projects.filter(p => p.id !== id);
+                localStorage.setItem('charterpro_projects', JSON.stringify(filtered));
+            } else if (tool === 'dmaic') {
+                if (id === 'dmaic-current') {
+                    localStorage.removeItem('dmaic_current_project');
+                } else {
+                    const projects = JSON.parse(localStorage.getItem('dmaic_projects') || '[]');
+                    const filtered = projects.filter(p => p.id !== id);
+                    localStorage.setItem('dmaic_projects', JSON.stringify(filtered));
+                }
+            } else if (tool === 'roi') {
+                localStorage.removeItem('roi_current_project');
+            } else if (tool === 'tco') {
+                localStorage.removeItem('tco_current');
+            } else if (tool === 'risk') {
+                localStorage.removeItem('risk_register');
+            }
+
+            loadDashboardData();
+        }
+
+        function updateGreeting() {
+            const hour = new Date().getHours();
+            let greeting = 'Good morning';
+            if (hour >= 12 && hour < 17) greeting = 'Good afternoon';
+            else if (hour >= 17) greeting = 'Good evening';
+            document.getElementById('greeting').textContent = greeting + ' 👋';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            updateGreeting();
+            loadDashboardData();
+        });
+    </script>
+</body>
+</html>
