@@ -3,8 +3,9 @@
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { ArrowLeft, Check, Sparkles, Eye, Lock } from 'lucide-react'
+import { ArrowLeft, Check, Sparkles, Eye, Lock, Loader2 } from 'lucide-react'
 import { plans, tools } from '@/lib/tools-config'
+import { createUser, getUserByEmail } from '@/lib/supabase'
 
 const styles = {
   page: {
@@ -151,22 +152,13 @@ const styles = {
     marginTop: 8,
     textDecoration: 'none',
   },
+  btnDisabled: {
+    opacity: 0.6,
+    cursor: 'not-allowed',
+  },
   btnSecondary: {
     background: 'rgba(255,255,255,0.05)',
     border: '1px solid rgba(255,255,255,0.1)',
-  },
-  divider: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 16,
-    margin: '24px 0',
-    color: 'rgba(255,255,255,0.3)',
-    fontSize: '0.85rem',
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    background: 'rgba(255,255,255,0.1)',
   },
   benefits: {
     marginTop: 24,
@@ -253,14 +245,25 @@ const styles = {
   stepActive: {
     background: '#6366f1',
   },
+  error: {
+    background: 'rgba(239, 68, 68, 0.1)',
+    border: '1px solid rgba(239, 68, 68, 0.3)',
+    color: '#fca5a5',
+    padding: '12px 16px',
+    borderRadius: 8,
+    fontSize: '0.9rem',
+    marginBottom: 20,
+  },
 }
 
 const availablePlans = plans.filter(p => p.id !== 'enterprise')
 
 export default function SignupPage() {
   const searchParams = useSearchParams()
-  const [step, setStep] = useState(1) // 1: account info, 2: plan selection (optional), 3: success
+  const [step, setStep] = useState(1)
   const [selectedPlan, setSelectedPlan] = useState('free')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -268,33 +271,62 @@ export default function SignupPage() {
   })
 
   useEffect(() => {
-    // Check for plan in URL
     const planParam = searchParams.get('plan')
     if (planParam && plans.find(p => p.id === planParam)) {
       setSelectedPlan(planParam)
     }
   }, [searchParams])
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
+    setError('')
+
     if (step === 1) {
+      // Check if email already exists
+      setLoading(true)
+      try {
+        const existingUser = await getUserByEmail(formData.email)
+        if (existingUser) {
+          setError('An account with this email already exists. Please sign in instead.')
+          setLoading(false)
+          return
+        }
+      } catch (err) {
+        // No user found, that's good - continue
+      }
+      setLoading(false)
       setStep(2)
     } else {
-      // Create user account in localStorage
-      const userData = {
-        email: formData.email,
-        name: formData.name,
-        company: formData.company || '',
-        plan: selectedPlan === 'free' ? 'free' : selectedPlan,
-        selectedTools: [],
-        createdAt: new Date().toISOString(),
-        lastLogin: new Date().toISOString()
+      // Create account
+      setLoading(true)
+      try {
+        const userData = {
+          email: formData.email,
+          name: formData.name,
+          company: formData.company || null,
+          plan: selectedPlan === 'free' ? 'free' : selectedPlan,
+          selectedTools: []
+        }
+
+        // Save to Supabase
+        const newUser = await createUser(userData)
+
+        // Also save to localStorage for client-side access control
+        localStorage.setItem('pmt_user', JSON.stringify({
+          id: newUser.id,
+          email: newUser.email,
+          name: newUser.name,
+          plan: newUser.plan,
+          selectedTools: newUser.selected_tools || [],
+          createdAt: newUser.created_at
+        }))
+
+        setStep(3)
+      } catch (err) {
+        console.error('Signup error:', err)
+        setError(err.message || 'Failed to create account. Please try again.')
       }
-      
-      localStorage.setItem('pmt_user', JSON.stringify(userData))
-      
-      // Move to success step
-      setStep(3)
+      setLoading(false)
     }
   }
 
@@ -351,7 +383,6 @@ export default function SignupPage() {
         </Link>
         
         <div style={styles.card}>
-          {/* Step Indicator */}
           <div style={styles.stepIndicator}>
             <div style={{ ...styles.step, ...styles.stepActive }}></div>
             <div style={{ ...styles.step, ...(step >= 2 ? styles.stepActive : {}) }}></div>
@@ -371,6 +402,8 @@ export default function SignupPage() {
             </p>
           </div>
 
+          {error && <div style={styles.error}>{error}</div>}
+
           {step === 1 ? (
             <>
               <div style={styles.freeBadge}>
@@ -388,6 +421,7 @@ export default function SignupPage() {
                     value={formData.name}
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
                     required
+                    disabled={loading}
                   />
                 </div>
 
@@ -400,6 +434,7 @@ export default function SignupPage() {
                     value={formData.email}
                     onChange={(e) => setFormData({...formData, email: e.target.value})}
                     required
+                    disabled={loading}
                   />
                 </div>
 
@@ -411,11 +446,16 @@ export default function SignupPage() {
                     placeholder="Acme Inc."
                     value={formData.company}
                     onChange={(e) => setFormData({...formData, company: e.target.value})}
+                    disabled={loading}
                   />
                 </div>
 
-                <button type="submit" style={styles.btn}>
-                  Continue →
+                <button 
+                  type="submit" 
+                  style={{ ...styles.btn, ...(loading ? styles.btnDisabled : {}) }}
+                  disabled={loading}
+                >
+                  {loading ? <><Loader2 size={18} className="animate-spin" /> Checking...</> : 'Continue →'}
                 </button>
               </form>
             </>
@@ -428,7 +468,7 @@ export default function SignupPage() {
                     ...styles.planOption, 
                     ...(selectedPlan === 'free' ? styles.planOptionSelected : {}) 
                   }}
-                  onClick={() => setSelectedPlan('free')}
+                  onClick={() => !loading && setSelectedPlan('free')}
                 >
                   <div style={{ 
                     ...styles.planRadio, 
@@ -451,7 +491,7 @@ export default function SignupPage() {
                       ...styles.planOption, 
                       ...(selectedPlan === plan.id ? styles.planOptionSelected : {}) 
                     }}
-                    onClick={() => setSelectedPlan(plan.id)}
+                    onClick={() => !loading && setSelectedPlan(plan.id)}
                   >
                     <div style={{ 
                       ...styles.planRadio, 
@@ -503,14 +543,23 @@ export default function SignupPage() {
                 )}
               </div>
 
-              <button type="submit" style={styles.btn}>
-                {selectedPlan === 'free' ? 'Create Free Account' : `Continue to Payment`}
+              <button 
+                type="submit" 
+                style={{ ...styles.btn, ...(loading ? styles.btnDisabled : {}) }}
+                disabled={loading}
+              >
+                {loading ? (
+                  <><Loader2 size={18} style={{ animation: 'spin 1s linear infinite' }} /> Creating Account...</>
+                ) : (
+                  selectedPlan === 'free' ? 'Create Free Account' : 'Continue to Payment'
+                )}
               </button>
               
               <button 
                 type="button" 
                 style={{ ...styles.btn, ...styles.btnSecondary }}
                 onClick={() => setStep(1)}
+                disabled={loading}
               >
                 ← Back
               </button>
@@ -522,6 +571,13 @@ export default function SignupPage() {
           </div>
         </div>
       </div>
+
+      <style jsx global>{`
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   )
 }

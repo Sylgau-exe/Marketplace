@@ -2,7 +2,8 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
-import { ArrowLeft, LogIn } from 'lucide-react'
+import { ArrowLeft, LogIn, Loader2 } from 'lucide-react'
+import { getUserByEmail } from '@/lib/supabase'
 
 const styles = {
   page: {
@@ -101,6 +102,10 @@ const styles = {
     cursor: 'pointer',
     marginTop: 8,
   },
+  btnDisabled: {
+    opacity: 0.6,
+    cursor: 'not-allowed',
+  },
   footer: {
     textAlign: 'center',
     marginTop: 24,
@@ -111,15 +116,14 @@ const styles = {
     color: '#a5b4fc',
     textDecoration: 'none',
   },
-  demoNote: {
-    marginTop: 24,
-    padding: 16,
-    background: 'rgba(245, 158, 11, 0.1)',
-    borderRadius: 10,
-    border: '1px solid rgba(245, 158, 11, 0.2)',
-    textAlign: 'center',
-    fontSize: '0.85rem',
-    color: 'rgba(255,255,255,0.7)',
+  error: {
+    background: 'rgba(239, 68, 68, 0.1)',
+    border: '1px solid rgba(239, 68, 68, 0.3)',
+    color: '#fca5a5',
+    padding: '12px 16px',
+    borderRadius: 8,
+    fontSize: '0.9rem',
+    marginBottom: 20,
   },
 }
 
@@ -128,33 +132,45 @@ export default function LoginPage() {
     email: '',
     password: '',
   })
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
-    
-    // In production, this would validate against your backend
-    // For now, we'll check if the user exists in localStorage or create a session
-    
-    if (!formData.email || !formData.password) {
-      setError('Please enter both email and password')
-      return
+    setLoading(true)
+
+    try {
+      // Check if user exists in Supabase
+      const user = await getUserByEmail(formData.email)
+      
+      if (!user) {
+        setError('No account found with this email. Please sign up first.')
+        setLoading(false)
+        return
+      }
+
+      // In production, you'd verify password here
+      // For now, we just check if user exists
+
+      // Save to localStorage for client-side access control
+      localStorage.setItem('pmt_user', JSON.stringify({
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        plan: user.plan,
+        selectedTools: user.selected_tools || [],
+        createdAt: user.created_at
+      }))
+
+      // Redirect to dashboard
+      window.location.href = '/dashboard/'
+    } catch (err) {
+      console.error('Login error:', err)
+      setError('Failed to sign in. Please try again.')
     }
 
-    // Create user session in localStorage
-    const userData = {
-      email: formData.email,
-      plan: 'free', // Default to free, would be fetched from backend
-      selectedTools: [],
-      createdAt: new Date().toISOString(),
-      lastLogin: new Date().toISOString()
-    }
-    
-    localStorage.setItem('pmt_user', JSON.stringify(userData))
-    
-    // Redirect to dashboard
-    window.location.href = '/dashboard/'
+    setLoading(false)
   }
 
   return (
@@ -173,19 +189,7 @@ export default function LoginPage() {
             <p style={styles.subtitle}>Sign in to your account</p>
           </div>
 
-          {error && (
-            <div style={{
-              background: 'rgba(239, 68, 68, 0.1)',
-              border: '1px solid rgba(239, 68, 68, 0.3)',
-              color: '#fca5a5',
-              padding: '12px 16px',
-              borderRadius: 8,
-              fontSize: '0.9rem',
-              marginBottom: 20,
-            }}>
-              {error}
-            </div>
-          )}
+          {error && <div style={styles.error}>{error}</div>}
 
           <form style={styles.form} onSubmit={handleSubmit}>
             <div style={styles.formGroup}>
@@ -197,6 +201,7 @@ export default function LoginPage() {
                 value={formData.email}
                 onChange={(e) => setFormData({...formData, email: e.target.value})}
                 required
+                disabled={loading}
               />
             </div>
 
@@ -209,12 +214,21 @@ export default function LoginPage() {
                 value={formData.password}
                 onChange={(e) => setFormData({...formData, password: e.target.value})}
                 required
+                disabled={loading}
               />
               <Link href="#" style={styles.forgotLink}>Forgot password?</Link>
             </div>
 
-            <button type="submit" style={styles.btn}>
-              Sign In →
+            <button 
+              type="submit" 
+              style={{ ...styles.btn, ...(loading ? styles.btnDisabled : {}) }}
+              disabled={loading}
+            >
+              {loading ? (
+                <><Loader2 size={18} style={{ animation: 'spin 1s linear infinite' }} /> Signing In...</>
+              ) : (
+                'Sign In →'
+              )}
             </button>
           </form>
 
@@ -223,6 +237,13 @@ export default function LoginPage() {
           </div>
         </div>
       </div>
+
+      <style jsx global>{`
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   )
 }
