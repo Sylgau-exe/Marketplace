@@ -280,7 +280,20 @@ export default function SignupPage() {
     if (step === 1) {
       setStep(2)
     } else {
-      // In production, this would create account and redirect to payment
+      // Create user account in localStorage
+      const userData = {
+        email: formData.email,
+        name: formData.name,
+        company: formData.company || '',
+        plan: selectedPlan === 'free' ? 'free' : selectedPlan,
+        selectedTools: [],
+        createdAt: new Date().toISOString(),
+        lastLogin: new Date().toISOString()
+      }
+      
+      localStorage.setItem('pmt_user', JSON.stringify(userData))
+      
+      // Move to success step
       setStep(3)
     }
   }
@@ -310,8 +323,8 @@ export default function SignupPage() {
                 }
               </p>
               {selectedPlan === 'free' ? (
-                <Link href="/" style={styles.btn}>
-                  Explore Tools →
+                <Link href="/dashboard/" style={styles.btn}>
+                  Go to Dashboard →
                 </Link>
               ) : (
                 <button style={styles.btn} onClick={() => alert('Stripe checkout would open here')}>
@@ -319,8 +332,8 @@ export default function SignupPage() {
                 </button>
               )}
               {selectedPlan !== 'free' && (
-                <Link href="/" style={{ ...styles.btn, ...styles.btnSecondary, marginTop: 12 }}>
-                  Maybe Later
+                <Link href="/dashboard/" style={{ ...styles.btn, ...styles.btnSecondary, marginTop: 12 }}>
+                  Go to Dashboard
                 </Link>
               )}
             </div>

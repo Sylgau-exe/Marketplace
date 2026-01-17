@@ -128,12 +128,33 @@ export default function LoginPage() {
     email: '',
     password: '',
   })
+  const [error, setError] = useState('')
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    // Demo mode - just redirect to home
-    alert('Demo Mode: Login functionality coming soon! You can explore all tools without an account.')
-    window.location.href = '/'
+    setError('')
+    
+    // In production, this would validate against your backend
+    // For now, we'll check if the user exists in localStorage or create a session
+    
+    if (!formData.email || !formData.password) {
+      setError('Please enter both email and password')
+      return
+    }
+
+    // Create user session in localStorage
+    const userData = {
+      email: formData.email,
+      plan: 'free', // Default to free, would be fetched from backend
+      selectedTools: [],
+      createdAt: new Date().toISOString(),
+      lastLogin: new Date().toISOString()
+    }
+    
+    localStorage.setItem('pmt_user', JSON.stringify(userData))
+    
+    // Redirect to dashboard
+    window.location.href = '/dashboard/'
   }
 
   return (
@@ -151,6 +172,20 @@ export default function LoginPage() {
             <h1 style={styles.title}>Welcome Back</h1>
             <p style={styles.subtitle}>Sign in to your account</p>
           </div>
+
+          {error && (
+            <div style={{
+              background: 'rgba(239, 68, 68, 0.1)',
+              border: '1px solid rgba(239, 68, 68, 0.3)',
+              color: '#fca5a5',
+              padding: '12px 16px',
+              borderRadius: 8,
+              fontSize: '0.9rem',
+              marginBottom: 20,
+            }}>
+              {error}
+            </div>
+          )}
 
           <form style={styles.form} onSubmit={handleSubmit}>
             <div style={styles.formGroup}>
@@ -183,13 +218,8 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <div style={styles.demoNote}>
-            🎯 <strong>Demo Mode:</strong> All tools are fully functional without login. 
-            Just explore and create!
-          </div>
-
           <div style={styles.footer}>
-            Don't have an account? <Link href="/signup" style={styles.link}>Start free trial</Link>
+            Don't have an account? <Link href="/signup" style={styles.link}>Create free account</Link>
           </div>
         </div>
       </div>
