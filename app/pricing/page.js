@@ -168,24 +168,28 @@ const styles = {
 
 const faqs = [
   {
+    question: 'Can I try the tools before paying?',
+    answer: 'Yes! Create a free account to browse all tools, view example projects, and see how everything works. You only pay when you want to start creating your own projects.',
+  },
+  {
     question: 'What happens when new tools are added?',
-    answer: 'All new tools are automatically included in your subscription at no extra cost. As we release Roadmap Studio, Risk Radar, and future tools, you\'ll have immediate access.',
+    answer: 'Unlimited plan subscribers get automatic access to all new tools at no extra cost. Starter and Professional users can swap their tool selections to include new tools.',
+  },
+  {
+    question: 'Can I change my selected tools?',
+    answer: 'Yes! You can change which tools you have access to once per billing cycle. This gives you flexibility to try different tools as your needs evolve.',
   },
   {
     question: 'Can I switch plans later?',
-    answer: 'Yes! You can upgrade or downgrade your plan at any time. When upgrading, you\'ll get immediate access to new features. When downgrading, the change takes effect at your next billing cycle.',
-  },
-  {
-    question: 'Is there a free trial?',
-    answer: 'Yes, Professional and Team plans come with a 14-day free trial. No credit card required to start. You\'ll have full access to all features during the trial.',
+    answer: 'Absolutely! Upgrade or downgrade anytime. When upgrading, you get immediate access to more tools. Downgrades take effect at your next billing cycle.',
   },
   {
     question: 'What payment methods do you accept?',
-    answer: 'We accept all major credit cards (Visa, MasterCard, American Express), PayPal, and for Enterprise plans, we can arrange invoicing and bank transfers.',
+    answer: 'We accept all major credit cards (Visa, MasterCard, American Express) and PayPal. For Enterprise plans, we can arrange invoicing and bank transfers.',
   },
   {
     question: 'Can I cancel anytime?',
-    answer: 'Absolutely. There are no long-term contracts. You can cancel your subscription at any time, and you\'ll retain access until the end of your current billing period.',
+    answer: 'Yes. No long-term contracts. Cancel your subscription anytime and retain access until the end of your current billing period.',
   },
 ]
 
@@ -200,8 +204,7 @@ export default function PricingPage() {
         <div style={styles.header}>
           <h1 style={styles.title}>Simple, Transparent Pricing</h1>
           <p style={styles.subtitle}>
-            One subscription gives you access to all tools — now and in the future. 
-            No hidden fees, no surprises.
+            Browse all tools for free. Pay only when you're ready to create.
           </p>
         </div>
 
