@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - ProjectManagerTool</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --accent: #8b5cf6;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --bg: #0a0a0f;
+            --bg-card: #12121a;
+            --text: #ffffff;
+            --text-muted: #94a3b8;
+            --border: rgba(255,255,255,0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'DM Sans', sans-serif; 
+            background: var(--bg); 
+            color: var(--text); 
+            line-height: 1.6; 
+            min-height: 100vh;
+        }
+
+        /* Login Form */
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid var(--border);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .login-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 28px;
+        }
+
+        .login-title {
+            font-family: 'Fraunces', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .login-subtitle {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: white;
+            font-family: inherit;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus {
+            border-color: var(--primary);
+            background: rgba(255,255,255,0.08);
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 14px 24px;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        /* Admin Dashboard */
+        .admin-dashboard {
+            display: none;
+        }
+
+        .nav {
+            background: var(--bg-card);
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+
+        .nav-logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .nav-logo-text {
+            font-family: 'Fraunces', serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .nav-badge {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .btn-logout {
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: white;
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-family: 'Fraunces', serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .page-subtitle {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 4px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-family: 'Fraunces', serif;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .stat-change {
+            font-size: 0.8rem;
+            margin-top: 4px;
+        }
+
+        .stat-change.positive { color: var(--success); }
+        .stat-change.negative { color: var(--error); }
+
+        /* Tables */
+        .section {
+            margin-bottom: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-family: 'Fraunces', serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .table-container {
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: rgba(255,255,255,0.03);
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: rgba(255,255,255,0.02);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-free { background: rgba(148,163,184,0.2); color: #94a3b8; }
+        .badge-starter { background: rgba(99,102,241,0.2); color: #a5b4fc; }
+        .badge-pro { background: rgba(139,92,246,0.2); color: #c4b5fd; }
+        .badge-unlimited { background: rgba(34,197,94,0.2); color: #86efac; }
+
+        @media (max-width: 1024px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 640px) {
+            .stats-grid { grid-template-columns: 1fr; }
+            .table-container { overflow-x: auto; }
+            table { min-width: 600px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Form -->
+    <div class="login-container" id="loginForm">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-icon">🔐</div>
+                <h1 class="login-title">Admin Access</h1>
+                <p class="login-subtitle">Enter your credentials to continue</p>
+            </div>
+
+            <div class="error-message" id="errorMessage">
+                Invalid credentials. Please try again.
+            </div>
+
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label class="form-label">Admin ID</label>
+                    <input type="text" class="form-input" id="adminId" placeholder="Enter admin ID" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input" id="adminPassword" placeholder="Enter password" required>
+                </div>
+
+                <button type="submit" class="btn">Sign In to Admin</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div class="admin-dashboard" id="adminDashboard">
+        <nav class="nav">
+            <div class="nav-content">
+                <div class="nav-logo">
+                    <div class="nav-logo-icon">🔐</div>
+                    <span class="nav-logo-text">PMT Admin</span>
+                    <span class="nav-badge">Admin</span>
+                </div>
+                <button class="btn-logout" onclick="handleLogout()">Logout</button>
+            </div>
+        </nav>
+
+        <main class="main">
+            <div class="page-header">
+                <h1 class="page-title">Admin Dashboard</h1>
+                <p class="page-subtitle">Platform overview and user management</p>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Users</div>
+                    <div class="stat-value" id="totalUsers">0</div>
+                    <div class="stat-change positive">↑ New this week</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Paid Subscribers</div>
+                    <div class="stat-value" id="paidUsers">0</div>
+                    <div class="stat-change positive">Active subscriptions</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Monthly Revenue</div>
+                    <div class="stat-value" id="monthlyRevenue">$0</div>
+                    <div class="stat-change positive">MRR</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Projects</div>
+                    <div class="stat-value" id="totalProjects">0</div>
+                    <div class="stat-change">Created by users</div>
+                </div>
+            </div>
+
+            <!-- Recent Users -->
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Recent Users</h2>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Email</th>
+                                <th>Plan</th>
+                                <th>Tools</th>
+                                <th>Joined</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTable">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Revenue by Plan -->
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Subscribers by Plan</h2>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Plan</th>
+                                <th>Price</th>
+                                <th>Subscribers</th>
+                                <th>Revenue</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="badge badge-starter">Starter</span></td>
+                                <td>$9/mo</td>
+                                <td id="starterCount">0</td>
+                                <td id="starterRevenue">$0</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge badge-pro">Professional</span></td>
+                                <td>$19/mo</td>
+                                <td id="proCount">0</td>
+                                <td id="proRevenue">$0</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge badge-unlimited">Unlimited</span></td>
+                                <td>$49/mo</td>
+                                <td id="unlimitedCount">0</td>
+                                <td id="unlimitedRevenue">$0</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Supabase configuration
+        const SUPABASE_URL = 'https://wfoyzgnowlpgpexygajs.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_uP0MT3tN5yMg2S490we5-w_UOAgnJi4';
+
+        // Admin credentials - In production, this would be server-side authentication
+        const ADMIN_CREDENTIALS = {
+            id: 'admin',
+            password: 'PMT@dmin2026!'
+        };
+
+        // Check if already logged in
+        function checkAdminSession() {
+            const session = sessionStorage.getItem('pmt_admin_session');
+            if (session) {
+                try {
+                    const data = JSON.parse(session);
+                    // Session expires after 2 hours
+                    if (data.timestamp && (Date.now() - data.timestamp) < 7200000) {
+                        showDashboard();
+                        return;
+                    }
+                } catch (e) {}
+            }
+            showLoginForm();
+        }
+
+        function showLoginForm() {
+            document.getElementById('loginForm').style.display = 'flex';
+            document.getElementById('adminDashboard').style.display = 'none';
+        }
+
+        function showDashboard() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('adminDashboard').style.display = 'block';
+            loadAdminData();
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            const id = document.getElementById('adminId').value;
+            const password = document.getElementById('adminPassword').value;
+
+            if (id === ADMIN_CREDENTIALS.id && password === ADMIN_CREDENTIALS.password) {
+                // Create session
+                sessionStorage.setItem('pmt_admin_session', JSON.stringify({
+                    authenticated: true,
+                    timestamp: Date.now()
+                }));
+                
+                document.getElementById('errorMessage').style.display = 'none';
+                showDashboard();
+            } else {
+                document.getElementById('errorMessage').style.display = 'block';
+                document.getElementById('adminPassword').value = '';
+            }
+        }
+
+        function handleLogout() {
+            sessionStorage.removeItem('pmt_admin_session');
+            showLoginForm();
+            document.getElementById('adminId').value = '';
+            document.getElementById('adminPassword').value = '';
+        }
+
+        async function loadAdminData() {
+            try {
+                // Fetch users from Supabase
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/users?select=*&order=created_at.desc`, {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch users');
+                }
+
+                const users = await response.json();
+
+                // Calculate stats
+                const stats = {
+                    total: users.length,
+                    free: users.filter(u => u.plan === 'free').length,
+                    starter: users.filter(u => u.plan === 'starter').length,
+                    professional: users.filter(u => u.plan === 'professional').length,
+                    unlimited: users.filter(u => u.plan === 'unlimited').length,
+                    enterprise: users.filter(u => u.plan === 'enterprise').length,
+                };
+
+                stats.paid = stats.starter + stats.professional + stats.unlimited + stats.enterprise;
+                stats.mrr = (stats.starter * 9) + (stats.professional * 19) + (stats.unlimited * 49);
+
+                // Update stats display
+                document.getElementById('totalUsers').textContent = stats.total;
+                document.getElementById('paidUsers').textContent = stats.paid;
+                document.getElementById('monthlyRevenue').textContent = '$' + stats.mrr.toLocaleString();
+                document.getElementById('totalProjects').textContent = '—'; // Would need separate tracking
+
+                // Update plan breakdown
+                document.getElementById('starterCount').textContent = stats.starter;
+                document.getElementById('starterRevenue').textContent = '$' + (stats.starter * 9);
+                document.getElementById('proCount').textContent = stats.professional;
+                document.getElementById('proRevenue').textContent = '$' + (stats.professional * 19);
+                document.getElementById('unlimitedCount').textContent = stats.unlimited;
+                document.getElementById('unlimitedRevenue').textContent = '$' + (stats.unlimited * 49);
+
+                // Populate users table
+                const usersTable = document.getElementById('usersTable');
+                
+                if (users.length === 0) {
+                    usersTable.innerHTML = `
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                                No users registered yet
+                            </td>
+                        </tr>
+                    `;
+                } else {
+                    usersTable.innerHTML = users.slice(0, 20).map(user => `
+                        <tr>
+                            <td>${user.email}</td>
+                            <td><span class="badge badge-${user.plan}">${user.plan.charAt(0).toUpperCase() + user.plan.slice(1)}</span></td>
+                            <td>${user.selected_tools?.length || 0}</td>
+                            <td>${new Date(user.created_at).toLocaleDateString()}</td>
+                            <td>
+                                <select onchange="updateUserPlan('${user.email}', this.value)" style="
+                                    background: rgba(255,255,255,0.1);
+                                    border: 1px solid var(--border);
+                                    color: white;
+                                    padding: 4px 8px;
+                                    border-radius: 4px;
+                                    font-size: 0.8rem;
+                                ">
+                                    <option value="free" ${user.plan === 'free' ? 'selected' : ''}>Free</option>
+                                    <option value="starter" ${user.plan === 'starter' ? 'selected' : ''}>Starter</option>
+                                    <option value="professional" ${user.plan === 'professional' ? 'selected' : ''}>Professional</option>
+                                    <option value="unlimited" ${user.plan === 'unlimited' ? 'selected' : ''}>Unlimited</option>
+                                </select>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+
+            } catch (err) {
+                console.error('Error loading admin data:', err);
+                document.getElementById('usersTable').innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; color: #fca5a5; padding: 2rem;">
+                            Error loading data: ${err.message}
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        async function updateUserPlan(email, newPlan) {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/users?email=eq.${encodeURIComponent(email)}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify({
+                        plan: newPlan,
+                        updated_at: new Date().toISOString()
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to update user');
+                }
+
+                // Reload data to reflect changes
+                loadAdminData();
+                
+                // Show success message
+                alert(`User ${email} updated to ${newPlan} plan`);
+
+            } catch (err) {
+                console.error('Error updating user:', err);
+                alert('Failed to update user: ' + err.message);
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', checkAdminSession);
+    </script>
+</body>
+</html>
