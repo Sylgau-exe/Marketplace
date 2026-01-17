@@ -123,13 +123,30 @@
             <div class="nav-links">
                 <a href="/dashboard/" class="nav-link active">Dashboard</a>
                 <a href="/pricing" class="nav-link">Pricing</a>
-                <a href="/admin/" class="nav-link">Admin</a>
             </div>
-            <a href="/pricing" class="btn btn-primary">View Plans</a>
+            <div id="userMenu" style="display: flex; align-items: center; gap: 1rem;">
+                <span id="userEmail" style="color: rgba(255,255,255,0.7); font-size: 0.9rem;"></span>
+                <button onclick="logout()" class="btn btn-secondary" style="padding: 0.5rem 1rem;">Logout</button>
+            </div>
         </div>
     </nav>
 
-    <main class="main">
+    <!-- Login Required Overlay -->
+    <div id="loginOverlay" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #0a0a0f; z-index: 1000; display: flex; align-items: center; justify-content: center;">
+        <div style="background: #12121a; border-radius: 20px; padding: 40px; max-width: 420px; width: 90%; text-align: center; border: 1px solid rgba(255,255,255,0.1);">
+            <div style="width: 64px; height: 64px; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; font-size: 28px;">👤</div>
+            <h2 style="color: white; font-size: 1.5rem; font-weight: 700; margin-bottom: 12px;">Sign In Required</h2>
+            <p style="color: rgba(255,255,255,0.6); font-size: 1rem; line-height: 1.6; margin-bottom: 32px;">
+                Please sign in to access your personal dashboard and saved projects.
+            </p>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <a href="/login" style="display: flex; align-items: center; justify-content: center; padding: 14px 24px; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); border-radius: 10px; color: white; font-size: 1rem; font-weight: 600; text-decoration: none;">Sign In</a>
+                <a href="/signup" style="display: flex; align-items: center; justify-content: center; padding: 14px 24px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: white; font-size: 1rem; font-weight: 600; text-decoration: none;">Create Free Account</a>
+            </div>
+        </div>
+    </div>
+
+    <main class="main" id="mainContent" style="display: none;">
         <div class="page-header">
             <p class="greeting" id="greeting">Good morning 👋</p>
             <h1 class="page-title">Your Dashboard</h1>
@@ -410,9 +427,45 @@
             document.getElementById('greeting').textContent = greeting + ' 👋';
         }
 
+        function checkLogin() {
+            const userData = localStorage.getItem('pmt_user');
+            if (!userData) {
+                // Not logged in - show login overlay
+                document.getElementById('loginOverlay').style.display = 'flex';
+                document.getElementById('mainContent').style.display = 'none';
+                return false;
+            }
+            
+            try {
+                const user = JSON.parse(userData);
+                if (!user.email) {
+                    document.getElementById('loginOverlay').style.display = 'flex';
+                    document.getElementById('mainContent').style.display = 'none';
+                    return false;
+                }
+                
+                // User is logged in - show dashboard
+                document.getElementById('loginOverlay').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                document.getElementById('userEmail').textContent = user.email;
+                return true;
+            } catch (e) {
+                document.getElementById('loginOverlay').style.display = 'flex';
+                document.getElementById('mainContent').style.display = 'none';
+                return false;
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('pmt_user');
+            window.location.href = '/';
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
-            updateGreeting();
-            loadDashboardData();
+            if (checkLogin()) {
+                updateGreeting();
+                loadDashboardData();
+            }
         });
     </script>
 </body>
