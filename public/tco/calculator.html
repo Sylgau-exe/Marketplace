@@ -517,6 +517,39 @@
             .result-card, .form-section { background: #f9f9f9; border: 1px solid #ddd; }
             .result-value { color: #333; }
         }
+
+        /* Example Gallery Styles */
+        .btn-examples { background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%); color: white; border: none; }
+        .btn-examples:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4); }
+        .example-gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+        .example-card { background: var(--bg-card); border-radius: 16px; overflow: hidden; border: 1px solid var(--border); transition: all 0.3s; }
+        .example-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.3); border-color: var(--accent); }
+        .example-card-header { padding: 1.5rem; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: white; }
+        .example-card-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+        .example-card-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.25rem; }
+        .example-card-subtitle { font-size: 0.875rem; opacity: 0.9; margin-bottom: 1rem; }
+        .example-card-stats { display: flex; gap: 1rem; background: rgba(255,255,255,0.15); border-radius: 8px; padding: 0.75rem; }
+        .example-stat { flex: 1; text-align: center; }
+        .example-stat-value { font-size: 1.1rem; font-weight: 700; }
+        .example-stat-label { font-size: 0.7rem; text-transform: uppercase; opacity: 0.8; }
+        .example-card-body { padding: 1.25rem; }
+        .example-card-desc { color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; margin-bottom: 1rem; }
+        .example-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+        .example-tag { background: var(--bg); color: var(--text-muted); padding: 0.25rem 0.75rem; border-radius: 100px; font-size: 0.75rem; }
+        .example-card-actions { display: flex; gap: 0.75rem; }
+        .example-card-actions .btn { flex: 1; justify-content: center; }
+        .gallery-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 2000; opacity: 0; visibility: hidden; transition: all 0.3s; padding: 1rem; }
+        .gallery-modal.active { opacity: 1; visibility: visible; }
+        .gallery-modal-content { background: var(--bg-card); border-radius: 16px; width: 100%; max-width: 1100px; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column; border: 1px solid var(--border); }
+        .gallery-modal-header { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); }
+        .gallery-modal-title { font-size: 1.25rem; font-weight: 700; }
+        .gallery-modal-close { background: none; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer; }
+        .gallery-modal-body { padding: 1.5rem; overflow-y: auto; flex: 1; }
+        .gallery-modal-footer { display: flex; gap: 1rem; justify-content: flex-end; padding: 1.25rem 1.5rem; border-top: 1px solid var(--border); }
+        .preview-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1rem; }
+        .preview-item { background: var(--bg); padding: 0.75rem; border-radius: 8px; }
+        .preview-item-label { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; margin-bottom: 0.25rem; }
+        .preview-item-value { font-weight: 500; }
     </style>
 </head>
 <body>
@@ -530,7 +563,7 @@
             <div class="nav-actions">
                 <div class="save-status" id="saveStatus"><span>●</span> Auto-saved</div>
                 <button class="btn btn-secondary" onclick="openHelpModal()">❓ Guide</button>
-                <button class="btn btn-secondary" onclick="loadExample()">📋 Example</button>
+                <button class="btn btn-examples" onclick="openExamplesGallery()">📚 Browse Examples</button>
                 <button class="btn btn-primary" onclick="goToStep(5)">View Results</button>
             </div>
         </div>
@@ -1446,6 +1479,268 @@
             
             window.print();
         };
+
+        // ============================================
+        // TCO EXAMPLE GALLERY
+        // ============================================
+        const tcoExamples = {
+            cloudMigration: {
+                id: 'cloudMigration',
+                title: 'Cloud Migration Analysis',
+                subtitle: 'On-Premise vs AWS',
+                icon: '☁️',
+                stats: { savings: '$1.8M', period: '5 years', reduction: '42%' },
+                tags: ['Cloud', 'AWS', 'Data Center'],
+                description: 'TCO comparison between on-premise data center and AWS cloud migration for 120 servers.',
+                data: {
+                    assetName: 'Data Center to AWS Cloud Migration',
+                    assetCategory: 'hardware',
+                    description: 'Comprehensive 5-year TCO comparison: 120 servers, 500TB storage. Comparing current on-premise data center versus AWS cloud infrastructure including all direct, indirect, and hidden costs.',
+                    vendor: 'AWS / Current: Dell/NetApp',
+                    analysisDate: '2026-01-22',
+                    lifespan: '5',
+                    purchasePrice: '450000',
+                    deliveryFees: '5000',
+                    taxesImport: '27000',
+                    installationLabor: '35000',
+                    installationMaterials: '8000',
+                    configSetup: '25000',
+                    training: '15000',
+                    projectManagement: '20000',
+                    lostProductivity: '10000',
+                    maintenanceLaborInternal: '48000',
+                    maintenanceContract: '45000',
+                    repairsAnnual: '15000',
+                    sparePartsAnnual: '8000',
+                    consumablesAnnual: '2000',
+                    softwareLicenses: '125000',
+                    supportContracts: '35000',
+                    fullTimeStaff: '4',
+                    avgSalary: '85000',
+                    benefitsRate: '35',
+                    partTimeHours: '0',
+                    hourlyRate: '0',
+                    trainingAnnual: '8000',
+                    certifications: '5000',
+                    powerCost: '142000',
+                    facilityCost: '185000',
+                    networkCost: '25000',
+                    insuranceCost: '28000',
+                    subscriptionCost: '0',
+                    cloudCost: '0',
+                    escalationRate: '4',
+                    salvageValue: '45000',
+                    salvagePercent: '10',
+                    decommissionLabor: '25000',
+                    disposalFees: '5000',
+                    migrationCost: '50000',
+                    downtimeHours: '24',
+                    downtimeCost: '5000'
+                }
+            },
+            fleetVehicle: {
+                id: 'fleetVehicle',
+                title: 'Fleet Vehicle Comparison',
+                subtitle: 'ICE vs Electric Vehicles',
+                icon: '🚗',
+                stats: { savings: '$485K', period: '7 years', reduction: '18%' },
+                tags: ['EV', 'Fleet', 'Sustainability'],
+                description: 'TCO analysis comparing ICE fleet vehicles with electric vehicles for 50 delivery vans.',
+                data: {
+                    assetName: 'Delivery Fleet: ICE vs Electric',
+                    assetCategory: 'equipment',
+                    description: '7-year TCO for 50 delivery vans. Comparing Ford Transit ICE vs Ford E-Transit electric. 25,000 miles/year per vehicle. Includes fuel, maintenance, charging infrastructure.',
+                    vendor: 'Ford Motor Company',
+                    analysisDate: '2026-01-25',
+                    lifespan: '7',
+                    purchasePrice: '2250000',
+                    deliveryFees: '25000',
+                    taxesImport: '0',
+                    installationLabor: '0',
+                    installationMaterials: '0',
+                    configSetup: '25000',
+                    training: '5000',
+                    projectManagement: '10000',
+                    lostProductivity: '15000',
+                    maintenanceLaborInternal: '25000',
+                    maintenanceContract: '50000',
+                    repairsAnnual: '45000',
+                    sparePartsAnnual: '20000',
+                    consumablesAnnual: '187500',
+                    softwareLicenses: '18000',
+                    supportContracts: '0',
+                    fullTimeStaff: '0',
+                    avgSalary: '0',
+                    benefitsRate: '0',
+                    partTimeHours: '20',
+                    hourlyRate: '25',
+                    trainingAnnual: '3000',
+                    certifications: '0',
+                    powerCost: '0',
+                    facilityCost: '0',
+                    networkCost: '0',
+                    insuranceCost: '125000',
+                    subscriptionCost: '0',
+                    cloudCost: '0',
+                    escalationRate: '4',
+                    salvageValue: '337500',
+                    salvagePercent: '15',
+                    decommissionLabor: '5000',
+                    disposalFees: '2500',
+                    migrationCost: '0',
+                    downtimeHours: '0',
+                    downtimeCost: '0'
+                }
+            },
+            officeSpace: {
+                id: 'officeSpace',
+                title: 'Office Space Strategy',
+                subtitle: 'Traditional vs Hybrid',
+                icon: '🏢',
+                stats: { savings: '$2.4M', period: '5 years', reduction: '35%' },
+                tags: ['Real Estate', 'Hybrid Work', 'Facilities'],
+                description: 'TCO comparison: maintaining 85K sq ft office vs hybrid model with 50K sq ft reduced footprint.',
+                data: {
+                    assetName: 'Office Real Estate: Traditional vs Hybrid',
+                    assetCategory: 'software',
+                    description: '5-year TCO for 400 employees. Comparing current 85,000 sq ft headquarters vs hybrid model with 50,000 sq ft and activity-based working. Includes build-out, technology, and operating costs.',
+                    vendor: 'Current Landlord / WeWork flex',
+                    analysisDate: '2026-01-28',
+                    lifespan: '5',
+                    purchasePrice: '0',
+                    deliveryFees: '0',
+                    taxesImport: '0',
+                    installationLabor: '150000',
+                    installationMaterials: '350000',
+                    configSetup: '85000',
+                    training: '25000',
+                    projectManagement: '75000',
+                    lostProductivity: '100000',
+                    maintenanceLaborInternal: '50000',
+                    maintenanceContract: '100000',
+                    repairsAnnual: '50000',
+                    sparePartsAnnual: '0',
+                    consumablesAnnual: '0',
+                    softwareLicenses: '48000',
+                    supportContracts: '24000',
+                    fullTimeStaff: '3',
+                    avgSalary: '65000',
+                    benefitsRate: '30',
+                    partTimeHours: '0',
+                    hourlyRate: '0',
+                    trainingAnnual: '5000',
+                    certifications: '0',
+                    powerCost: '255000',
+                    facilityCost: '2550000',
+                    networkCost: '50000',
+                    insuranceCost: '85000',
+                    subscriptionCost: '0',
+                    cloudCost: '0',
+                    escalationRate: '3',
+                    salvageValue: '0',
+                    salvagePercent: '0',
+                    decommissionLabor: '50000',
+                    disposalFees: '25000',
+                    migrationCost: '100000',
+                    downtimeHours: '40',
+                    downtimeCost: '200'
+                }
+            }
+        };
+
+        function renderTcoGallery() {
+            const gallery = document.getElementById('tcoExampleGallery');
+            gallery.innerHTML = '';
+            Object.values(tcoExamples).forEach(ex => {
+                gallery.innerHTML += `
+                    <div class="example-card">
+                        <div class="example-card-header">
+                            <div class="example-card-icon">${ex.icon}</div>
+                            <div class="example-card-title">${ex.title}</div>
+                            <div class="example-card-subtitle">${ex.subtitle}</div>
+                            <div class="example-card-stats">
+                                <div class="example-stat"><div class="example-stat-value">${ex.stats.savings}</div><div class="example-stat-label">Savings</div></div>
+                                <div class="example-stat"><div class="example-stat-value">${ex.stats.period}</div><div class="example-stat-label">Period</div></div>
+                                <div class="example-stat"><div class="example-stat-value">${ex.stats.reduction}</div><div class="example-stat-label">Reduction</div></div>
+                            </div>
+                        </div>
+                        <div class="example-card-body">
+                            <p class="example-card-desc">${ex.description}</p>
+                            <div class="example-tags">${ex.tags.map(t => `<span class="example-tag">${t}</span>`).join('')}</div>
+                            <div class="example-card-actions">
+                                <button class="btn btn-secondary btn-sm" onclick="previewTcoExample('${ex.id}')">👁️ Preview</button>
+                                <button class="btn btn-primary btn-sm" onclick="useTcoExample('${ex.id}')">✨ Use This</button>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function openExamplesGallery() { renderTcoGallery(); document.getElementById('tcoGalleryModal').classList.add('active'); }
+        function closeExamplesGallery() { document.getElementById('tcoGalleryModal').classList.remove('active'); }
+        function closeTcoPreview() { document.getElementById('tcoPreviewModal').classList.remove('active'); }
+
+        function previewTcoExample(id) {
+            const ex = tcoExamples[id];
+            document.getElementById('tcoPreviewTitle').textContent = ex.title + ' - Preview';
+            document.getElementById('tcoPreviewContent').innerHTML = `
+                <div class="preview-grid">
+                    <div class="preview-item"><div class="preview-item-label">Analysis</div><div class="preview-item-value">${ex.data.assetName}</div></div>
+                    <div class="preview-item"><div class="preview-item-label">Period</div><div class="preview-item-value">${ex.data.lifespan} years</div></div>
+                </div>
+                <div style="margin-bottom:1rem;"><div class="preview-item-label">DESCRIPTION</div><p style="color:var(--text-muted);font-size:0.9rem;">${ex.data.description}</p></div>
+                <div class="preview-grid">
+                    <div class="preview-item"><div class="preview-item-label">Initial Investment</div><div class="preview-item-value">$${parseInt(ex.data.purchasePrice || 0).toLocaleString()}</div></div>
+                    <div class="preview-item"><div class="preview-item-label">Expected Savings</div><div class="preview-item-value">${ex.stats.savings}</div></div>
+                </div>`;
+            document.getElementById('useTcoPreviewBtn').onclick = () => useTcoExample(id);
+            closeExamplesGallery();
+            document.getElementById('tcoPreviewModal').classList.add('active');
+        }
+
+        function useTcoExample(id) {
+            const d = tcoExamples[id].data;
+            Object.keys(d).forEach(key => {
+                const el = document.getElementById(key);
+                if (el) el.value = d[key];
+            });
+            closeExamplesGallery();
+            closeTcoPreview();
+            setupAutoCalc();
+            updateTotals();
+            saveData();
+            alert('Example loaded! Review each step and click View Results.');
+            goToStep(1);
+        }
     </script>
+
+    <!-- TCO Gallery Modal -->
+    <div class="gallery-modal" id="tcoGalleryModal">
+        <div class="gallery-modal-content">
+            <div class="gallery-modal-header">
+                <h3 class="gallery-modal-title">📚 Example TCO Analyses</h3>
+                <button class="gallery-modal-close" onclick="closeExamplesGallery()">×</button>
+            </div>
+            <div class="gallery-modal-body">
+                <p style="color:var(--text-muted);margin-bottom:1.5rem;">Browse real-world TCO comparison examples. Preview or use as your starting point.</p>
+                <div class="example-gallery" id="tcoExampleGallery"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TCO Preview Modal -->
+    <div class="gallery-modal" id="tcoPreviewModal">
+        <div class="gallery-modal-content" style="max-width:800px;">
+            <div class="gallery-modal-header">
+                <h3 class="gallery-modal-title" id="tcoPreviewTitle">Preview</h3>
+                <button class="gallery-modal-close" onclick="closeTcoPreview()">×</button>
+            </div>
+            <div class="gallery-modal-body" id="tcoPreviewContent"></div>
+            <div class="gallery-modal-footer">
+                <button class="btn btn-secondary" onclick="closeTcoPreview()">Close</button>
+                <button class="btn btn-primary" id="useTcoPreviewBtn">✨ Use This Example</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

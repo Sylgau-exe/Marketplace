@@ -635,6 +635,40 @@
         .help-section p, .help-section li { color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; }
         .help-section ol, .help-section ul { padding-left: 1.25rem; }
         .help-section li { margin-bottom: 0.5rem; }
+
+        /* Example Gallery Styles */
+        .btn-examples { background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%); color: white; border: none; }
+        .btn-examples:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4); }
+        .example-gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+        .example-card { background: var(--bg-card); border-radius: 16px; overflow: hidden; border: 1px solid var(--border); transition: all 0.3s; }
+        .example-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.3); border-color: var(--accent); }
+        .example-card-header { padding: 1.5rem; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: white; }
+        .example-card-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+        .example-card-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.25rem; }
+        .example-card-subtitle { font-size: 0.875rem; opacity: 0.9; margin-bottom: 1rem; }
+        .example-card-stats { display: flex; gap: 1rem; background: rgba(255,255,255,0.15); border-radius: 8px; padding: 0.75rem; }
+        .example-stat { flex: 1; text-align: center; }
+        .example-stat-value { font-size: 1.1rem; font-weight: 700; }
+        .example-stat-label { font-size: 0.7rem; text-transform: uppercase; opacity: 0.8; }
+        .example-card-body { padding: 1.25rem; }
+        .example-card-desc { color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; margin-bottom: 1rem; }
+        .example-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+        .example-tag { background: var(--bg); color: var(--text-muted); padding: 0.25rem 0.75rem; border-radius: 100px; font-size: 0.75rem; }
+        .example-card-actions { display: flex; gap: 0.75rem; }
+        .example-card-actions .btn { flex: 1; justify-content: center; }
+        .gallery-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 2000; opacity: 0; visibility: hidden; transition: all 0.3s; padding: 1rem; }
+        .gallery-modal.active { opacity: 1; visibility: visible; }
+        .gallery-modal-content { background: var(--bg-card); border-radius: 16px; width: 100%; max-width: 1100px; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column; border: 1px solid var(--border); }
+        .gallery-modal-header { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); }
+        .gallery-modal-title { font-size: 1.25rem; font-weight: 700; }
+        .gallery-modal-close { background: none; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer; }
+        .gallery-modal-close:hover { color: var(--text); }
+        .gallery-modal-body { padding: 1.5rem; overflow-y: auto; flex: 1; }
+        .gallery-modal-footer { display: flex; gap: 1rem; justify-content: flex-end; padding: 1.25rem 1.5rem; border-top: 1px solid var(--border); }
+        .preview-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1rem; }
+        .preview-item { background: var(--bg); padding: 0.75rem; border-radius: 8px; }
+        .preview-item-label { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; margin-bottom: 0.25rem; }
+        .preview-item-value { font-weight: 500; }
     </style>
 </head>
 <body>
@@ -651,7 +685,7 @@
                     <span>●</span> Auto-saved
                 </div>
                 <button class="btn btn-secondary" onclick="openHelpModal()">❓ Guide</button>
-                <button class="btn btn-secondary" onclick="loadExample()">📋 Example</button>
+                <button class="btn btn-examples" onclick="openExamplesGallery()">📚 Browse Examples</button>
                 <button class="btn btn-primary" onclick="goToStep(6)">Preview & Export</button>
             </div>
         </div>
@@ -1916,7 +1950,239 @@
         function printPreview() {
             exportPDF();
         }
+
+        // ============================================
+        // EXAMPLE GALLERY SYSTEM
+        // ============================================
+        const dmaicExamples = {
+            manufacturing: {
+                id: 'manufacturing',
+                title: 'Manufacturing Defect Reduction',
+                subtitle: 'PCB Assembly Line Quality',
+                icon: '🏭',
+                stats: { sigma: '4.2σ→5.1σ', savings: '$1.2M', duration: '6 mo' },
+                tags: ['Electronics', 'Quality', 'Assembly'],
+                description: 'Six Sigma project to reduce PCB assembly defects from 6,200 DPMO to 200 DPMO through process optimization.',
+                data: {
+                    projectName: 'PCB Assembly Defect Reduction Initiative',
+                    projectId: 'DMAIC-2026-MFG-001',
+                    champion: 'Maria Santos, VP Manufacturing',
+                    projectLeader: 'James Park, Six Sigma Black Belt',
+                    startDate: '2026-01-15',
+                    targetDate: '2026-07-15',
+                    problemStatement: 'The PCB assembly line at Plant 3 is experiencing a defect rate of 6,200 DPMO (Defects Per Million Opportunities), significantly above our target of 500 DPMO. This results in $1.4M annually in scrap, rework, and customer returns. The defect rate has increased 40% over the past 18 months. Primary defect categories are solder bridges (45%), missing components (30%), and misaligned parts (25%).',
+                    businessCase: 'Reducing defects to target levels will save $1.2M annually in scrap and rework costs, reduce customer returns by 75% saving $180K in warranty costs, improve on-time delivery from 87% to 97%, and protect $8M in at-risk customer contracts requiring <500 DPMO.',
+                    annualImpact: '$1,200,000',
+                    impactType: 'cost-reduction',
+                    inScope: 'All PCB assembly operations on Lines 1-4 at Plant 3, including SMT placement, reflow soldering, and inspection processes.',
+                    outScope: 'Component supplier quality (separate project), PCB bare board fabrication, final product assembly, other plant locations.',
+                    goalStatement: 'Reduce PCB assembly defect rate from 6,200 DPMO to 500 DPMO (5.1 sigma) by July 2026, resulting in $1.2M annual savings.',
+                    teamMembers: ['Linda Chen - Process Owner', 'Robert Kim - Quality Engineer', 'Tech Team - 3 operators, 1 maintenance'],
+                    processDescription: 'Current State: Bare PCB Loading → Solder Paste Application → SPI → SMT Placement → Reflow Oven → AOI → Manual Inspection → Rework → Final Test. Critical steps 2, 4, 5 account for 85% of defects.',
+                    processStart: 'Bare PCB loaded to line',
+                    processEnd: 'PCB passes final test',
+                    primaryMetric: 'Defects Per Million Opportunities (DPMO)',
+                    baselineValue: '6,200 DPMO',
+                    targetValue: '500 DPMO',
+                    dataCollection: 'AOI system logs (100% inspection), SPI measurements, Manual inspection records (50 units/shift), Rework tracking, Environmental monitoring. 4-week baseline, 50,000 units analyzed.',
+                    rootCauses: '1. Placement machine vision loses calibration after 8 hours (35%)\n2. Reflow oven Zone 3 temperature varies ±8°C vs spec ±3°C (25%)\n3. Solder paste exceeds 4-hour exposure limit (15%)\n4. Stencil aperture wear after 5,000 prints (15%)\n5. Night shift lacks updated work instructions (10%)',
+                    analysisTools: 'Fishbone diagram, Pareto analysis, Regression analysis (R²=0.78), ANOVA shift comparison (p=0.003), Correlation analysis',
+                    keyFindings: 'Placement accuracy accounts for 45% of variation. Shift analysis shows night shift 40% higher defects. Humidity correlates with solder bridges (r=0.72).'
+                }
+            },
+            customerSupport: {
+                id: 'customerSupport',
+                title: 'Support Response Time',
+                subtitle: 'Customer Service Excellence',
+                icon: '🎧',
+                stats: { sigma: '2.8σ→4.5σ', savings: '$680K', duration: '4 mo' },
+                tags: ['Service', 'Response Time', 'CX'],
+                description: 'DMAIC project to reduce average customer support response time from 24 hours to 4 hours.',
+                data: {
+                    projectName: 'Customer Support Response Time Optimization',
+                    projectId: 'DMAIC-2026-SVC-001',
+                    champion: 'Sarah Johnson, VP Customer Success',
+                    projectLeader: 'Michael Torres, Six Sigma Green Belt',
+                    startDate: '2026-02-01',
+                    targetDate: '2026-06-01',
+                    problemStatement: 'Average first response time for customer support tickets is 24 hours, with 35% exceeding our 8-hour SLA. Customer satisfaction dropped to 72%, and we are losing 8% of customers annually citing poor support. The team handles 15,000 tickets monthly with significant variation.',
+                    businessCase: 'Improving response time will reduce churn by 4% ($520K), decrease escalations 50% ($95K savings), improve CSAT to 90%+, and meet SLAs for enterprise customers worth $2M ARR at risk.',
+                    annualImpact: '$680,000',
+                    impactType: 'customer-satisfaction',
+                    inScope: 'All Tier 1 support tickets across email, chat, and phone for North America region.',
+                    outScope: 'Tier 2/3 engineering escalations, EMEA/APAC regions, sales inquiries, billing disputes.',
+                    goalStatement: 'Reduce average first response time from 24 hours to 4 hours by June 2026, achieving 95% SLA compliance and 90% CSAT.',
+                    teamMembers: ['Jennifer Wu - Support Manager', 'IT Support - System config', '4 Agent Representatives'],
+                    processDescription: 'Ticket submitted → General queue → Agent picks manually → Research issue → Respond → If unresolved: back to queue → Resolution. Waste: 18hr avg queue wait, 15min search time, 40% need follow-up.',
+                    processStart: 'Customer submits ticket',
+                    processEnd: 'Issue resolved and closed',
+                    primaryMetric: 'Average First Response Time (hours)',
+                    baselineValue: '24 hours',
+                    targetValue: '4 hours',
+                    dataCollection: 'Zendesk logs, Phone ACD data, CSAT surveys (22% response), Agent time studies. 12,000 tickets analyzed over 4 weeks.',
+                    rootCauses: '1. No intelligent ticket routing - all to general queue (40%)\n2. Staffing misaligned with demand (Monday, weekends) (25%)\n3. Agents spend 15 min searching for answers (20%)\n4. No auto-acknowledgment sets wrong expectations (10%)\n5. Inconsistent categorization causes misrouting (5%)',
+                    analysisTools: 'Regression analysis (R²=0.72), ANOVA by channel (p<0.001), Day/time volume analysis, Agent variation study',
+                    keyFindings: 'Email 32hr vs Chat 8hr vs Phone 2hr response. Monday 9-11AM has 180% volume. Top quartile agents: 12hr avg, Bottom: 38hr avg.'
+                }
+            },
+            invoiceProcessing: {
+                id: 'invoiceProcessing',
+                title: 'Invoice Processing Optimization',
+                subtitle: 'Accounts Payable Transformation',
+                icon: '📄',
+                stats: { sigma: '3.2σ→4.8σ', savings: '$420K', duration: '5 mo' },
+                tags: ['Finance', 'Automation', 'Cycle Time'],
+                description: 'DMAIC project to reduce invoice processing cycle time from 12 days to 3 days through automation.',
+                data: {
+                    projectName: 'Accounts Payable Invoice Processing Optimization',
+                    projectId: 'DMAIC-2026-FIN-001',
+                    champion: 'David Park, CFO',
+                    projectLeader: 'Rachel Green, Six Sigma Green Belt',
+                    startDate: '2026-01-20',
+                    targetDate: '2026-06-20',
+                    problemStatement: 'Invoice processing averages 12 days, with 28% exceeding 15-day terms. This causes $180K lost early payment discounts, strained vendor relationships, $95K late penalties, and 2,400 hours of AP staff time on exceptions. 8,500 invoices monthly with 15% manual intervention.',
+                    businessCase: 'Optimizing will capture $180K early discounts, eliminate $95K penalties, reduce AP workload 40%, improve vendor relationships, and reduce working capital needs.',
+                    annualImpact: '$420,000',
+                    impactType: 'cost-reduction',
+                    inScope: 'All vendor invoices through AP including PO and non-PO invoices, expense reports, utility payments for US entities.',
+                    outScope: 'Intercompany invoices, international subsidiaries, employee reimbursements via Concur, capital expenditure approvals.',
+                    goalStatement: 'Reduce invoice cycle time from 12 days to 3 days by June 2026, achieving 98% on-time payment and 90% first-time match rate.',
+                    teamMembers: ['Tom Baker - AP Manager', 'Procurement - PO accuracy', 'IT - System integration'],
+                    processDescription: 'Invoice received → Mailroom scanning (2 days) → Data entry (1 day) → 3-way match → Exception routing (3 days) → Approval (2 days) → Payment batch (2 days). Value-add: 1.5 days, Non-value: 10.5 days (88% waste).',
+                    processStart: 'Invoice received in mailroom',
+                    processEnd: 'Payment executed',
+                    primaryMetric: 'Invoice Cycle Time (days)',
+                    baselineValue: '12 days',
+                    targetValue: '3 days',
+                    dataCollection: 'ERP transaction logs (51,000 invoices, 6 months), Exception tracking, Email vendor inquiries, Time studies. Segmented by vendor, PO type, amount.',
+                    rootCauses: '1. Manual data entry creates 2-day delay (25%)\n2. PO receiving data incorrect for 38% of invoices (20%)\n3. Approvers average 2.3 days vs 1-day target (20%)\n4. Payment batches only run Tuesday/Friday (15%)\n5. Sequential approval routing doubles time (20%)',
+                    analysisTools: 'Pareto of delays, Regression (R²=0.81), Chi-square vendor analysis (p<0.001), Time-of-week analysis',
+                    keyFindings: 'PO accuracy drives 35% of variation. Invoices received Monday process 2 days faster. Top 20 vendors cause 60% of exceptions.'
+                }
+            }
+        };
+
+        function renderDmaicGallery() {
+            const gallery = document.getElementById('dmaicExampleGallery');
+            gallery.innerHTML = '';
+            Object.values(dmaicExamples).forEach(ex => {
+                gallery.innerHTML += `
+                    <div class="example-card">
+                        <div class="example-card-header">
+                            <div class="example-card-icon">${ex.icon}</div>
+                            <div class="example-card-title">${ex.title}</div>
+                            <div class="example-card-subtitle">${ex.subtitle}</div>
+                            <div class="example-card-stats">
+                                <div class="example-stat"><div class="example-stat-value">${ex.stats.sigma}</div><div class="example-stat-label">Sigma</div></div>
+                                <div class="example-stat"><div class="example-stat-value">${ex.stats.savings}</div><div class="example-stat-label">Savings</div></div>
+                                <div class="example-stat"><div class="example-stat-value">${ex.stats.duration}</div><div class="example-stat-label">Duration</div></div>
+                            </div>
+                        </div>
+                        <div class="example-card-body">
+                            <p class="example-card-desc">${ex.description}</p>
+                            <div class="example-tags">${ex.tags.map(t => `<span class="example-tag">${t}</span>`).join('')}</div>
+                            <div class="example-card-actions">
+                                <button class="btn btn-secondary btn-sm" onclick="previewDmaicExample('${ex.id}')">👁️ Preview</button>
+                                <button class="btn btn-primary btn-sm" onclick="useDmaicExample('${ex.id}')">✨ Use This</button>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function openExamplesGallery() {
+            renderDmaicGallery();
+            document.getElementById('dmaicGalleryModal').classList.add('active');
+        }
+        function closeExamplesGallery() { document.getElementById('dmaicGalleryModal').classList.remove('active'); }
+        function closeDmaicPreview() { document.getElementById('dmaicPreviewModal').classList.remove('active'); }
+
+        function previewDmaicExample(id) {
+            const ex = dmaicExamples[id];
+            document.getElementById('dmaicPreviewTitle').textContent = ex.title + ' - Preview';
+            document.getElementById('dmaicPreviewContent').innerHTML = `
+                <div class="preview-grid">
+                    <div class="preview-item"><div class="preview-item-label">Project</div><div class="preview-item-value">${ex.data.projectName}</div></div>
+                    <div class="preview-item"><div class="preview-item-label">Impact</div><div class="preview-item-value">${ex.data.annualImpact}</div></div>
+                </div>
+                <div style="margin-bottom:1rem;"><div class="preview-item-label">PROBLEM STATEMENT</div><p style="color:var(--text-muted);font-size:0.9rem;">${ex.data.problemStatement.substring(0,300)}...</p></div>
+                <div><div class="preview-item-label">ROOT CAUSES</div><pre style="color:var(--text-muted);font-size:0.85rem;white-space:pre-wrap;">${ex.data.rootCauses}</pre></div>`;
+            document.getElementById('useDmaicPreviewBtn').onclick = () => useDmaicExample(id);
+            closeExamplesGallery();
+            document.getElementById('dmaicPreviewModal').classList.add('active');
+        }
+
+        function useDmaicExample(id) {
+            const d = dmaicExamples[id].data;
+            document.getElementById('projectName').value = d.projectName || '';
+            document.getElementById('projectId').value = d.projectId || '';
+            document.getElementById('champion').value = d.champion || '';
+            document.getElementById('projectLeader').value = d.projectLeader || '';
+            document.getElementById('startDate').value = d.startDate || '';
+            document.getElementById('targetDate').value = d.targetDate || '';
+            document.getElementById('problemStatement').value = d.problemStatement || '';
+            document.getElementById('businessCase').value = d.businessCase || '';
+            document.getElementById('annualImpact').value = d.annualImpact || '';
+            document.getElementById('impactType').value = d.impactType || '';
+            document.getElementById('inScope').value = d.inScope || '';
+            document.getElementById('outScope').value = d.outScope || '';
+            document.getElementById('goalStatement').value = d.goalStatement || '';
+            document.getElementById('processDescription').value = d.processDescription || '';
+            document.getElementById('processStart').value = d.processStart || '';
+            document.getElementById('processEnd').value = d.processEnd || '';
+            document.getElementById('primaryMetric').value = d.primaryMetric || '';
+            document.getElementById('baselineValue').value = d.baselineValue || '';
+            document.getElementById('targetValue').value = d.targetValue || '';
+            document.getElementById('dataCollection').value = d.dataCollection || '';
+            document.getElementById('rootCauses').value = d.rootCauses || '';
+            document.getElementById('analysisTools').value = d.analysisTools || '';
+            document.getElementById('keyFindings').value = d.keyFindings || '';
+            
+            const teamList = document.getElementById('teamList');
+            teamList.innerHTML = '';
+            (d.teamMembers || []).forEach(m => {
+                const div = document.createElement('div');
+                div.className = 'dynamic-item';
+                div.innerHTML = `<input type="text" class="form-input" value="${m}"><button class="btn-icon" onclick="removeItem(this)">✕</button>`;
+                teamList.appendChild(div);
+            });
+            
+            closeExamplesGallery();
+            closeDmaicPreview();
+            saveData();
+            alert('Example loaded! Complete the Improve and Control phases, then preview.');
+            goToStep(1);
+        }
     </script>
+
+    <!-- DMAIC Examples Gallery Modal -->
+    <div class="gallery-modal" id="dmaicGalleryModal">
+        <div class="gallery-modal-content">
+            <div class="gallery-modal-header">
+                <h3 class="gallery-modal-title">📚 Example DMAIC Projects</h3>
+                <button class="gallery-modal-close" onclick="closeExamplesGallery()">×</button>
+            </div>
+            <div class="gallery-modal-body">
+                <p style="color:var(--text-muted);margin-bottom:1.5rem;">Browse real Six Sigma DMAIC project examples with complete data for Define, Measure, and Analyze phases.</p>
+                <div class="example-gallery" id="dmaicExampleGallery"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DMAIC Preview Modal -->
+    <div class="gallery-modal" id="dmaicPreviewModal">
+        <div class="gallery-modal-content" style="max-width:800px;">
+            <div class="gallery-modal-header">
+                <h3 class="gallery-modal-title" id="dmaicPreviewTitle">Preview</h3>
+                <button class="gallery-modal-close" onclick="closeDmaicPreview()">×</button>
+            </div>
+            <div class="gallery-modal-body" id="dmaicPreviewContent"></div>
+            <div class="gallery-modal-footer">
+                <button class="btn btn-secondary" onclick="closeDmaicPreview()">Close</button>
+                <button class="btn btn-primary" id="useDmaicPreviewBtn">✨ Use This Example</button>
+            </div>
+        </div>
+    </div>
 
     <style>
         @media print {

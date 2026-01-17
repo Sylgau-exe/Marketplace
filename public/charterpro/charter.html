@@ -754,6 +754,94 @@
                 grid-template-columns: 1fr;
             }
         }
+    /* Example Gallery Styles */
+        .btn-examples {
+            background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
+            color: white;
+            border: none;
+            padding: 0.625rem 1.25rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-examples:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+        }
+        .example-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        .example-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+        .example-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: var(--accent);
+        }
+        .example-card-header {
+            padding: 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+        }
+        .example-card-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+        .example-card-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.25rem; }
+        .example-card-subtitle { font-size: 0.875rem; opacity: 0.9; margin-bottom: 1rem; }
+        .example-card-stats { display: flex; gap: 1rem; background: rgba(255,255,255,0.15); border-radius: 8px; padding: 0.75rem; }
+        .example-stat { flex: 1; text-align: center; }
+        .example-stat-value { font-size: 1.1rem; font-weight: 700; }
+        .example-stat-label { font-size: 0.7rem; text-transform: uppercase; opacity: 0.8; }
+        .example-card-body { padding: 1.25rem; }
+        .example-card-desc { color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; margin-bottom: 1rem; }
+        .example-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+        .example-tag { background: var(--bg); color: var(--text-muted); padding: 0.25rem 0.75rem; border-radius: 100px; font-size: 0.75rem; }
+        .example-card-actions { display: flex; gap: 0.75rem; }
+        .example-card-actions .btn { flex: 1; justify-content: center; }
+        .gallery-modal {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(8px);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 2000; opacity: 0; visibility: hidden; transition: all 0.3s;
+            padding: 1rem;
+        }
+        .gallery-modal.active { opacity: 1; visibility: visible; }
+        .gallery-modal-content {
+            background: var(--bg-card); border-radius: 16px;
+            width: 100%; max-width: 1100px; max-height: 90vh;
+            overflow: hidden; display: flex; flex-direction: column;
+            border: 1px solid var(--border);
+        }
+        .gallery-modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border);
+        }
+        .gallery-modal-title { font-size: 1.25rem; font-weight: 700; }
+        .gallery-modal-close {
+            background: none; border: none; font-size: 1.5rem;
+            color: var(--text-muted); cursor: pointer; padding: 0.25rem;
+        }
+        .gallery-modal-close:hover { color: var(--text); }
+        .gallery-modal-body { padding: 1.5rem; overflow-y: auto; flex: 1; }
+        .gallery-modal-footer {
+            display: flex; gap: 1rem; justify-content: flex-end;
+            padding: 1.25rem 1.5rem; border-top: 1px solid var(--border);
+        }
+        .preview-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1rem; }
+        .preview-item { background: var(--bg); padding: 0.75rem; border-radius: 8px; }
+        .preview-item-label { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; margin-bottom: 0.25rem; }
+        .preview-item-value { font-weight: 500; }
+
+        @media (max-width: 768px) {
+            .example-gallery { grid-template-columns: 1fr; }
+            .preview-grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
@@ -769,6 +857,7 @@
                 <div class="save-status" id="saveStatus">
                     <span>●</span> Auto-saved
                 </div>
+                <button class="btn btn-examples" onclick="openExamplesGallery()">📚 Browse Examples</button>
                 <a href="dashboard.html" class="btn btn-secondary">My Charters</a>
                 <button class="btn btn-primary" onclick="goToStep(7)">Preview & Export</button>
             </div>
@@ -1768,6 +1857,380 @@
         function formatNumber(num) {
             return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
         }
+
+        // ============================================
+        // EXAMPLE GALLERY SYSTEM
+        // ============================================
+        const charterExamples = {
+            customerPortal: {
+                id: 'customerPortal',
+                title: 'Customer Portal 2.0',
+                subtitle: 'Enterprise Web Application',
+                icon: '💻',
+                category: 'Software Development',
+                stats: { roi: '127%', budget: '$2.4M', timeline: '18 mo' },
+                tags: ['React', 'Microservices', 'Cloud'],
+                description: 'Complete overhaul of legacy customer portal with React frontend, microservices backend, and enhanced security.',
+                data: {
+                    projectName: 'Customer Portal 2.0 - Enterprise Modernization',
+                    projectType: 'Software Development',
+                    priority: 'High',
+                    startDate: '2026-03-01',
+                    endDate: '2027-08-31',
+                    overview: 'Implement a modern, cloud-native customer portal built on React/TypeScript frontend with a Node.js microservices backend deployed on AWS. The solution includes responsive single-page application with sub-2-second load times, self-service capabilities for 80% of current support requests, real-time notifications and chat support integration, SSO/MFA authentication with OAuth 2.0, API-first architecture enabling third-party integrations, and Progressive Web App capabilities for mobile users. This project will replace our 10-year-old legacy portal that experiences frequent outages and poor user experience.',
+                    objectives: [
+                        'Achieve 99.9% system uptime (vs. current 99.2%)',
+                        'Reduce average page load time to under 2 seconds',
+                        'Decrease support ticket volume by 40% through self-service',
+                        'Improve customer satisfaction score from 3.2 to 4.5/5',
+                        'Enable mobile usage to reach 35% of total sessions'
+                    ],
+                    inScope: 'All customer-facing portal functionality including account management, billing, support tickets, knowledge base, and reporting dashboards. Mobile-responsive design, API integrations with CRM and ERP systems, SSO implementation, and data migration from legacy system.',
+                    outOfScope: 'Internal employee portals, B2B partner portals, legacy system decommissioning (separate project), hardware infrastructure changes, and third-party vendor contract renegotiations.',
+                    deliverables: [
+                        'Production-ready customer portal application',
+                        'RESTful API layer with documentation',
+                        'Mobile-responsive Progressive Web App',
+                        'Integrated knowledge base with AI search',
+                        'Admin console for content management',
+                        'Comprehensive test suite (90%+ coverage)',
+                        'User training materials and documentation'
+                    ],
+                    sponsor: 'Jennifer Martinez, Chief Technology Officer',
+                    projectManager: 'David Chen, Senior Project Manager',
+                    stakeholders: [
+                        { name: 'Linda Wong, VP Customer Success', role: 'Business Owner' },
+                        { name: 'Michael Park, Enterprise Architect', role: 'Technical Lead' },
+                        { name: 'Sarah Johnson, UX Director', role: 'Design Lead' },
+                        { name: 'Robert Kim, Security Officer', role: 'Security Advisor' }
+                    ],
+                    risks: [
+                        { risk: 'Data migration complexity causes data loss', impact: 'High', mitigation: 'Phased migration with validation and rollback capability' },
+                        { risk: 'User adoption resistance to new interface', impact: 'Medium', mitigation: 'Beta program, change management, comprehensive training' },
+                        { risk: 'Integration failures with third-party systems', impact: 'High', mitigation: 'Early API testing, sandbox environments, fallback options' },
+                        { risk: 'Performance issues under peak load', impact: 'High', mitigation: 'Load testing every sprint, auto-scaling architecture' },
+                        { risk: 'Key developer resignation', impact: 'Medium', mitigation: 'Cross-training, documentation, contractor backup plan' }
+                    ],
+                    constraints: 'Must maintain 99% uptime during migration. Budget ceiling of $2.5M. Must meet SOC 2 compliance. No disruption during Q4 peak season.',
+                    assumptions: 'Current development team remains stable. AWS infrastructure approved. Marketing will support change management. Legacy system documentation is accurate.',
+                    milestones: [
+                        { phase: 'Discovery & Architecture', duration: '8 weeks', date: 'Apr 2026' },
+                        { phase: 'Backend Development', duration: '16 weeks', date: 'Aug 2026' },
+                        { phase: 'Frontend Development', duration: '14 weeks', date: 'Nov 2026' },
+                        { phase: 'Integration & Testing', duration: '10 weeks', date: 'Feb 2027' },
+                        { phase: 'Data Migration', duration: '6 weeks', date: 'Mar 2027' },
+                        { phase: 'Launch & Stabilization', duration: '8 weeks', date: 'May 2027' }
+                    ],
+                    budget: '$2,400,000',
+                    benefits: '$800,000',
+                    duration: '18',
+                    benefitPeriod: '3'
+                }
+            },
+            campusExpansion: {
+                id: 'campusExpansion',
+                title: 'Corporate Campus Expansion',
+                subtitle: 'LEED Platinum Office Complex',
+                icon: '🏗️',
+                category: 'Construction',
+                stats: { roi: '89%', budget: '$24M', timeline: '28 mo' },
+                tags: ['LEED Platinum', 'Sustainable', 'Mixed-Use'],
+                description: 'New 180,000 sq ft LEED Platinum office building with underground parking, retail space, and modern amenities.',
+                data: {
+                    projectName: 'Corporate Campus Phase II - Innovation Center',
+                    projectType: 'Construction',
+                    priority: 'High',
+                    startDate: '2026-04-01',
+                    endDate: '2028-07-31',
+                    overview: 'Construct a new 180,000 square foot, 6-story office building on the adjacent parcel already owned by the company. The LEED Platinum certified building will feature open collaborative workspaces with activity-based design, 12,000 sq ft ground-floor retail and café space, 450-space underground parking structure, rooftop amenity deck with outdoor meeting areas, advanced building systems including geothermal HVAC, and electric vehicle charging for 50 spaces. This expansion addresses our current 98% capacity constraint and eliminates $2.1M in annual external lease costs.',
+                    objectives: [
+                        'Achieve LEED Platinum certification',
+                        'Complete construction within 28 months',
+                        'Deliver within 5% of approved budget',
+                        'Achieve 50% energy reduction vs. code baseline',
+                        'Consolidate all employees to campus within 3 months of completion'
+                    ],
+                    inScope: 'New 6-story office building, underground parking garage, ground-floor retail space, rooftop amenity deck, pedestrian bridge to existing building, upgraded campus infrastructure, landscaping and site improvements, and building management systems.',
+                    outOfScope: 'Renovation of existing headquarters building, IT infrastructure and equipment, furniture procurement (separate project), tenant improvements for retail spaces.',
+                    deliverables: [
+                        '180,000 sq ft Class A office building',
+                        '450-space underground parking garage',
+                        '12,000 sq ft retail/café space',
+                        'Rooftop amenity deck with landscaping',
+                        'Pedestrian bridge connection',
+                        'LEED Platinum certification documentation',
+                        'Building management system installation'
+                    ],
+                    sponsor: 'Robert Williams, Chief Executive Officer',
+                    projectManager: 'Sarah Thompson, VP of Facilities',
+                    stakeholders: [
+                        { name: 'Construction Manager - Turner Construction', role: 'General Contractor' },
+                        { name: 'Gensler Architecture', role: 'Design Architect' },
+                        { name: 'City Planning Department', role: 'Regulatory Approval' },
+                        { name: 'HR Leadership Team', role: 'Space Planning' }
+                    ],
+                    risks: [
+                        { risk: 'Construction cost escalation', impact: 'High', mitigation: 'Fixed-price GMP contract, value engineering options ready' },
+                        { risk: 'Permit delays from city planning', impact: 'High', mitigation: 'Early engagement, experienced permit expediter hired' },
+                        { risk: 'Subcontractor availability constraints', impact: 'Medium', mitigation: 'Early bid packages, relationships with key trades' },
+                        { risk: 'Weather delays during foundation work', impact: 'Medium', mitigation: 'Schedule buffer built in, winter work contingency plan' },
+                        { risk: 'Supply chain disruption for materials', impact: 'High', mitigation: 'Early procurement, multiple suppliers identified' }
+                    ],
+                    constraints: 'City height restriction of 85 feet. Parking requirement of 2.5 spaces per 1000 sf. Construction cannot disrupt existing building operations. Must maintain LEED Platinum eligibility throughout.',
+                    assumptions: 'Permit approval within 90 days. No significant changes to building codes. Financing secured at projected rates. No hazardous materials discovered during excavation.',
+                    milestones: [
+                        { phase: 'Design Development', duration: '16 weeks', date: 'Jul 2026' },
+                        { phase: 'Procurement & Bidding', duration: '8 weeks', date: 'Sep 2026' },
+                        { phase: 'Site Preparation', duration: '6 weeks', date: 'Nov 2026' },
+                        { phase: 'Foundation & Structure', duration: '24 weeks', date: 'Apr 2027' },
+                        { phase: 'Building Envelope', duration: '16 weeks', date: 'Aug 2027' },
+                        { phase: 'MEP & Interior Finish', duration: '20 weeks', date: 'Jan 2028' },
+                        { phase: 'Commissioning & Occupancy', duration: '12 weeks', date: 'Apr 2028' }
+                    ],
+                    budget: '$24,000,000',
+                    benefits: '$4,500,000',
+                    duration: '28',
+                    benefitPeriod: '5'
+                }
+            },
+            digitalTransformation: {
+                id: 'digitalTransformation',
+                title: 'Digital Transformation',
+                subtitle: 'Enterprise-Wide Automation',
+                icon: '🚀',
+                category: 'Business Transformation',
+                stats: { roi: '215%', budget: '$5.2M', timeline: '36 mo' },
+                tags: ['ERP', 'AI/ML', 'Automation'],
+                description: 'Comprehensive digital transformation including ERP implementation, workflow automation, and AI-powered analytics.',
+                data: {
+                    projectName: 'Enterprise Digital Transformation - Project Phoenix',
+                    projectType: 'Business Transformation',
+                    priority: 'High',
+                    startDate: '2026-02-01',
+                    endDate: '2029-01-31',
+                    overview: 'A three-phase digital transformation program: Phase 1 implements cloud-based ERP (SAP S/4HANA) for Finance, Procurement, and Inventory. Phase 2 deploys intelligent automation across 50 high-volume processes using RPA and AI. Phase 3 builds an enterprise analytics platform with AI/ML capabilities for predictive insights. Throughout all phases, execute comprehensive change management and digital skills training for all 2,400 employees. This transformation will address our current 15-business-day month-end close, 47 Excel-based processes, and 12 siloed departmental applications.',
+                    objectives: [
+                        'Reduce month-end close from 15 to 3 business days',
+                        'Decrease procurement cycle time from 23 to 5 days',
+                        'Achieve 80% straight-through processing for standard transactions',
+                        'Eliminate 8,000 hours of manual data reconciliation annually',
+                        'Enable real-time dashboards for all KPIs'
+                    ],
+                    inScope: 'SAP S/4HANA implementation for Finance, Procurement, Inventory, and HR modules. RPA deployment for 50 processes. Enterprise data warehouse. Power BI analytics dashboards. AI/ML models for forecasting. Digital skills training for all employees.',
+                    outOfScope: 'Manufacturing execution systems (MES), Customer-facing applications, Legacy system archival (separate project), Hardware infrastructure refresh.',
+                    deliverables: [
+                        'Fully implemented SAP S/4HANA ERP system',
+                        '50 automated workflows using UiPath RPA',
+                        'Integrated data warehouse on Snowflake',
+                        'Power BI analytics dashboards for all departments',
+                        'AI/ML models for demand forecasting',
+                        'Digital skills certification for 100% of employees',
+                        'Updated process documentation and SOPs'
+                    ],
+                    sponsor: 'Michael Foster, Chief Operating Officer',
+                    projectManager: 'Amanda Liu, Transformation Program Director',
+                    stakeholders: [
+                        { name: 'CFO Organization', role: 'Finance Process Owner' },
+                        { name: 'CIO Organization', role: 'Technology Delivery' },
+                        { name: 'CHRO Organization', role: 'Change Management' },
+                        { name: 'Accenture', role: 'Implementation Partner' }
+                    ],
+                    risks: [
+                        { risk: 'Change resistance slows adoption', impact: 'High', mitigation: 'Executive sponsorship, change champions, incentive alignment' },
+                        { risk: 'Data migration errors from legacy systems', impact: 'High', mitigation: 'Dedicated data team, multiple validation cycles, parallel running' },
+                        { risk: 'Integration complexity exceeds estimates', impact: 'High', mitigation: 'Integration architecture review, middleware platform' },
+                        { risk: 'Vendor delivery delays', impact: 'Medium', mitigation: 'Contractual SLAs, regular governance, backup resources' },
+                        { risk: 'Key person dependencies', impact: 'Medium', mitigation: 'Knowledge transfer protocols, cross-training, documentation' }
+                    ],
+                    constraints: 'Cannot disrupt operations during Q4 peak season. IT team bandwidth limited - requires SI partner. Data quality issues in legacy systems must be addressed. Board-mandated budget ceiling.',
+                    assumptions: 'SAP licensing approved. Systems integrator contract executed. Leadership committed to change management. No major organizational restructuring during program.',
+                    milestones: [
+                        { phase: 'Assessment & Planning', duration: '12 weeks', date: 'May 2026' },
+                        { phase: 'Phase 1: Core ERP', duration: '40 weeks', date: 'Feb 2027' },
+                        { phase: 'Phase 2: Automation', duration: '32 weeks', date: 'Nov 2027' },
+                        { phase: 'Phase 3: Analytics & AI', duration: '24 weeks', date: 'May 2028' },
+                        { phase: 'Training & Adoption', duration: '52 weeks', date: 'Ongoing' },
+                        { phase: 'Optimization', duration: '16 weeks', date: 'Oct 2028' }
+                    ],
+                    budget: '$5,200,000',
+                    benefits: '$3,500,000',
+                    duration: '36',
+                    benefitPeriod: '3'
+                }
+            }
+        };
+
+        function renderExampleGallery() {
+            const gallery = document.getElementById('exampleGallery');
+            gallery.innerHTML = '';
+            
+            Object.values(charterExamples).forEach(ex => {
+                gallery.innerHTML += `
+                    <div class="example-card">
+                        <div class="example-card-header">
+                            <div class="example-card-icon">${ex.icon}</div>
+                            <div class="example-card-title">${ex.title}</div>
+                            <div class="example-card-subtitle">${ex.subtitle}</div>
+                            <div class="example-card-stats">
+                                <div class="example-stat"><div class="example-stat-value">${ex.stats.roi}</div><div class="example-stat-label">ROI</div></div>
+                                <div class="example-stat"><div class="example-stat-value">${ex.stats.budget}</div><div class="example-stat-label">Budget</div></div>
+                                <div class="example-stat"><div class="example-stat-value">${ex.stats.timeline}</div><div class="example-stat-label">Timeline</div></div>
+                            </div>
+                        </div>
+                        <div class="example-card-body">
+                            <p class="example-card-desc">${ex.description}</p>
+                            <div class="example-tags">${ex.tags.map(t => `<span class="example-tag">${t}</span>`).join('')}</div>
+                            <div class="example-card-actions">
+                                <button class="btn btn-secondary btn-sm" onclick="previewExample('${ex.id}')">👁️ Preview</button>
+                                <button class="btn btn-primary btn-sm" onclick="useExample('${ex.id}')">✨ Use This</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function openExamplesGallery() {
+            renderExampleGallery();
+            document.getElementById('examplesGalleryModal').classList.add('active');
+        }
+
+        function closeExamplesGallery() {
+            document.getElementById('examplesGalleryModal').classList.remove('active');
+        }
+
+        function previewExample(id) {
+            const ex = charterExamples[id];
+            if (!ex) return;
+            
+            document.getElementById('previewModalTitle').textContent = ex.title + ' - Preview';
+            const content = document.getElementById('previewModalContent');
+            
+            content.innerHTML = `
+                <div class="preview-grid">
+                    <div class="preview-item"><div class="preview-item-label">Project Name</div><div class="preview-item-value">${ex.data.projectName}</div></div>
+                    <div class="preview-item"><div class="preview-item-label">Type</div><div class="preview-item-value">${ex.data.projectType}</div></div>
+                    <div class="preview-item"><div class="preview-item-label">Budget</div><div class="preview-item-value">${ex.data.budget}</div></div>
+                    <div class="preview-item"><div class="preview-item-label">Duration</div><div class="preview-item-value">${ex.data.duration} months</div></div>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <div class="preview-item-label" style="margin-bottom: 0.5rem;">EXECUTIVE SUMMARY</div>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.6;">${ex.data.overview.substring(0, 400)}...</p>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <div class="preview-item-label" style="margin-bottom: 0.5rem;">KEY OBJECTIVES</div>
+                    <ul style="color: var(--text-muted); font-size: 0.9rem; padding-left: 1.25rem;">
+                        ${ex.data.objectives.slice(0, 3).map(o => `<li>${o}</li>`).join('')}
+                    </ul>
+                </div>
+                <div>
+                    <div class="preview-item-label" style="margin-bottom: 0.5rem;">TOP RISKS</div>
+                    <ul style="color: var(--text-muted); font-size: 0.9rem; padding-left: 1.25rem;">
+                        ${ex.data.risks.slice(0, 3).map(r => `<li>${r.risk}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+            
+            document.getElementById('usePreviewBtn').onclick = () => useExample(id);
+            closeExamplesGallery();
+            document.getElementById('previewModal').classList.add('active');
+        }
+
+        function closePreviewModal() {
+            document.getElementById('previewModal').classList.remove('active');
+        }
+
+        function useExample(id) {
+            const ex = charterExamples[id];
+            if (!ex) return;
+            const d = ex.data;
+            
+            // Basic fields
+            document.getElementById('projectName').value = d.projectName || '';
+            document.getElementById('projectType').value = d.projectType || '';
+            document.getElementById('priority').value = d.priority || 'Medium';
+            document.getElementById('startDate').value = d.startDate || '';
+            document.getElementById('endDate').value = d.endDate || '';
+            document.getElementById('overview').value = d.overview || '';
+            document.getElementById('inScope').value = d.inScope || '';
+            document.getElementById('outOfScope').value = d.outOfScope || '';
+            document.getElementById('sponsor').value = d.sponsor || '';
+            document.getElementById('projectManager').value = d.projectManager || '';
+            document.getElementById('constraints').value = d.constraints || '';
+            document.getElementById('assumptions').value = d.assumptions || '';
+            document.getElementById('budget').value = d.budget || '';
+            document.getElementById('benefits').value = d.benefits || '';
+            document.getElementById('duration').value = d.duration || '';
+            document.getElementById('benefitPeriod').value = d.benefitPeriod || '';
+            
+            // Objectives
+            const objList = document.getElementById('objectivesList');
+            objList.innerHTML = '';
+            (d.objectives || []).forEach(obj => addObjectiveWithValue(obj));
+            if (!d.objectives || d.objectives.length === 0) addObjective();
+            
+            // Deliverables
+            const delList = document.getElementById('deliverablesList');
+            delList.innerHTML = '';
+            (d.deliverables || []).forEach(del => addDeliverableWithValue(del));
+            if (!d.deliverables || d.deliverables.length === 0) addDeliverable();
+            
+            // Stakeholders
+            const stkList = document.getElementById('stakeholdersList');
+            stkList.innerHTML = '';
+            (d.stakeholders || []).forEach(s => addStakeholderWithValue(s.name, s.role));
+            if (!d.stakeholders || d.stakeholders.length === 0) addStakeholder();
+            
+            // Risks
+            const riskTbody = document.querySelector('#riskTable tbody');
+            riskTbody.innerHTML = '';
+            (d.risks || []).forEach(r => addRiskWithValue(r.risk, r.impact, r.mitigation));
+            if (!d.risks || d.risks.length === 0) addRisk();
+            
+            // Milestones
+            const mileTbody = document.querySelector('#milestoneTable tbody');
+            mileTbody.innerHTML = '';
+            (d.milestones || []).forEach(m => addMilestoneWithValue(m.phase, m.duration, m.date));
+            if (!d.milestones || d.milestones.length === 0) addMilestone();
+            
+            // Close modals and update
+            closeExamplesGallery();
+            closePreviewModal();
+            calculateROI();
+            autoSave();
+            
+            alert('Example loaded! Review and customize the data for your project.');
+            goToStep(1);
+        }
     </script>
+
+    <!-- Examples Gallery Modal -->
+    <div class="gallery-modal" id="examplesGalleryModal">
+        <div class="gallery-modal-content">
+            <div class="gallery-modal-header">
+                <h3 class="gallery-modal-title">📚 Example Project Charters</h3>
+                <button class="gallery-modal-close" onclick="closeExamplesGallery()">×</button>
+            </div>
+            <div class="gallery-modal-body">
+                <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Browse real-world project charter examples. Preview any example or use it as your starting point.</p>
+                <div class="example-gallery" id="exampleGallery"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preview Modal -->
+    <div class="gallery-modal" id="previewModal">
+        <div class="gallery-modal-content" style="max-width: 800px;">
+            <div class="gallery-modal-header">
+                <h3 class="gallery-modal-title" id="previewModalTitle">Example Preview</h3>
+                <button class="gallery-modal-close" onclick="closePreviewModal()">×</button>
+            </div>
+            <div class="gallery-modal-body" id="previewModalContent"></div>
+            <div class="gallery-modal-footer">
+                <button class="btn btn-secondary" onclick="closePreviewModal()">Close</button>
+                <button class="btn btn-primary" id="usePreviewBtn">✨ Use This Example</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
