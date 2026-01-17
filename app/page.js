@@ -480,7 +480,7 @@ export default function HomePage() {
               Log In
             </Link>
             <Link href="/signup" style={{ ...styles.btn, ...styles.btnPrimary }}>
-              Start Free
+              Get Started
             </Link>
           </div>
         </div>
@@ -503,12 +503,15 @@ export default function HomePage() {
           </p>
           <div style={styles.heroCtas}>
             <Link href="/signup" style={{ ...styles.btn, ...styles.btnPrimary, ...styles.btnLarge }}>
-              Start Free Trial <ArrowRight size={18} />
+              Get Started <ArrowRight size={18} />
             </Link>
             <Link href="#tools" style={{ ...styles.btn, ...styles.btnSecondary, ...styles.btnLarge }}>
               Explore Tools
             </Link>
           </div>
+          <p style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.4)', marginTop: 16 }}>
+            Browse all tools free • Plans from $9/month
+          </p>
         </div>
       </section>
 
@@ -591,7 +594,7 @@ export default function HomePage() {
           <div style={styles.sectionHeader}>
             <h2 style={styles.sectionTitle}>Simple, Transparent Pricing</h2>
             <p style={styles.sectionSubtitle}>
-              One subscription, all tools. No hidden fees.
+              Browse free. Pay only when you're ready to create.
             </p>
           </div>
           <div style={styles.pricingGrid}>
@@ -612,8 +615,11 @@ export default function HomePage() {
             Join thousands of project managers who trust our platform.
           </p>
           <Link href="/signup" style={{ ...styles.btn, ...styles.btnPrimary, ...styles.btnLarge }}>
-            Start Your Free Trial <ArrowRight size={18} />
+            Get Started Now <ArrowRight size={18} />
           </Link>
+          <p style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.4)', marginTop: 16 }}>
+            Free to browse • Plans from $9/month
+          </p>
         </div>
       </section>
 
