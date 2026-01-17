@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics - Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --accent: #8b5cf6;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --bg: #0a0f1a;
+            --bg-card: #111827;
+            --bg-sidebar: #0d1117;
+            --text: #f7fafc;
+            --text-muted: #a0aec0;
+            --text-dim: #718096;
+            --border: #2d3748;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; min-height: 100vh; }
+
+        .admin-layout { display: flex; min-height: 100vh; }
+
+        /* Sidebar */
+        .sidebar { width: 260px; background: var(--bg-sidebar); border-right: 1px solid var(--border); position: fixed; top: 0; left: 0; bottom: 0; overflow-y: auto; }
+        .sidebar-header { padding: 1.5rem; border-bottom: 1px solid var(--border); }
+        .sidebar-logo { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; }
+        .sidebar-logo-icon { width: 36px; height: 36px; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+        .sidebar-logo-text { font-family: 'Fraunces', serif; font-size: 1.25rem; font-weight: 700; color: var(--text); }
+        .sidebar-badge { background: var(--error); color: white; font-size: 0.65rem; padding: 0.15rem 0.4rem; border-radius: 4px; margin-left: 0.5rem; }
+
+        .sidebar-nav { padding: 1rem 0; }
+        .nav-section { padding: 0.5rem 1.5rem; margin-top: 1rem; }
+        .nav-section-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-dim); margin-bottom: 0.5rem; }
+        .nav-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1.5rem; color: var(--text-muted); text-decoration: none; transition: all 0.2s; border-left: 3px solid transparent; }
+        .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+        .nav-item.active { background: rgba(99, 102, 241, 0.1); color: var(--primary-light); border-left-color: var(--primary); }
+        .nav-icon { width: 20px; text-align: center; }
+
+        /* Main Content */
+        .main-content { flex: 1; margin-left: 260px; }
+        .top-bar { padding: 1rem 2rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: var(--bg-card); }
+        .top-bar-title { font-size: 1.25rem; font-weight: 600; }
+        .top-bar-actions { display: flex; gap: 1rem; align-items: center; }
+
+        .btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.6rem 1.2rem; border-radius: 8px; font-family: inherit; font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: all 0.2s; border: none; text-decoration: none; }
+        .btn-primary { background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: white; }
+        .btn-secondary { background: transparent; color: var(--text); border: 1px solid var(--border); }
+
+        .time-filter { display: flex; gap: 0.5rem; }
+        .time-btn { padding: 0.5rem 1rem; border-radius: 6px; border: 1px solid var(--border); background: transparent; color: var(--text-muted); cursor: pointer; font-size: 0.85rem; transition: all 0.2s; }
+        .time-btn.active, .time-btn:hover { background: var(--primary); border-color: var(--primary); color: white; }
+
+        .content { padding: 2rem; }
+
+        /* Stats Grid */
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; }
+        .stat-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem; }
+        .stat-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
+        .stat-trend { font-size: 0.8rem; padding: 0.2rem 0.5rem; border-radius: 20px; }
+        .stat-trend.up { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
+        .stat-trend.down { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+        .stat-value { font-family: 'Fraunces', serif; font-size: 2rem; font-weight: 700; margin-bottom: 0.25rem; }
+        .stat-label { color: var(--text-muted); font-size: 0.9rem; }
+
+        /* Charts */
+        .section-title { font-family: 'Fraunces', serif; font-size: 1.25rem; margin-bottom: 1rem; }
+        .charts-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+        .chart-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; }
+        .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .chart-title { font-weight: 600; }
+
+        /* Simple Bar Chart */
+        .bar-chart { display: flex; align-items: flex-end; gap: 1rem; height: 200px; padding-top: 1rem; }
+        .bar-group { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+        .bar { width: 100%; border-radius: 4px 4px 0 0; transition: height 0.3s ease; min-height: 4px; }
+        .bar-label { font-size: 0.75rem; color: var(--text-dim); }
+        .bar-value { font-size: 0.8rem; font-weight: 600; }
+
+        /* Tool Usage */
+        .tool-usage { display: flex; flex-direction: column; gap: 1rem; }
+        .tool-row { display: flex; align-items: center; gap: 1rem; }
+        .tool-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+        .tool-info { flex: 1; }
+        .tool-name { font-weight: 500; font-size: 0.9rem; margin-bottom: 0.25rem; }
+        .tool-bar-container { height: 8px; background: var(--bg); border-radius: 4px; overflow: hidden; }
+        .tool-bar { height: 100%; border-radius: 4px; transition: width 0.3s ease; }
+        .tool-percent { font-weight: 600; font-size: 0.9rem; min-width: 45px; text-align: right; }
+
+        /* Top Projects */
+        .top-projects { display: flex; flex-direction: column; gap: 0.75rem; }
+        .project-row { display: flex; align-items: center; gap: 1rem; padding: 0.75rem; background: var(--bg); border-radius: 8px; }
+        .project-rank { width: 24px; height: 24px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; }
+        .project-info { flex: 1; }
+        .project-name { font-weight: 500; font-size: 0.9rem; }
+        .project-tool { font-size: 0.8rem; color: var(--text-dim); }
+        .project-views { font-size: 0.85rem; color: var(--text-muted); }
+
+        /* Colors */
+        .charterpro { background: rgba(99, 102, 241, 0.15); }
+        .dmaic { background: rgba(16, 185, 129, 0.15); }
+        .roi { background: rgba(245, 158, 11, 0.15); }
+        .tco { background: rgba(139, 92, 246, 0.15); }
+        .risk { background: rgba(239, 68, 68, 0.15); }
+
+        @media (max-width: 1200px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .charts-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; }
+            .stats-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-layout">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="/" class="sidebar-logo">
+                    <div class="sidebar-logo-icon">🚀</div>
+                    <span class="sidebar-logo-text">PMTool</span>
+                    <span class="sidebar-badge">Admin</span>
+                </a>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="/admin/" class="nav-item">
+                    <span class="nav-icon">📊</span> Dashboard
+                </a>
+                <a href="/admin/users.html" class="nav-item">
+                    <span class="nav-icon">👥</span> Users
+                </a>
+                <a href="/admin/analytics.html" class="nav-item active">
+                    <span class="nav-icon">📈</span> Analytics
+                </a>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Tools</div>
+                </div>
+                <a href="/charterpro/dashboard.html" class="nav-item">
+                    <span class="nav-icon">📋</span> CharterPro
+                </a>
+                <a href="/dmaic/dashboard.html" class="nav-item">
+                    <span class="nav-icon">🔄</span> DMAIC Generator
+                </a>
+                <a href="/roi/dashboard.html" class="nav-item">
+                    <span class="nav-icon">💰</span> ROI Calculator
+                </a>
+                <a href="/tco/calculator.html" class="nav-item">
+                    <span class="nav-icon">🧮</span> TCO Calculator
+                </a>
+                <a href="/risk-register/register.html" class="nav-item">
+                    <span class="nav-icon">⚠️</span> Risk Register
+                </a>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Settings</div>
+                </div>
+                <a href="/invite/" class="nav-item">
+                    <span class="nav-icon">✉️</span> Beta Invites
+                </a>
+                <a href="/admin/settings.html" class="nav-item">
+                    <span class="nav-icon">⚙️</span> Settings
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="top-bar">
+                <h1 class="top-bar-title">Analytics</h1>
+                <div class="top-bar-actions">
+                    <div class="time-filter">
+                        <button class="time-btn" onclick="setTimeRange('7d')">7 Days</button>
+                        <button class="time-btn active" onclick="setTimeRange('30d')">30 Days</button>
+                        <button class="time-btn" onclick="setTimeRange('90d')">90 Days</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content">
+                <!-- Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon" style="background: rgba(99, 102, 241, 0.15);">👁️</div>
+                            <span class="stat-trend up">↑ 24%</span>
+                        </div>
+                        <div class="stat-value" id="totalViews">0</div>
+                        <div class="stat-label">Page Views</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon" style="background: rgba(34, 197, 94, 0.15);">📄</div>
+                            <span class="stat-trend up">↑ 18%</span>
+                        </div>
+                        <div class="stat-value" id="totalExports">0</div>
+                        <div class="stat-label">PDF Exports</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon" style="background: rgba(245, 158, 11, 0.15);">⏱️</div>
+                            <span class="stat-trend up">↑ 12%</span>
+                        </div>
+                        <div class="stat-value">4.2m</div>
+                        <div class="stat-label">Avg. Session</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon" style="background: rgba(139, 92, 246, 0.15);">🔄</div>
+                            <span class="stat-trend down">↓ 3%</span>
+                        </div>
+                        <div class="stat-value">67%</div>
+                        <div class="stat-label">Return Rate</div>
+                    </div>
+                </div>
+
+                <!-- Charts Row -->
+                <div class="charts-grid">
+                    <!-- Activity Chart -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <span class="chart-title">Projects Created (Last 7 Days)</span>
+                        </div>
+                        <div class="bar-chart" id="activityChart">
+                            <!-- Generated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Tool Usage -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <span class="chart-title">Tool Usage</span>
+                        </div>
+                        <div class="tool-usage" id="toolUsage">
+                            <!-- Generated by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Second Row -->
+                <div class="charts-grid">
+                    <!-- Export Stats -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <span class="chart-title">Exports by Tool</span>
+                        </div>
+                        <div class="bar-chart" id="exportsChart">
+                            <!-- Generated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Top Projects -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <span class="chart-title">Recent Projects</span>
+                        </div>
+                        <div class="top-projects" id="topProjects">
+                            <!-- Generated by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function loadAnalyticsData() {
+            // Calculate totals from localStorage
+            const charterExports = parseInt(localStorage.getItem('charterpro_exports') || '0');
+            const dmaicExports = parseInt(localStorage.getItem('dmaic_exports') || '0');
+            const roiExports = parseInt(localStorage.getItem('roi_exports') || '0');
+            const tcoExports = parseInt(localStorage.getItem('tco_exports') || '0');
+            const riskExports = parseInt(localStorage.getItem('risk_exports') || '0');
+            const totalExports = charterExports + dmaicExports + roiExports + tcoExports + riskExports;
+
+            // Count projects
+            const charters = JSON.parse(localStorage.getItem('charterpro_projects') || '[]').length;
+            const dmaic = localStorage.getItem('dmaic_current_project') ? 1 : 0;
+            const roi = localStorage.getItem('roi_current_project') ? 1 : 0;
+            const tco = localStorage.getItem('tco_current') ? 1 : 0;
+            const risk = localStorage.getItem('risk_register') ? 1 : 0;
+            const totalProjects = charters + dmaic + roi + tco + risk;
+
+            // Simulate page views based on projects
+            const totalViews = totalProjects * 15 + totalExports * 3 + Math.floor(Math.random() * 50);
+
+            document.getElementById('totalViews').textContent = totalViews;
+            document.getElementById('totalExports').textContent = totalExports;
+
+            // Render activity chart (simulated daily data)
+            renderActivityChart();
+
+            // Render tool usage
+            renderToolUsage(charters, dmaic, roi, tco, risk);
+
+            // Render exports chart
+            renderExportsChart(charterExports, dmaicExports, roiExports, tcoExports, riskExports);
+
+            // Render top projects
+            renderTopProjects();
+        }
+
+        function renderActivityChart() {
+            const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            const values = days.map(() => Math.floor(Math.random() * 10) + 1);
+            const max = Math.max(...values);
+
+            const chart = document.getElementById('activityChart');
+            chart.innerHTML = days.map((day, i) => `
+                <div class="bar-group">
+                    <div class="bar-value">${values[i]}</div>
+                    <div class="bar" style="height: ${(values[i] / max) * 150}px; background: linear-gradient(180deg, #6366f1, #8b5cf6);"></div>
+                    <div class="bar-label">${day}</div>
+                </div>
+            `).join('');
+        }
+
+        function renderToolUsage(charters, dmaic, roi, tco, risk) {
+            const tools = [
+                { name: 'CharterPro', icon: '📋', count: charters, color: '#6366f1', class: 'charterpro' },
+                { name: 'DMAIC Generator', icon: '🔄', count: dmaic, color: '#10b981', class: 'dmaic' },
+                { name: 'ROI Calculator', icon: '💰', count: roi, color: '#f59e0b', class: 'roi' },
+                { name: 'TCO Calculator', icon: '🧮', count: tco, color: '#8b5cf6', class: 'tco' },
+                { name: 'Risk Register', icon: '⚠️', count: risk, color: '#ef4444', class: 'risk' }
+            ];
+
+            const total = tools.reduce((sum, t) => sum + t.count, 0) || 1;
+
+            const container = document.getElementById('toolUsage');
+            container.innerHTML = tools.map(t => {
+                const percent = Math.round((t.count / total) * 100);
+                return `
+                    <div class="tool-row">
+                        <div class="tool-icon ${t.class}">${t.icon}</div>
+                        <div class="tool-info">
+                            <div class="tool-name">${t.name}</div>
+                            <div class="tool-bar-container">
+                                <div class="tool-bar" style="width: ${percent}%; background: ${t.color};"></div>
+                            </div>
+                        </div>
+                        <div class="tool-percent">${percent}%</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderExportsChart(charter, dmaic, roi, tco, risk) {
+            const tools = [
+                { name: 'Charter', value: charter, color: '#6366f1' },
+                { name: 'DMAIC', value: dmaic, color: '#10b981' },
+                { name: 'ROI', value: roi, color: '#f59e0b' },
+                { name: 'TCO', value: tco, color: '#8b5cf6' },
+                { name: 'Risk', value: risk, color: '#ef4444' }
+            ];
+
+            const max = Math.max(...tools.map(t => t.value), 1);
+
+            const chart = document.getElementById('exportsChart');
+            chart.innerHTML = tools.map(t => `
+                <div class="bar-group">
+                    <div class="bar-value">${t.value}</div>
+                    <div class="bar" style="height: ${(t.value / max) * 150}px; background: ${t.color};"></div>
+                    <div class="bar-label">${t.name}</div>
+                </div>
+            `).join('');
+        }
+
+        function renderTopProjects() {
+            const projects = [];
+
+            // Gather all projects
+            const charters = JSON.parse(localStorage.getItem('charterpro_projects') || '[]');
+            charters.forEach(c => projects.push({ name: c.projectName || 'Untitled Charter', tool: 'CharterPro', icon: '📋' }));
+
+            if (localStorage.getItem('dmaic_current_project')) {
+                const d = JSON.parse(localStorage.getItem('dmaic_current_project'));
+                projects.push({ name: d.projectName || 'DMAIC Project', tool: 'DMAIC', icon: '🔄' });
+            }
+
+            if (localStorage.getItem('roi_current_project')) {
+                const r = JSON.parse(localStorage.getItem('roi_current_project'));
+                projects.push({ name: r.projectName || 'ROI Analysis', tool: 'ROI Calculator', icon: '💰' });
+            }
+
+            if (localStorage.getItem('tco_current')) {
+                const t = JSON.parse(localStorage.getItem('tco_current'));
+                projects.push({ name: t.assetName || 'TCO Analysis', tool: 'TCO Calculator', icon: '🧮' });
+            }
+
+            if (localStorage.getItem('risk_register')) {
+                const rr = JSON.parse(localStorage.getItem('risk_register'));
+                projects.push({ name: rr.projectName || 'Risk Register', tool: 'Risk Register', icon: '⚠️' });
+            }
+
+            const container = document.getElementById('topProjects');
+            
+            if (projects.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">📁</div>
+                        <p>No projects yet</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = projects.slice(0, 5).map((p, i) => `
+                <div class="project-row">
+                    <div class="project-rank">${i + 1}</div>
+                    <div style="font-size: 1.25rem;">${p.icon}</div>
+                    <div class="project-info">
+                        <div class="project-name">${p.name}</div>
+                        <div class="project-tool">${p.tool}</div>
+                    </div>
+                    <div class="project-views">${Math.floor(Math.random() * 20) + 5} views</div>
+                </div>
+            `).join('');
+        }
+
+        function setTimeRange(range) {
+            document.querySelectorAll('.time-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            loadAnalyticsData(); // Reload with new range (simulated)
+        }
+
+        document.addEventListener('DOMContentLoaded', loadAnalyticsData);
+    </script>
+</body>
+</html>
