@@ -4,9 +4,10 @@
  * 
  * Usage: <script src="/js/access-control.js"></script>
  * 
- * This script checks if the user has access to the current tool.
- * - Free users: Can view examples only, redirected to upgrade when trying to use tool
- * - Paid users: Full access based on their plan and selected tools
+ * Access Levels:
+ * - Not registered: Must register to access anything (tools or examples)
+ * - Free account: Can browse tools and view examples only
+ * - Paid accounts: Full access based on plan and selected tools
  */
 
 (function() {
@@ -22,7 +23,7 @@
     };
 
     const PLAN_TOOL_LIMITS = {
-        free: 0,
+        free: 0,        // Can view examples only
         starter: 1,
         professional: 5,
         unlimited: -1,  // -1 = unlimited
@@ -50,10 +51,20 @@
         return null;
     }
 
-    // Check if current page is an examples/index page (always allowed)
+    // Check if current page is an examples/index page
     function isExamplesPage() {
         const path = window.location.pathname;
         return path.endsWith('/index.html') || path.endsWith('/examples.html');
+    }
+
+    // Check if current page is a tool page (not examples)
+    function isToolPage() {
+        const path = window.location.pathname;
+        return path.includes('/charter.html') || 
+               path.includes('/dmaic.html') || 
+               path.includes('/calculator.html') || 
+               path.includes('/register.html') ||
+               path.includes('/study.html');
     }
 
     // Get user data from localStorage
@@ -67,20 +78,23 @@
         }
     }
 
-    // Check if user has access to a specific tool
+    // Check if user is logged in
+    function isLoggedIn() {
+        const user = getUserData();
+        return user !== null && user.email;
+    }
+
+    // Check if user has access to a specific tool (for creating projects)
     function hasToolAccess(toolId) {
         const user = getUserData();
         
-        // No user = no access (but can view examples)
-        if (!user) {
-            return false;
-        }
+        if (!user) return false;
 
         const plan = user.plan || ACCESS_CONFIG.FREE;
         const selectedTools = user.selectedTools || [];
         const toolLimit = PLAN_TOOL_LIMITS[plan];
 
-        // Free plan = no tool access
+        // Free plan = no tool access (examples only)
         if (plan === ACCESS_CONFIG.FREE) {
             return false;
         }
@@ -94,9 +108,107 @@
         return selectedTools.includes(toolId);
     }
 
-    // Show upgrade modal
+    // Show registration required modal
+    function showRegistrationModal() {
+        const overlay = document.createElement('div');
+        overlay.id = 'pmt-register-modal';
+        overlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(8px);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        `;
+
+        overlay.innerHTML = `
+            <div style="
+                background: #12121a;
+                border-radius: 20px;
+                padding: 40px;
+                max-width: 480px;
+                width: 100%;
+                border: 1px solid rgba(255,255,255,0.1);
+                text-align: center;
+            ">
+                <div style="
+                    width: 64px;
+                    height: 64px;
+                    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+                    border-radius: 16px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin: 0 auto 24px;
+                    font-size: 28px;
+                ">👤</div>
+                <h2 style="
+                    color: white;
+                    font-size: 1.5rem;
+                    font-weight: 700;
+                    margin-bottom: 12px;
+                ">Create a Free Account</h2>
+                <p style="
+                    color: rgba(255,255,255,0.6);
+                    font-size: 1rem;
+                    line-height: 1.6;
+                    margin-bottom: 32px;
+                ">
+                    Sign up for free to browse our professional PM tools and view example projects. 
+                    It only takes a moment.
+                </p>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <a href="/signup" style="
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 8px;
+                        padding: 14px 24px;
+                        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+                        border: none;
+                        border-radius: 10px;
+                        color: white;
+                        font-size: 1rem;
+                        font-weight: 600;
+                        cursor: pointer;
+                        text-decoration: none;
+                    ">Create Free Account</a>
+                    <a href="/login" style="
+                        padding: 14px 24px;
+                        background: rgba(255,255,255,0.05);
+                        border: 1px solid rgba(255,255,255,0.1);
+                        border-radius: 10px;
+                        color: white;
+                        font-size: 1rem;
+                        font-weight: 600;
+                        cursor: pointer;
+                        text-decoration: none;
+                    ">I Already Have an Account</a>
+                </div>
+                <p style="
+                    color: rgba(255,255,255,0.4);
+                    font-size: 0.85rem;
+                    margin-top: 24px;
+                ">
+                    ✓ Free forever &nbsp;&nbsp; ✓ No credit card required
+                </p>
+            </div>
+        `;
+
+        document.body.appendChild(overlay);
+        
+        // Prevent scrolling
+        document.body.style.overflow = 'hidden';
+    }
+
+    // Show upgrade modal for free users trying to use tools
     function showUpgradeModal(toolId) {
-        // Create modal overlay
         const overlay = document.createElement('div');
         overlay.id = 'pmt-upgrade-modal';
         overlay.style.cssText = `
@@ -151,14 +263,14 @@
                     font-size: 1.5rem;
                     font-weight: 700;
                     margin-bottom: 12px;
-                ">Upgrade to Access ${toolName}</h2>
+                ">Upgrade to Use ${toolName}</h2>
                 <p style="
                     color: rgba(255,255,255,0.6);
                     font-size: 1rem;
                     line-height: 1.6;
                     margin-bottom: 32px;
                 ">
-                    You're currently on a free account. Upgrade to start creating 
+                    You're on a free account. Upgrade to start creating 
                     your own projects with ${toolName}.
                 </p>
                 <div style="display: flex; flex-direction: column; gap: 12px;">
@@ -186,14 +298,14 @@
                         font-size: 1rem;
                         font-weight: 600;
                         cursor: pointer;
-                    ">Continue Browsing Examples</button>
+                    ">Continue Viewing Examples</button>
                 </div>
                 <p style="
                     color: rgba(255,255,255,0.4);
                     font-size: 0.85rem;
                     margin-top: 24px;
                 ">
-                    ✓ Browse all tools free &nbsp;&nbsp; ✓ View example projects
+                    ✓ Browse examples free &nbsp;&nbsp; ✓ Cancel anytime
                 </p>
             </div>
         `;
@@ -201,34 +313,53 @@
         document.body.appendChild(overlay);
     }
 
-    // Disable form inputs and show upgrade prompts
+    // Disable form inputs and show upgrade prompts for free users on tool pages
     function disableToolUsage() {
+        const toolId = getCurrentToolId();
+        
         // Find all form inputs, buttons, and interactive elements
-        const interactiveElements = document.querySelectorAll('input, textarea, select, button[type="submit"]');
+        const interactiveElements = document.querySelectorAll('input, textarea, select, button[type="submit"], button:not([onclick*="modal"])');
         
         interactiveElements.forEach(el => {
             // Skip navigation and example gallery buttons
             if (el.closest('.nav') || 
+                el.closest('#pmt-upgrade-modal') ||
+                el.closest('#pmt-register-modal') ||
+                el.classList.contains('example-btn') ||
                 el.classList.contains('btn-examples') || 
                 el.onclick?.toString().includes('Example') ||
+                el.onclick?.toString().includes('preview') ||
                 el.id === 'loadExampleBtn') {
                 return;
             }
             
             el.addEventListener('focus', function(e) {
                 e.preventDefault();
-                showUpgradeModal(getCurrentToolId());
+                e.target.blur();
+                if (!document.getElementById('pmt-upgrade-modal')) {
+                    showUpgradeModal(toolId);
+                }
             });
             
             el.addEventListener('click', function(e) {
                 if (el.tagName === 'BUTTON' || el.type === 'submit') {
                     e.preventDefault();
-                    showUpgradeModal(getCurrentToolId());
+                    e.stopPropagation();
+                    if (!document.getElementById('pmt-upgrade-modal')) {
+                        showUpgradeModal(toolId);
+                    }
                 }
             });
         });
 
         // Add a banner at the top
+        addPreviewBanner();
+    }
+
+    // Add preview mode banner
+    function addPreviewBanner() {
+        if (document.getElementById('pmt-free-banner')) return;
+        
         const banner = document.createElement('div');
         banner.id = 'pmt-free-banner';
         banner.style.cssText = `
@@ -246,9 +377,10 @@
             align-items: center;
             justify-content: center;
             gap: 16px;
+            flex-wrap: wrap;
         `;
         banner.innerHTML = `
-            <span>🔍 <strong>Preview Mode</strong> - You're viewing this tool as a free user</span>
+            <span>🔍 <strong>Preview Mode</strong> - Viewing as free user</span>
             <a href="/pricing" style="
                 background: white;
                 color: #6366f1;
@@ -257,65 +389,105 @@
                 text-decoration: none;
                 font-weight: 600;
                 font-size: 0.85rem;
-            ">Upgrade to Create</a>
+            ">Upgrade to Create Projects</a>
         `;
         document.body.prepend(banner);
 
         // Adjust page content to account for banner
-        document.body.style.paddingTop = '48px';
+        document.body.style.paddingTop = '52px';
     }
 
     // Initialize access control
     function init() {
         const toolId = getCurrentToolId();
         
-        // No tool ID found = not a tool page
+        // No tool ID found = not a tool page, skip
         if (!toolId) {
             return;
         }
 
-        // Examples pages are always accessible
+        // STEP 1: Check if user is logged in at all
+        if (!isLoggedIn()) {
+            console.log('PMT Access: User not logged in - registration required');
+            showRegistrationModal();
+            return;
+        }
+
+        // STEP 2: User is logged in - check their access level
+        const user = getUserData();
+        const plan = user.plan || ACCESS_CONFIG.FREE;
+
+        // Examples pages - allow for all logged-in users
         if (isExamplesPage()) {
-            console.log('PMT Access: Examples page - access granted');
+            console.log('PMT Access: Examples page - access granted for', plan);
+            if (plan === ACCESS_CONFIG.FREE) {
+                addPreviewBanner();
+            }
             return;
         }
 
-        // Check access
-        if (hasToolAccess(toolId)) {
-            console.log('PMT Access: User has access to', toolId);
-            return;
+        // Tool pages - check if user has paid access
+        if (isToolPage()) {
+            if (hasToolAccess(toolId)) {
+                console.log('PMT Access: Full access granted for', toolId);
+                return;
+            } else {
+                console.log('PMT Access: Preview mode for', toolId, '- plan:', plan);
+                // Wait for DOM to be ready, then disable tool usage
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', disableToolUsage);
+                } else {
+                    disableToolUsage();
+                }
+                return;
+            }
         }
 
-        // No access - show preview mode
-        console.log('PMT Access: Preview mode for', toolId);
-        
-        // Wait for DOM to be ready
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', disableToolUsage);
-        } else {
-            disableToolUsage();
+        // Default: allow access but show banner for free users
+        if (plan === ACCESS_CONFIG.FREE) {
+            addPreviewBanner();
         }
     }
 
     // For testing: Set user data
     window.PMTAccess = {
-        setUser: function(plan, selectedTools = []) {
+        // Login as a user with specific plan
+        login: function(email, plan, selectedTools = []) {
             localStorage.setItem('pmt_user', JSON.stringify({
-                plan: plan,
+                email: email || 'test@example.com',
+                plan: plan || 'free',
                 selectedTools: selectedTools,
-                email: 'test@example.com'
+                createdAt: new Date().toISOString()
             }));
             location.reload();
         },
-        clearUser: function() {
+        // Quick login shortcuts
+        loginFree: function() {
+            this.login('free@test.com', 'free', []);
+        },
+        loginStarter: function(toolId) {
+            this.login('starter@test.com', 'starter', [toolId || 'charterpro']);
+        },
+        loginPro: function() {
+            this.login('pro@test.com', 'professional', ['charterpro', 'dmaic-generator', 'roi-calculator', 'tco-calculator', 'risk-register']);
+        },
+        loginUnlimited: function() {
+            this.login('unlimited@test.com', 'unlimited', []);
+        },
+        // Logout
+        logout: function() {
             localStorage.removeItem('pmt_user');
             location.reload();
         },
+        // Get current user
         getUser: getUserData,
-        hasAccess: hasToolAccess
+        // Check access
+        hasAccess: hasToolAccess,
+        isLoggedIn: isLoggedIn
     };
 
     // Run on load
     init();
 
 })();
+;
