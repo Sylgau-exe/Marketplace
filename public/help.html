@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help Center - ProjectManagerTool</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --accent: #8b5cf6;
+            --success: #22c55e;
+            --bg: #0a0a0f;
+            --bg-card: #12121a;
+            --text: #ffffff;
+            --text-muted: #94a3b8;
+            --border: rgba(255,255,255,0.1);
+            --glow: rgba(99, 102, 241, 0.3);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        .nav {
+            background: rgba(10, 10, 15, 0.9);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+
+        .nav-logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        .nav-logo-text {
+            font-family: 'Fraunces', serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover {
+            color: var(--text);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px var(--glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px var(--glow);
+        }
+
+        /* Hero */
+        .hero {
+            padding: 160px 2rem 80px;
+            text-align: center;
+            background: 
+                radial-gradient(ellipse at 50% 0%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                var(--bg);
+        }
+
+        .hero-title {
+            font-family: 'Fraunces', serif;
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .hero-subtitle {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Search */
+        .search-container {
+            max-width: 500px;
+            margin: 2rem auto 0;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 16px 24px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary);
+        }
+
+        .search-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* Main Content */
+        .main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 2rem 4rem;
+        }
+
+        /* FAQ Section */
+        .section {
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-family: 'Fraunces', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(99, 102, 241, 0.15);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        /* Accordion */
+        .faq-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+        }
+
+        .faq-question {
+            width: 100%;
+            padding: 1.25rem 1.5rem;
+            background: none;
+            border: none;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+        }
+
+        .faq-question:hover {
+            background: rgba(255,255,255,0.03);
+        }
+
+        .faq-icon {
+            font-size: 1.2rem;
+            transition: transform 0.3s;
+            color: var(--text-muted);
+        }
+
+        .faq-item.open .faq-icon {
+            transform: rotate(45deg);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+
+        .faq-answer-content {
+            padding: 0 1.5rem 1.25rem;
+            color: var(--text-muted);
+            line-height: 1.7;
+        }
+
+        .faq-item.open .faq-answer {
+            max-height: 500px;
+        }
+
+        /* Quick Links */
+        .quick-links {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .quick-link {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .quick-link:hover {
+            border-color: var(--primary);
+            transform: translateY(-4px);
+        }
+
+        .quick-link-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(99, 102, 241, 0.15);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .quick-link-title {
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+
+        .quick-link-desc {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Contact CTA */
+        .contact-cta {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 3rem;
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        .contact-cta h2 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .contact-cta p {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .footer-text {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hero-title { font-size: 2rem; }
+            .quick-links { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-content">
+            <a href="/" class="nav-logo">
+                <div class="nav-logo-icon">📊</div>
+                <span class="nav-logo-text">ProjectManagerTool</span>
+            </a>
+            <div class="nav-links">
+                <a href="/" class="nav-link">Tools</a>
+                <a href="/help.html" class="nav-link" style="color: var(--text);">Help</a>
+                <a href="/about.html" class="nav-link">About</a>
+                <a href="/contact.html" class="nav-link">Contact</a>
+                <a href="/login.html" class="btn-primary">Sign In</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <h1 class="hero-title">How can we help?</h1>
+        <p class="hero-subtitle">Find answers to common questions about ProjectManagerTool and get the most out of our platform.</p>
+        
+        <div class="search-container">
+            <input type="text" class="search-input" placeholder="Search for help..." id="searchInput" onkeyup="filterFAQs()">
+        </div>
+    </section>
+
+    <main class="main">
+        <!-- Quick Links -->
+        <div class="quick-links">
+            <a href="#getting-started" class="quick-link">
+                <div class="quick-link-icon">🚀</div>
+                <div class="quick-link-title">Getting Started</div>
+                <div class="quick-link-desc">Learn the basics of using our platform</div>
+            </a>
+            <a href="#plans" class="quick-link">
+                <div class="quick-link-icon">💳</div>
+                <div class="quick-link-title">Plans & Billing</div>
+                <div class="quick-link-desc">Understand our pricing and subscriptions</div>
+            </a>
+            <a href="#tools" class="quick-link">
+                <div class="quick-link-icon">🔧</div>
+                <div class="quick-link-title">Using Tools</div>
+                <div class="quick-link-desc">Get help with specific tools</div>
+            </a>
+        </div>
+
+        <!-- Getting Started -->
+        <section class="section" id="getting-started">
+            <h2 class="section-title">
+                <div class="section-icon">🚀</div>
+                Getting Started
+            </h2>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    What is ProjectManagerTool?
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        ProjectManagerTool is a marketplace of curated project management tools designed for professionals. We bring together the best PM tools in one place, making it easy to find, compare, and access the tools you need to manage projects effectively. Whether you're looking for Gantt charts, Kanban boards, time trackers, or collaboration tools, we've got you covered.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    How do I create an account?
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        Creating an account is simple! Click the "Sign In" button in the top navigation, then select "Create Account." Enter your email address and create a password. You'll receive a confirmation email to verify your account. Once verified, you can start exploring and activating tools right away.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    Is there a free plan?
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        Yes! We offer a free plan that gives you access to 3 tools. It's perfect for trying out the platform and seeing if it fits your workflow. When you're ready for more, you can upgrade to one of our paid plans for unlimited access and additional features.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    How do I activate a tool?
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        Browse our tools catalog and click on any tool you're interested in. You'll see a detailed description, features, and user ratings. Click "Activate Tool" to add it to your dashboard. Depending on your plan, you may have a limit on how many tools you can activate at once.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Plans & Billing -->
+        <section class="section" id="plans">
+            <h2 class="section-title">
+                <div class="section-icon">💳</div>
+                Plans & Billing
+            </h2>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    What plans do you offer?
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        We offer four plans to fit different needs:<br><br>
+                        <strong>Free:</strong> Access to 3 tools, perfect for trying us out<br>
+                        <strong>Starter ($9/mo):</strong> Access to 10 tools<br>
+                        <strong>Professional ($19/mo):</strong> Access to 25 tools + priority support<br>
+                        <strong>Unlimited ($49/mo):</strong> Unlimited tools + all features + dedicated support
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    Can I change my plan anytime?
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        Absolutely! You can upgrade or downgrade your plan at any time from your account settings. When upgrading, you'll get immediate access to the new features. When downgrading, the change takes effect at the end of your current billing cycle.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    What payment methods do you accept?
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        We accept all major credit cards (Visa, MasterCard, American Express) through our secure payment processor, Stripe. All transactions are encrypted and your payment information is never stored on our servers.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    How do I cancel my subscription?
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        You can cancel your subscription anytime from your account settings. Click on "Billing," then "Cancel Subscription." You'll continue to have access until the end of your current billing period. We don't offer refunds for partial months, but you won't be charged again after cancellation.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Using Tools -->
+        <section class="section" id="tools">
+            <h2 class="section-title">
+                <div class="section-icon">🔧</div>
+                Using Tools
+            </h2>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    How do I access my activated tools?
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        All your activated tools appear in your personal dashboard. Simply log in and you'll see them on your home screen. Click any tool to launch it. You can also organize your tools and mark favorites for quick access.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    Can I request a new tool?
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        Yes! We love hearing from our users. If there's a project management tool you'd like to see on our platform, please contact us through our contact form. We review all requests and regularly add new tools based on user demand.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    Is my data secure?
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        Absolutely. Security is our top priority. We use industry-standard encryption for all data transmission and storage. Your project data is backed up regularly and we never share your information with third parties. We're committed to keeping your data safe and private.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    Do you offer team accounts?
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        Team features are coming soon! We're working on collaborative features that will let you share tools and projects with your team members. Sign up for our newsletter to be notified when team accounts launch.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact CTA -->
+        <div class="contact-cta">
+            <h2>Still have questions?</h2>
+            <p>Our support team is here to help you get the most out of ProjectManagerTool.</p>
+            <a href="/contact.html" class="btn-primary">Contact Support</a>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p class="footer-text">© 2026 ProjectManagerTool. All rights reserved.</p>
+    </footer>
+
+    <script>
+        function toggleFAQ(button) {
+            const item = button.parentElement;
+            const wasOpen = item.classList.contains('open');
+            
+            // Close all items
+            document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+            
+            // Open clicked item if it wasn't already open
+            if (!wasOpen) {
+                item.classList.add('open');
+            }
+        }
+
+        function filterFAQs() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const items = document.querySelectorAll('.faq-item');
+            
+            items.forEach(item => {
+                const question = item.querySelector('.faq-question').textContent.toLowerCase();
+                const answer = item.querySelector('.faq-answer-content').textContent.toLowerCase();
+                
+                if (question.includes(search) || answer.includes(search)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = search ? 'none' : 'block';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
