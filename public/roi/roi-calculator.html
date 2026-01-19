@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROI Calculator - Return on Investment Analysis</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #b45309;
+            --primary-light: #d97706;
+            --primary-dark: #92400e;
+            --accent: #f59e0b;
+            --accent-light: #fbbf24;
+            --accent-glow: rgba(245, 158, 11, 0.3);
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --bg: #0a0f1a;
+            --bg-card: #111827;
+            --bg-card-hover: #1a2332;
+            --text: #f7fafc;
+            --text-muted: #a0aec0;
+            --text-dim: #718096;
+            --border: #2d3748;
+            --gradient-amber: linear-gradient(135deg, #f59e0b 0%, #fbbf24 50%, #f59e0b 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; min-height: 100vh; }
+
+        .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 1rem 2rem; background: rgba(10, 15, 26, 0.95); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+        .nav-content { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .nav-logo { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; }
+        .nav-logo-icon { width: 40px; height: 40px; background: var(--gradient-amber); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
+        .nav-logo-text { font-family: 'Fraunces', serif; font-size: 1.5rem; font-weight: 700; color: var(--text); }
+        .platform-link { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 8px; color: #a5b4fc; text-decoration: none; font-size: 0.85rem; }
+        .nav-actions { display: flex; align-items: center; gap: 1rem; }
+        .save-status { font-size: 0.85rem; color: var(--text-muted); }
+        .save-status.saved { color: var(--success); }
+
+        .btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.5rem; border-radius: 8px; font-family: inherit; font-size: 0.9rem; font-weight: 600; text-decoration: none; cursor: pointer; transition: all 0.2s; border: none; }
+        .btn-primary { background: var(--gradient-amber); color: #1a1a2e; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 20px var(--accent-glow); }
+        .btn-secondary { background: transparent; color: var(--text); border: 1px solid var(--border); }
+        .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+        .btn-sm { padding: 0.5rem 1rem; font-size: 0.85rem; }
+        .btn-examples { background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%); color: white; border: none; }
+        .btn-examples:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4); }
+
+        .main-layout { display: flex; padding-top: 73px; min-height: 100vh; }
+        
+        .sidebar { width: 260px; background: var(--bg-card); border-right: 1px solid var(--border); padding: 1.5rem; position: fixed; top: 73px; bottom: 0; overflow-y: auto; }
+        .sidebar-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-dim); margin-bottom: 1rem; }
+        
+        .step-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; border-radius: 8px; cursor: pointer; transition: all 0.2s; margin-bottom: 0.5rem; }
+        .step-item:hover { background: var(--bg-card-hover); }
+        .step-item.active { background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.3); }
+        .step-item.completed .step-number { background: var(--success); }
+        .step-number { width: 32px; height: 32px; border-radius: 8px; background: var(--border); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.85rem; flex-shrink: 0; }
+        .step-item.active .step-number { background: var(--accent); color: #1a1a2e; }
+        .step-info h4 { font-size: 0.9rem; font-weight: 600; }
+        .step-info p { font-size: 0.75rem; color: var(--text-dim); }
+
+        .content-area { flex: 1; margin-left: 260px; padding: 2rem; max-width: 900px; }
+        
+        .step-content { display: none; }
+        .step-content.active { display: block; }
+        
+        .step-header { margin-bottom: 2rem; }
+        .step-header h2 { font-family: 'Fraunces', serif; font-size: 1.75rem; margin-bottom: 0.5rem; }
+        .step-header p { color: var(--text-muted); }
+        .step-badge { display: inline-block; padding: 0.25rem 0.75rem; background: rgba(245, 158, 11, 0.2); color: var(--accent); border-radius: 100px; font-size: 0.75rem; font-weight: 600; margin-bottom: 0.5rem; }
+
+        .form-section { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
+        .form-section-title { font-size: 1rem; font-weight: 600; margin-bottom: 1rem; color: var(--accent); }
+        .form-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+        .form-group { margin-bottom: 1rem; }
+        .form-label { display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 0.5rem; }
+        .form-label .required { color: var(--error); }
+        .form-hint { font-size: 0.8rem; color: var(--text-dim); margin-top: 0.25rem; }
+        
+        .form-input, .form-select, .form-textarea {
+            width: 100%; padding: 0.75rem 1rem; background: var(--bg); border: 1px solid var(--border);
+            border-radius: 8px; color: var(--text); font-family: inherit; font-size: 0.95rem; transition: all 0.2s;
+        }
+        .form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+        .form-textarea { min-height: 100px; resize: vertical; }
+
+        .input-group { display: flex; }
+        .input-group .input-prefix { padding: 0.75rem 1rem; background: var(--border); border: 1px solid var(--border); border-right: none; border-radius: 8px 0 0 8px; color: var(--text-muted); }
+        .input-group .form-input { border-radius: 0 8px 8px 0; }
+
+        .benefits-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        .benefits-table th, .benefits-table td { padding: 0.75rem; text-align: left; border-bottom: 1px solid var(--border); }
+        .benefits-table th { font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+        .benefits-table input { width: 100%; padding: 0.5rem; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-family: inherit; }
+        .benefits-table input:focus { outline: none; border-color: var(--accent); }
+        .btn-remove { background: transparent; border: none; color: var(--text-dim); cursor: pointer; padding: 0.25rem; font-size: 1.25rem; }
+        .btn-remove:hover { color: var(--error); }
+        .btn-add { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: transparent; border: 1px dashed var(--border); border-radius: 8px; color: var(--text-muted); cursor: pointer; font-family: inherit; font-size: 0.85rem; margin-top: 0.5rem; }
+        .btn-add:hover { border-color: var(--accent); color: var(--accent); }
+
+        .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+        .metric-card { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); border-radius: 12px; padding: 1.25rem; text-align: center; }
+        .metric-value { font-family: 'Fraunces', serif; font-size: 2rem; font-weight: 700; color: var(--accent-light); }
+        .metric-label { font-size: 0.8rem; opacity: 0.9; margin-top: 0.25rem; }
+
+        .step-navigation { display: flex; justify-content: space-between; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border); }
+
+        .results-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+        .result-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; }
+        .result-card.highlight { border-color: var(--accent); background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(251, 191, 36, 0.05) 100%); }
+        .result-title { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem; }
+        .result-value { font-family: 'Fraunces', serif; font-size: 2.5rem; font-weight: 700; color: var(--accent); }
+        .result-subtitle { font-size: 0.8rem; color: var(--text-dim); margin-top: 0.25rem; }
+
+        .chart-container { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-top: 1.5rem; }
+        .chart-title { font-size: 1rem; font-weight: 600; margin-bottom: 1rem; }
+        .chart-bar-container { margin-bottom: 1rem; }
+        .chart-bar-label { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.5rem; }
+        .chart-bar { height: 24px; background: var(--bg); border-radius: 4px; overflow: hidden; }
+        .chart-bar-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
+        .chart-bar-fill.cost { background: linear-gradient(90deg, #ef4444, #f87171); }
+        .chart-bar-fill.benefit { background: linear-gradient(90deg, #22c55e, #4ade80); }
+
+        /* Example Gallery Styles */
+        .example-gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+        .example-card { background: var(--bg-card); border-radius: 16px; overflow: hidden; border: 1px solid var(--border); transition: all 0.3s; }
+        .example-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.3); border-color: var(--accent); }
+        .example-card-header { padding: 1.5rem; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: white; }
+        .example-card-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+        .example-card-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.25rem; }
+        .example-card-subtitle { font-size: 0.875rem; opacity: 0.9; margin-bottom: 1rem; }
+        .example-card-stats { display: flex; gap: 1rem; background: rgba(255,255,255,0.15); border-radius: 8px; padding: 0.75rem; }
+        .example-stat { flex: 1; text-align: center; }
+        .example-stat-value { font-size: 1.1rem; font-weight: 700; }
+        .example-stat-label { font-size: 0.7rem; text-transform: uppercase; opacity: 0.8; }
+        .example-card-body { padding: 1.25rem; }
+        .example-card-desc { color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; margin-bottom: 1rem; }
+        .example-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+        .example-tag { background: var(--bg); color: var(--text-muted); padding: 0.25rem 0.75rem; border-radius: 100px; font-size: 0.75rem; }
+        .example-card-actions { display: flex; gap: 0.75rem; }
+        .example-card-actions .btn { flex: 1; justify-content: center; }
+        
+        .gallery-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 2000; opacity: 0; visibility: hidden; transition: all 0.3s; padding: 1rem; }
+        .gallery-modal.active { opacity: 1; visibility: visible; }
+        .gallery-modal-content { background: var(--bg-card); border-radius: 16px; width: 100%; max-width: 1100px; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column; border: 1px solid var(--border); }
+        .gallery-modal-header { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); }
+        .gallery-modal-title { font-size: 1.25rem; font-weight: 700; }
+        .gallery-modal-close { background: none; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer; }
+        .gallery-modal-close:hover { color: var(--text); }
+        .gallery-modal-body { padding: 1.5rem; overflow-y: auto; flex: 1; }
+        .gallery-modal-footer { display: flex; gap: 1rem; justify-content: flex-end; padding: 1.25rem 1.5rem; border-top: 1px solid var(--border); }
+        .preview-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1rem; }
+        .preview-item { background: var(--bg); padding: 0.75rem; border-radius: 8px; }
+        .preview-item-label { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; margin-bottom: 0.25rem; }
+        .preview-item-value { font-weight: 500; }
+
+        /* Help Modal */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 1500; opacity: 0; visibility: hidden; transition: all 0.3s; }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .modal { background: var(--bg-card); border-radius: 16px; width: 90%; max-width: 600px; max-height: 80vh; overflow: hidden; border: 1px solid var(--border); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); }
+        .modal-title { font-family: 'Fraunces', serif; font-size: 1.25rem; }
+        .modal-close { background: none; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer; }
+        .modal-body { padding: 1.5rem; overflow-y: auto; max-height: 60vh; }
+        .modal-footer { display: flex; justify-content: flex-end; gap: 1rem; padding: 1.25rem 1.5rem; border-top: 1px solid var(--border); }
+
+        .help-section { margin-bottom: 1.5rem; }
+        .help-section h4 { color: var(--accent); margin-bottom: 0.5rem; }
+        .help-section p, .help-section li { color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; }
+        .help-section ol, .help-section ul { padding-left: 1.25rem; }
+        .help-section li { margin-bottom: 0.5rem; }
+
+        @media (max-width: 900px) {
+            .sidebar { display: none; }
+            .content-area { margin-left: 0; }
+            .form-row { grid-template-columns: 1fr; }
+            .metrics-grid { grid-template-columns: 1fr; }
+            .results-grid { grid-template-columns: 1fr; }
+            .example-gallery { grid-template-columns: 1fr; }
+        }
+
+        @media print {
+            .nav, .sidebar, .step-navigation, .btn, .modal-overlay, .gallery-modal { display: none !important; }
+            body { background: white; color: black; }
+            .content-area { margin: 0; padding: 1rem; max-width: 100%; }
+            .form-section, .result-card, .chart-container { background: #f9f9f9; border: 1px solid #ddd; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-content">
+            <a href="index.html" class="nav-logo">
+                <div class="nav-logo-icon">📈</div>
+                <span class="nav-logo-text">ROI Calculator</span>
+            </a>
+            <a href="/" class="platform-link">← All Tools</a>
+            <div class="nav-actions">
+                <div class="save-status saved" id="saveStatus">● Auto-saved</div>
+                <button class="btn btn-secondary" onclick="openHelpModal()">❓ Guide</button>
+                <button class="btn btn-examples" onclick="openExamplesGallery()">📚 Browse Examples</button>
+                <button class="btn btn-primary" onclick="goToStep(5)">View Results</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Help Modal -->
+    <div class="modal-overlay" id="helpModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">📈 ROI Calculator Guide</h3>
+                <button class="modal-close" onclick="closeHelpModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="help-section">
+                    <h4>What is ROI?</h4>
+                    <p>Return on Investment (ROI) measures the profitability of an investment relative to its cost. It helps you determine if a project or purchase is financially worthwhile.</p>
+                </div>
+                <div class="help-section">
+                    <h4>How to Use This Calculator</h4>
+                    <ol>
+                        <li><strong>Project Details:</strong> Name your investment and set the analysis period</li>
+                        <li><strong>Investment Costs:</strong> Enter all initial and ongoing costs</li>
+                        <li><strong>Benefits:</strong> Add expected financial benefits (cost savings, revenue increases)</li>
+                        <li><strong>Risk Factors:</strong> Adjust for uncertainty with risk scenarios</li>
+                        <li><strong>Results:</strong> Review ROI, NPV, payback period, and visualizations</li>
+                    </ol>
+                </div>
+                <div class="help-section">
+                    <h4>Key Metrics Explained</h4>
+                    <ul>
+                        <li><strong>ROI %:</strong> (Total Benefits - Total Costs) / Total Costs × 100</li>
+                        <li><strong>NPV:</strong> Net Present Value - discounted future cash flows minus investment</li>
+                        <li><strong>Payback Period:</strong> Time to recover the initial investment</li>
+                        <li><strong>IRR:</strong> Internal Rate of Return - the discount rate where NPV = 0</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="closeHelpModal()">Got It!</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Layout -->
+    <div class="main-layout">
+        <aside class="sidebar">
+            <div class="sidebar-title">Analysis Steps</div>
+            
+            <div class="step-item active" onclick="goToStep(1)" data-step="1">
+                <div class="step-number">1</div>
+                <div class="step-info">
+                    <h4>Project Details</h4>
+                    <p>Name & timeline</p>
+                </div>
+            </div>
+            
+            <div class="step-item" onclick="goToStep(2)" data-step="2">
+                <div class="step-number">2</div>
+                <div class="step-info">
+                    <h4>Investment Costs</h4>
+                    <p>Initial & ongoing</p>
+                </div>
+            </div>
+            
+            <div class="step-item" onclick="goToStep(3)" data-step="3">
+                <div class="step-number">3</div>
+                <div class="step-info">
+                    <h4>Expected Benefits</h4>
+                    <p>Savings & revenue</p>
+                </div>
+            </div>
+            
+            <div class="step-item" onclick="goToStep(4)" data-step="4">
+                <div class="step-number">4</div>
+                <div class="step-info">
+                    <h4>Risk & Scenarios</h4>
+                    <p>Sensitivity analysis</p>
+                </div>
+            </div>
+            
+            <div class="step-item" onclick="goToStep(5)" data-step="5">
+                <div class="step-number">📊</div>
+                <div class="step-info">
+                    <h4>Results</h4>
+                    <p>ROI & visualization</p>
+                </div>
+            </div>
+        </aside>
+
+        <main class="content-area">
+            <!-- Step 1: Project Details -->
+            <div class="step-content active" id="step1">
+                <div class="step-header">
+                    <div class="step-badge">Step 1 of 5</div>
+                    <h2>Project Details</h2>
+                    <p>Define your investment project and analysis parameters.</p>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">📋 Investment Overview</div>
+                    <div class="form-group">
+                        <label class="form-label">Project/Investment Name <span class="required">*</span></label>
+                        <input type="text" class="form-input" id="projectName" placeholder="e.g., Marketing Automation Platform Implementation">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-textarea" id="description" placeholder="Describe the investment, its purpose, and expected outcomes..."></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Investment Category</label>
+                            <select class="form-select" id="category">
+                                <option value="">Select category...</option>
+                                <option value="technology">Technology/Software</option>
+                                <option value="equipment">Equipment/Machinery</option>
+                                <option value="marketing">Marketing/Advertising</option>
+                                <option value="hr">Human Resources/Training</option>
+                                <option value="facilities">Facilities/Real Estate</option>
+                                <option value="process">Process Improvement</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Analysis Date</label>
+                            <input type="date" class="form-input" id="analysisDate">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">⏱️ Analysis Period</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Analysis Period (Years) <span class="required">*</span></label>
+                            <select class="form-select" id="analysisPeriod">
+                                <option value="1">1 Year</option>
+                                <option value="2">2 Years</option>
+                                <option value="3" selected>3 Years</option>
+                                <option value="4">4 Years</option>
+                                <option value="5">5 Years</option>
+                                <option value="7">7 Years</option>
+                                <option value="10">10 Years</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Discount Rate (%)</label>
+                            <input type="number" class="form-input" id="discountRate" value="10" min="0" max="30" step="0.5">
+                            <p class="form-hint">Used for NPV calculation. Typical range: 8-15%</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-navigation">
+                    <div></div>
+                    <button class="btn btn-primary" onclick="goToStep(2)">Next: Investment Costs →</button>
+                </div>
+            </div>
+
+            <!-- Step 2: Investment Costs -->
+            <div class="step-content" id="step2">
+                <div class="step-header">
+                    <div class="step-badge">Step 2 of 5</div>
+                    <h2>Investment Costs</h2>
+                    <p>Enter all costs associated with this investment.</p>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">💰 Initial Investment (One-Time Costs)</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Software/Hardware Purchase</label>
+                            <div class="input-group">
+                                <span class="input-prefix">$</span>
+                                <input type="number" class="form-input" id="purchaseCost" value="0" min="0">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Implementation/Setup</label>
+                            <div class="input-group">
+                                <span class="input-prefix">$</span>
+                                <input type="number" class="form-input" id="implementationCost" value="0" min="0">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Training Costs</label>
+                            <div class="input-group">
+                                <span class="input-prefix">$</span>
+                                <input type="number" class="form-input" id="trainingCost" value="0" min="0">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Other Initial Costs</label>
+                            <div class="input-group">
+                                <span class="input-prefix">$</span>
+                                <input type="number" class="form-input" id="otherInitialCost" value="0" min="0">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="metrics-grid" style="margin-top: 1rem;">
+                        <div class="metric-card">
+                            <div class="metric-value" id="totalInitialCost">$0</div>
+                            <div class="metric-label">Total Initial Investment</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">🔄 Ongoing Costs (Annual)</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">License/Subscription Fees</label>
+                            <div class="input-group">
+                                <span class="input-prefix">$</span>
+                                <input type="number" class="form-input" id="licenseCost" value="0" min="0">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Maintenance/Support</label>
+                            <div class="input-group">
+                                <span class="input-prefix">$</span>
+                                <input type="number" class="form-input" id="maintenanceCost" value="0" min="0">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Staffing/Operations</label>
+                            <div class="input-group">
+                                <span class="input-prefix">$</span>
+                                <input type="number" class="form-input" id="staffingCost" value="0" min="0">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Other Annual Costs</label>
+                            <div class="input-group">
+                                <span class="input-prefix">$</span>
+                                <input type="number" class="form-input" id="otherAnnualCost" value="0" min="0">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="metrics-grid" style="margin-top: 1rem;">
+                        <div class="metric-card">
+                            <div class="metric-value" id="totalAnnualCost">$0</div>
+                            <div class="metric-label">Total Annual Costs</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-navigation">
+                    <button class="btn btn-secondary" onclick="goToStep(1)">← Back</button>
+                    <button class="btn btn-primary" onclick="goToStep(3)">Next: Benefits →</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Benefits -->
+            <div class="step-content" id="step3">
+                <div class="step-header">
+                    <div class="step-badge">Step 3 of 5</div>
+                    <h2>Expected Benefits</h2>
+                    <p>Define the financial benefits you expect from this investment.</p>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">📊 Annual Benefits</div>
+                    <p class="form-hint" style="margin-bottom: 1rem;">Add each benefit category with its expected annual value.</p>
+                    
+                    <table class="benefits-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 45%;">Benefit Description</th>
+                                <th style="width: 20%;">Category</th>
+                                <th style="width: 25%;">Annual Value</th>
+                                <th style="width: 10%;"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="benefitsTableBody">
+                            <tr>
+                                <td><input type="text" placeholder="e.g., Labor cost reduction"></td>
+                                <td>
+                                    <select style="width:100%;padding:0.5rem;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);">
+                                        <option value="cost-savings">Cost Savings</option>
+                                        <option value="revenue">Revenue Increase</option>
+                                        <option value="productivity">Productivity</option>
+                                        <option value="risk">Risk Reduction</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </td>
+                                <td><input type="number" placeholder="0" min="0"></td>
+                                <td><button class="btn-remove" onclick="removeBenefitRow(this)">×</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <button class="btn-add" onclick="addBenefitRow()">+ Add Benefit</button>
+                    
+                    <div class="metrics-grid" style="margin-top: 1.5rem;">
+                        <div class="metric-card">
+                            <div class="metric-value" id="totalAnnualBenefits">$0</div>
+                            <div class="metric-label">Total Annual Benefits</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">📈 Benefit Growth</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Annual Benefit Growth Rate (%)</label>
+                            <input type="number" class="form-input" id="benefitGrowthRate" value="0" min="0" max="50" step="0.5">
+                            <p class="form-hint">Expected year-over-year increase in benefits</p>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Time to Full Benefits (Months)</label>
+                            <input type="number" class="form-input" id="rampUpMonths" value="0" min="0" max="24">
+                            <p class="form-hint">Months until benefits reach full value (Year 1 prorated)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-navigation">
+                    <button class="btn btn-secondary" onclick="goToStep(2)">← Back</button>
+                    <button class="btn btn-primary" onclick="goToStep(4)">Next: Risk Factors →</button>
+                </div>
+            </div>
+
+            <!-- Step 4: Risk & Scenarios -->
+            <div class="step-content" id="step4">
+                <div class="step-header">
+                    <div class="step-badge">Step 4 of 5</div>
+                    <h2>Risk & Scenarios</h2>
+                    <p>Account for uncertainty with risk adjustments and scenarios.</p>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">⚠️ Risk Adjustment</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Implementation Risk Level</label>
+                            <select class="form-select" id="riskLevel">
+                                <option value="low">Low Risk (5% reduction)</option>
+                                <option value="medium" selected>Medium Risk (15% reduction)</option>
+                                <option value="high">High Risk (30% reduction)</option>
+                            </select>
+                            <p class="form-hint">Adjusts expected benefits for implementation uncertainty</p>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Confidence Level (%)</label>
+                            <input type="number" class="form-input" id="confidenceLevel" value="80" min="50" max="100">
+                            <p class="form-hint">Your confidence in benefit estimates (50-100%)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">📊 Scenario Analysis</div>
+                    <p class="form-hint" style="margin-bottom: 1rem;">Define pessimistic and optimistic scenarios for sensitivity analysis.</p>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Pessimistic Scenario</label>
+                            <input type="number" class="form-input" id="pessimisticPercent" value="70" min="0" max="100">
+                            <p class="form-hint">% of expected benefits in worst case</p>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Optimistic Scenario</label>
+                            <input type="number" class="form-input" id="optimisticPercent" value="130" min="100" max="200">
+                            <p class="form-hint">% of expected benefits in best case</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">📝 Assumptions & Notes</div>
+                    <div class="form-group">
+                        <label class="form-label">Key Assumptions</label>
+                        <textarea class="form-textarea" id="assumptions" placeholder="List the key assumptions underlying your ROI analysis..."></textarea>
+                    </div>
+                </div>
+
+                <div class="step-navigation">
+                    <button class="btn btn-secondary" onclick="goToStep(3)">← Back</button>
+                    <button class="btn btn-primary" onclick="goToStep(5)">Calculate ROI →</button>
+                </div>
+            </div>
+
+            <!-- Step 5: Results -->
+            <div class="step-content" id="step5">
+                <div class="step-header">
+                    <div class="step-badge">Results</div>
+                    <h2>ROI Analysis Results</h2>
+                    <p id="resultsProjectName">Investment Analysis</p>
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-value" id="resultROI">0%</div>
+                        <div class="metric-label">Return on Investment</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="resultNPV">$0</div>
+                        <div class="metric-label">Net Present Value</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="resultPayback">-- yrs</div>
+                        <div class="metric-label">Payback Period</div>
+                    </div>
+                </div>
+
+                <div class="results-grid">
+                    <div class="result-card highlight">
+                        <div class="result-title">Total Investment</div>
+                        <div class="result-value" id="resultTotalInvestment">$0</div>
+                        <div class="result-subtitle">Over analysis period</div>
+                    </div>
+                    <div class="result-card highlight">
+                        <div class="result-title">Total Benefits</div>
+                        <div class="result-value" id="resultTotalBenefits">$0</div>
+                        <div class="result-subtitle">Over analysis period</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-title">Net Gain/Loss</div>
+                        <div class="result-value" id="resultNetGain">$0</div>
+                        <div class="result-subtitle">Benefits minus costs</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-title">Risk-Adjusted ROI</div>
+                        <div class="result-value" id="resultRiskAdjustedROI">0%</div>
+                        <div class="result-subtitle">After risk adjustment</div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">📊 Cost vs. Benefits by Year</div>
+                    <div id="yearlyChart"></div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">📈 Cumulative Cash Flow</div>
+                    <div id="cumulativeChart"></div>
+                </div>
+
+                <div class="step-navigation">
+                    <button class="btn btn-secondary" onclick="goToStep(4)">← Back to Edit</button>
+                    <button class="btn btn-primary" onclick="window.print()">📄 Export PDF</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Examples Gallery Modal -->
+    <div class="gallery-modal" id="roiGalleryModal">
+        <div class="gallery-modal-content">
+            <div class="gallery-modal-header">
+                <h3 class="gallery-modal-title">📚 Example ROI Analyses</h3>
+                <button class="gallery-modal-close" onclick="closeExamplesGallery()">×</button>
+            </div>
+            <div class="gallery-modal-body">
+                <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Browse real-world ROI analysis examples. Preview or use as your starting point.</p>
+                <div class="example-gallery" id="roiExampleGallery"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preview Modal -->
+    <div class="gallery-modal" id="roiPreviewModal">
+        <div class="gallery-modal-content" style="max-width: 800px;">
+            <div class="gallery-modal-header">
+                <h3 class="gallery-modal-title" id="roiPreviewTitle">Preview</h3>
+                <button class="gallery-modal-close" onclick="closeRoiPreview()">×</button>
+            </div>
+            <div class="gallery-modal-body" id="roiPreviewContent"></div>
+            <div class="gallery-modal-footer">
+                <button class="btn btn-secondary" onclick="closeRoiPreview()">Close</button>
+                <button class="btn btn-primary" id="useRoiPreviewBtn">✨ Use This Example</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('analysisDate').value = new Date().toISOString().split('T')[0];
+            loadData();
+            setupAutoCalc();
+        });
+
+        // Navigation
+        function goToStep(step) {
+            document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.step-item').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById('step' + step).classList.add('active');
+            document.querySelector(`.step-item[data-step="${step}"]`).classList.add('active');
+            
+            // Mark previous steps as completed
+            document.querySelectorAll('.step-item').forEach(el => {
+                if (parseInt(el.dataset.step) < step) el.classList.add('completed');
+            });
+            
+            currentStep = step;
+            if (step === 5) calculateResults();
+            window.scrollTo(0, 0);
+        }
+
+        // Auto-calculation setup
+        function setupAutoCalc() {
+            const inputs = document.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => {
+                input.addEventListener('change', () => {
+                    updateTotals();
+                    saveData();
+                });
+                input.addEventListener('input', () => {
+                    updateTotals();
+                });
+            });
+        }
+
+        // Update totals
+        function updateTotals() {
+            // Initial costs
+            const purchase = parseFloat(document.getElementById('purchaseCost').value) || 0;
+            const implementation = parseFloat(document.getElementById('implementationCost').value) || 0;
+            const training = parseFloat(document.getElementById('trainingCost').value) || 0;
+            const otherInitial = parseFloat(document.getElementById('otherInitialCost').value) || 0;
+            const totalInitial = purchase + implementation + training + otherInitial;
+            document.getElementById('totalInitialCost').textContent = '$' + totalInitial.toLocaleString();
+            
+            // Annual costs
+            const license = parseFloat(document.getElementById('licenseCost').value) || 0;
+            const maintenance = parseFloat(document.getElementById('maintenanceCost').value) || 0;
+            const staffing = parseFloat(document.getElementById('staffingCost').value) || 0;
+            const otherAnnual = parseFloat(document.getElementById('otherAnnualCost').value) || 0;
+            const totalAnnual = license + maintenance + staffing + otherAnnual;
+            document.getElementById('totalAnnualCost').textContent = '$' + totalAnnual.toLocaleString();
+            
+            // Benefits
+            let totalBenefits = 0;
+            document.querySelectorAll('#benefitsTableBody tr').forEach(row => {
+                const valueInput = row.querySelectorAll('input[type="number"]')[0];
+                if (valueInput) totalBenefits += parseFloat(valueInput.value) || 0;
+            });
+            document.getElementById('totalAnnualBenefits').textContent = '$' + totalBenefits.toLocaleString();
+            
+            updateSaveStatus();
+        }
+
+        // Benefits table
+        function addBenefitRow() {
+            const tbody = document.getElementById('benefitsTableBody');
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><input type="text" placeholder="Benefit description"></td>
+                <td>
+                    <select style="width:100%;padding:0.5rem;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);">
+                        <option value="cost-savings">Cost Savings</option>
+                        <option value="revenue">Revenue Increase</option>
+                        <option value="productivity">Productivity</option>
+                        <option value="risk">Risk Reduction</option>
+                        <option value="other">Other</option>
+                    </select>
+                </td>
+                <td><input type="number" placeholder="0" min="0" onchange="updateTotals();saveData()"></td>
+                <td><button class="btn-remove" onclick="removeBenefitRow(this)">×</button></td>
+            `;
+            tbody.appendChild(tr);
+        }
+
+        function removeBenefitRow(btn) {
+            btn.closest('tr').remove();
+            updateTotals();
+            saveData();
+        }
+
+        // Calculate results
+        function calculateResults() {
+            const years = parseInt(document.getElementById('analysisPeriod').value) || 3;
+            const discountRate = (parseFloat(document.getElementById('discountRate').value) || 10) / 100;
+            
+            // Get costs
+            const initialCost = (parseFloat(document.getElementById('purchaseCost').value) || 0) +
+                               (parseFloat(document.getElementById('implementationCost').value) || 0) +
+                               (parseFloat(document.getElementById('trainingCost').value) || 0) +
+                               (parseFloat(document.getElementById('otherInitialCost').value) || 0);
+            
+            const annualCost = (parseFloat(document.getElementById('licenseCost').value) || 0) +
+                              (parseFloat(document.getElementById('maintenanceCost').value) || 0) +
+                              (parseFloat(document.getElementById('staffingCost').value) || 0) +
+                              (parseFloat(document.getElementById('otherAnnualCost').value) || 0);
+            
+            // Get benefits
+            let annualBenefits = 0;
+            document.querySelectorAll('#benefitsTableBody tr').forEach(row => {
+                const valueInput = row.querySelectorAll('input[type="number"]')[0];
+                if (valueInput) annualBenefits += parseFloat(valueInput.value) || 0;
+            });
+            
+            const benefitGrowth = (parseFloat(document.getElementById('benefitGrowthRate').value) || 0) / 100;
+            const rampUpMonths = parseFloat(document.getElementById('rampUpMonths').value) || 0;
+            
+            // Risk adjustment
+            const riskLevel = document.getElementById('riskLevel').value;
+            const riskMultiplier = riskLevel === 'low' ? 0.95 : riskLevel === 'high' ? 0.70 : 0.85;
+            
+            // Calculate totals
+            let totalCosts = initialCost;
+            let totalBenefits = 0;
+            let npv = -initialCost;
+            let cumulativeCashFlow = -initialCost;
+            let paybackYear = null;
+            
+            const yearlyData = [];
+            
+            for (let year = 1; year <= years; year++) {
+                const yearCost = annualCost;
+                let yearBenefit = annualBenefits * Math.pow(1 + benefitGrowth, year - 1);
+                
+                // Apply ramp-up for year 1
+                if (year === 1 && rampUpMonths > 0) {
+                    yearBenefit *= (12 - rampUpMonths) / 12;
+                }
+                
+                totalCosts += yearCost;
+                totalBenefits += yearBenefit;
+                
+                const netCashFlow = yearBenefit - yearCost;
+                cumulativeCashFlow += netCashFlow;
+                npv += netCashFlow / Math.pow(1 + discountRate, year);
+                
+                if (paybackYear === null && cumulativeCashFlow >= 0) {
+                    paybackYear = year - (cumulativeCashFlow / netCashFlow);
+                }
+                
+                yearlyData.push({ year, cost: yearCost, benefit: yearBenefit, cumulative: cumulativeCashFlow });
+            }
+            
+            const roi = totalCosts > 0 ? ((totalBenefits - totalCosts) / totalCosts) * 100 : 0;
+            const riskAdjustedROI = roi * riskMultiplier;
+            const netGain = totalBenefits - totalCosts;
+            
+            // Update UI
+            document.getElementById('resultsProjectName').textContent = document.getElementById('projectName').value || 'Investment Analysis';
+            document.getElementById('resultROI').textContent = roi.toFixed(1) + '%';
+            document.getElementById('resultNPV').textContent = '$' + Math.round(npv).toLocaleString();
+            document.getElementById('resultPayback').textContent = paybackYear ? paybackYear.toFixed(1) + ' yrs' : '> ' + years + ' yrs';
+            document.getElementById('resultTotalInvestment').textContent = '$' + Math.round(totalCosts).toLocaleString();
+            document.getElementById('resultTotalBenefits').textContent = '$' + Math.round(totalBenefits).toLocaleString();
+            document.getElementById('resultNetGain').textContent = '$' + Math.round(netGain).toLocaleString();
+            document.getElementById('resultNetGain').style.color = netGain >= 0 ? 'var(--success)' : 'var(--error)';
+            document.getElementById('resultRiskAdjustedROI').textContent = riskAdjustedROI.toFixed(1) + '%';
+            
+            // Render charts
+            renderYearlyChart(yearlyData);
+            renderCumulativeChart(yearlyData, initialCost);
+        }
+
+        function renderYearlyChart(data) {
+            const container = document.getElementById('yearlyChart');
+            const maxValue = Math.max(...data.map(d => Math.max(d.cost, d.benefit)));
+            
+            container.innerHTML = data.map(d => `
+                <div class="chart-bar-container">
+                    <div class="chart-bar-label">
+                        <span>Year ${d.year}</span>
+                        <span>Cost: $${d.cost.toLocaleString()} | Benefit: $${Math.round(d.benefit).toLocaleString()}</span>
+                    </div>
+                    <div class="chart-bar">
+                        <div class="chart-bar-fill cost" style="width: ${(d.cost / maxValue) * 100}%"></div>
+                    </div>
+                    <div class="chart-bar" style="margin-top: 4px;">
+                        <div class="chart-bar-fill benefit" style="width: ${(d.benefit / maxValue) * 100}%"></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderCumulativeChart(data, initialCost) {
+            const container = document.getElementById('cumulativeChart');
+            const allValues = [-initialCost, ...data.map(d => d.cumulative)];
+            const maxAbs = Math.max(...allValues.map(Math.abs));
+            
+            container.innerHTML = `
+                <div class="chart-bar-container">
+                    <div class="chart-bar-label"><span>Initial</span><span>-$${initialCost.toLocaleString()}</span></div>
+                    <div class="chart-bar"><div class="chart-bar-fill cost" style="width: ${(initialCost / maxAbs) * 100}%"></div></div>
+                </div>
+            ` + data.map(d => `
+                <div class="chart-bar-container">
+                    <div class="chart-bar-label">
+                        <span>Year ${d.year}</span>
+                        <span style="color: ${d.cumulative >= 0 ? 'var(--success)' : 'var(--error)'}">
+                            ${d.cumulative >= 0 ? '' : '-'}$${Math.abs(Math.round(d.cumulative)).toLocaleString()}
+                        </span>
+                    </div>
+                    <div class="chart-bar">
+                        <div class="chart-bar-fill ${d.cumulative >= 0 ? 'benefit' : 'cost'}" 
+                             style="width: ${(Math.abs(d.cumulative) / maxAbs) * 100}%"></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Save/Load
+        function saveData() {
+            const data = {
+                projectName: document.getElementById('projectName').value,
+                description: document.getElementById('description').value,
+                category: document.getElementById('category').value,
+                analysisDate: document.getElementById('analysisDate').value,
+                analysisPeriod: document.getElementById('analysisPeriod').value,
+                discountRate: document.getElementById('discountRate').value,
+                purchaseCost: document.getElementById('purchaseCost').value,
+                implementationCost: document.getElementById('implementationCost').value,
+                trainingCost: document.getElementById('trainingCost').value,
+                otherInitialCost: document.getElementById('otherInitialCost').value,
+                licenseCost: document.getElementById('licenseCost').value,
+                maintenanceCost: document.getElementById('maintenanceCost').value,
+                staffingCost: document.getElementById('staffingCost').value,
+                otherAnnualCost: document.getElementById('otherAnnualCost').value,
+                benefitGrowthRate: document.getElementById('benefitGrowthRate').value,
+                rampUpMonths: document.getElementById('rampUpMonths').value,
+                riskLevel: document.getElementById('riskLevel').value,
+                confidenceLevel: document.getElementById('confidenceLevel').value,
+                pessimisticPercent: document.getElementById('pessimisticPercent').value,
+                optimisticPercent: document.getElementById('optimisticPercent').value,
+                assumptions: document.getElementById('assumptions').value,
+                benefits: collectBenefits()
+            };
+            localStorage.setItem('roi_calculator_data', JSON.stringify(data));
+        }
+
+        function loadData() {
+            const saved = localStorage.getItem('roi_calculator_data');
+            if (!saved) return;
+            
+            try {
+                const data = JSON.parse(saved);
+                Object.keys(data).forEach(key => {
+                    const el = document.getElementById(key);
+                    if (el) el.value = data[key];
+                });
+                
+                if (data.benefits && data.benefits.length > 0) {
+                    const tbody = document.getElementById('benefitsTableBody');
+                    tbody.innerHTML = '';
+                    data.benefits.forEach(b => addBenefitRowWithData(b.description, b.category, b.value));
+                }
+                
+                updateTotals();
+            } catch (e) {
+                console.error('Error loading data:', e);
+            }
+        }
+
+        function collectBenefits() {
+            const benefits = [];
+            document.querySelectorAll('#benefitsTableBody tr').forEach(row => {
+                const inputs = row.querySelectorAll('input');
+                const select = row.querySelector('select');
+                if (inputs[0] && inputs[0].value) {
+                    benefits.push({
+                        description: inputs[0].value,
+                        category: select ? select.value : 'other',
+                        value: inputs[1] ? inputs[1].value : 0
+                    });
+                }
+            });
+            return benefits;
+        }
+
+        function addBenefitRowWithData(description, category, value) {
+            const tbody = document.getElementById('benefitsTableBody');
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><input type="text" value="${description || ''}" placeholder="Benefit description"></td>
+                <td>
+                    <select style="width:100%;padding:0.5rem;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);">
+                        <option value="cost-savings" ${category === 'cost-savings' ? 'selected' : ''}>Cost Savings</option>
+                        <option value="revenue" ${category === 'revenue' ? 'selected' : ''}>Revenue Increase</option>
+                        <option value="productivity" ${category === 'productivity' ? 'selected' : ''}>Productivity</option>
+                        <option value="risk" ${category === 'risk' ? 'selected' : ''}>Risk Reduction</option>
+                        <option value="other" ${category === 'other' ? 'selected' : ''}>Other</option>
+                    </select>
+                </td>
+                <td><input type="number" value="${value || 0}" placeholder="0" min="0" onchange="updateTotals();saveData()"></td>
+                <td><button class="btn-remove" onclick="removeBenefitRow(this)">×</button></td>
+            `;
+            tbody.appendChild(tr);
+        }
+
+        function updateSaveStatus() {
+            const status = document.getElementById('saveStatus');
+            status.textContent = '● Saving...';
+            status.classList.remove('saved');
+            setTimeout(() => {
+                status.textContent = '● Auto-saved';
+                status.classList.add('saved');
+            }, 500);
+        }
+
+        // Help Modal
+        function openHelpModal() { document.getElementById('helpModal').classList.add('active'); }
+        function closeHelpModal() { document.getElementById('helpModal').classList.remove('active'); }
+
+        // ============================================
+        // EXAMPLE GALLERY SYSTEM
+        // ============================================
+        const roiExamples = {
+            marketingAutomation: {
+                id: 'marketingAutomation',
+                title: 'Marketing Automation Platform',
+                subtitle: 'HubSpot Enterprise Implementation',
+                icon: '📧',
+                stats: { roi: '285%', payback: '8 mo', npv: '$1.2M' },
+                tags: ['Marketing', 'SaaS', 'Automation'],
+                description: 'ROI analysis for implementing HubSpot Marketing Enterprise including lead generation and productivity benefits.',
+                data: {
+                    projectName: 'HubSpot Marketing Enterprise Implementation',
+                    description: 'Implementation of HubSpot Marketing Enterprise platform to automate lead generation, email marketing, and campaign management. Replacing manual processes and consolidating 4 point solutions.',
+                    category: 'technology',
+                    analysisPeriod: '3',
+                    discountRate: '10',
+                    purchaseCost: '15000',
+                    implementationCost: '45000',
+                    trainingCost: '12000',
+                    otherInitialCost: '8000',
+                    licenseCost: '48000',
+                    maintenanceCost: '12000',
+                    staffingCost: '0',
+                    otherAnnualCost: '5000',
+                    benefitGrowthRate: '15',
+                    rampUpMonths: '3',
+                    riskLevel: 'medium',
+                    confidenceLevel: '85',
+                    pessimisticPercent: '70',
+                    optimisticPercent: '130',
+                    assumptions: 'Current marketing team adopts platform within 90 days. Lead quality improvement materializes in Q2. Email deliverability maintains current levels. Integration with Salesforce CRM successful.',
+                    benefits: [
+                        { description: 'Increased qualified leads (30% improvement)', category: 'revenue', value: '180000' },
+                        { description: 'Marketing team efficiency gains', category: 'productivity', value: '65000' },
+                        { description: 'Reduced vendor consolidation (4→1)', category: 'cost-savings', value: '28000' },
+                        { description: 'Improved conversion rate', category: 'revenue', value: '95000' },
+                        { description: 'Reduced agency dependency', category: 'cost-savings', value: '40000' }
+                    ]
+                }
+            },
+            warehouseAutomation: {
+                id: 'warehouseAutomation',
+                title: 'Warehouse Automation',
+                subtitle: 'ASRS System Implementation',
+                icon: '🏭',
+                stats: { roi: '156%', payback: '2.1 yrs', npv: '$4.8M' },
+                tags: ['Automation', 'Logistics', 'Capital'],
+                description: 'ROI analysis for automated storage and retrieval system (ASRS) to improve warehouse throughput and reduce labor costs.',
+                data: {
+                    projectName: 'Automated Storage & Retrieval System (ASRS)',
+                    description: 'Implementation of goods-to-person ASRS system in main distribution center. Includes 15 automated crane units, conveyor integration, WMS upgrade, and facility modifications.',
+                    category: 'equipment',
+                    analysisPeriod: '5',
+                    discountRate: '12',
+                    purchaseCost: '4200000',
+                    implementationCost: '850000',
+                    trainingCost: '120000',
+                    otherInitialCost: '450000',
+                    licenseCost: '180000',
+                    maintenanceCost: '220000',
+                    staffingCost: '85000',
+                    otherAnnualCost: '45000',
+                    benefitGrowthRate: '8',
+                    rampUpMonths: '6',
+                    riskLevel: 'medium',
+                    confidenceLevel: '80',
+                    pessimisticPercent: '65',
+                    optimisticPercent: '120',
+                    assumptions: 'Order volume grows 8% annually. Construction completed on schedule. Workforce transition managed without disruption. System achieves 99.5% uptime after stabilization.',
+                    benefits: [
+                        { description: 'Labor reduction (145→85 FTEs)', category: 'cost-savings', value: '1800000' },
+                        { description: 'Increased throughput capacity', category: 'revenue', value: '650000' },
+                        { description: 'Reduced picking errors', category: 'cost-savings', value: '180000' },
+                        { description: 'Space utilization improvement', category: 'cost-savings', value: '320000' },
+                        { description: 'Inventory carrying cost reduction', category: 'cost-savings', value: '240000' }
+                    ]
+                }
+            },
+            crmUpgrade: {
+                id: 'crmUpgrade',
+                title: 'CRM System Upgrade',
+                subtitle: 'Salesforce Lightning + Einstein AI',
+                icon: '💼',
+                stats: { roi: '198%', payback: '14 mo', npv: '$890K' },
+                tags: ['CRM', 'AI', 'Sales'],
+                description: 'ROI analysis for upgrading to Salesforce Lightning with Einstein AI capabilities for sales team productivity.',
+                data: {
+                    projectName: 'Salesforce Lightning + Einstein AI Upgrade',
+                    description: 'Upgrade from Salesforce Classic to Lightning Experience with Einstein AI for 85 sales users. Includes CPQ implementation, data cleanup, custom development, and training.',
+                    category: 'technology',
+                    analysisPeriod: '3',
+                    discountRate: '10',
+                    purchaseCost: '0',
+                    implementationCost: '165000',
+                    trainingCost: '42000',
+                    otherInitialCost: '28000',
+                    licenseCost: '156000',
+                    maintenanceCost: '24000',
+                    staffingCost: '0',
+                    otherAnnualCost: '18000',
+                    benefitGrowthRate: '10',
+                    rampUpMonths: '4',
+                    riskLevel: 'low',
+                    confidenceLevel: '85',
+                    pessimisticPercent: '75',
+                    optimisticPercent: '125',
+                    assumptions: 'Sales team achieves 80% adoption within 90 days. Einstein recommendations improve over time with data. Integration with marketing automation successful. Mobile usage increases as expected.',
+                    benefits: [
+                        { description: 'Sales productivity improvement (15%)', category: 'productivity', value: '320000' },
+                        { description: 'Win rate improvement via AI insights', category: 'revenue', value: '280000' },
+                        { description: 'Quote turnaround reduction (CPQ)', category: 'productivity', value: '95000' },
+                        { description: 'Reduced data entry time', category: 'productivity', value: '68000' },
+                        { description: 'Improved forecast accuracy', category: 'risk', value: '45000' }
+                    ]
+                }
+            }
+        };
+
+        function renderRoiGallery() {
+            const gallery = document.getElementById('roiExampleGallery');
+            gallery.innerHTML = '';
+            Object.values(roiExamples).forEach(ex => {
+                gallery.innerHTML += `
+                    <div class="example-card">
+                        <div class="example-card-header">
+                            <div class="example-card-icon">${ex.icon}</div>
+                            <div class="example-card-title">${ex.title}</div>
+                            <div class="example-card-subtitle">${ex.subtitle}</div>
+                            <div class="example-card-stats">
+                                <div class="example-stat"><div class="example-stat-value">${ex.stats.roi}</div><div class="example-stat-label">ROI</div></div>
+                                <div class="example-stat"><div class="example-stat-value">${ex.stats.payback}</div><div class="example-stat-label">Payback</div></div>
+                                <div class="example-stat"><div class="example-stat-value">${ex.stats.npv}</div><div class="example-stat-label">NPV</div></div>
+                            </div>
+                        </div>
+                        <div class="example-card-body">
+                            <p class="example-card-desc">${ex.description}</p>
+                            <div class="example-tags">${ex.tags.map(t => `<span class="example-tag">${t}</span>`).join('')}</div>
+                            <div class="example-card-actions">
+                                <button class="btn btn-secondary btn-sm" onclick="previewRoiExample('${ex.id}')">👁️ Preview</button>
+                                <button class="btn btn-primary btn-sm" onclick="useRoiExample('${ex.id}')">✨ Use This</button>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function openExamplesGallery() { renderRoiGallery(); document.getElementById('roiGalleryModal').classList.add('active'); }
+        function closeExamplesGallery() { document.getElementById('roiGalleryModal').classList.remove('active'); }
+        function closeRoiPreview() { document.getElementById('roiPreviewModal').classList.remove('active'); }
+
+        function previewRoiExample(id) {
+            const ex = roiExamples[id];
+            document.getElementById('roiPreviewTitle').textContent = ex.title + ' - Preview';
+            const totalInitial = (parseFloat(ex.data.purchaseCost) || 0) + (parseFloat(ex.data.implementationCost) || 0) + 
+                                (parseFloat(ex.data.trainingCost) || 0) + (parseFloat(ex.data.otherInitialCost) || 0);
+            const totalBenefits = ex.data.benefits.reduce((sum, b) => sum + (parseFloat(b.value) || 0), 0);
+            
+            document.getElementById('roiPreviewContent').innerHTML = `
+                <div class="preview-grid">
+                    <div class="preview-item"><div class="preview-item-label">Project</div><div class="preview-item-value">${ex.data.projectName}</div></div>
+                    <div class="preview-item"><div class="preview-item-label">Period</div><div class="preview-item-value">${ex.data.analysisPeriod} years</div></div>
+                    <div class="preview-item"><div class="preview-item-label">Initial Investment</div><div class="preview-item-value">$${totalInitial.toLocaleString()}</div></div>
+                    <div class="preview-item"><div class="preview-item-label">Annual Benefits</div><div class="preview-item-value">$${totalBenefits.toLocaleString()}</div></div>
+                </div>
+                <div style="margin-bottom:1rem;"><div class="preview-item-label">DESCRIPTION</div><p style="color:var(--text-muted);font-size:0.9rem;">${ex.data.description}</p></div>
+                <div><div class="preview-item-label">KEY BENEFITS</div>
+                    <ul style="color:var(--text-muted);font-size:0.9rem;padding-left:1.25rem;">
+                        ${ex.data.benefits.slice(0, 4).map(b => `<li>${b.description}: $${parseInt(b.value).toLocaleString()}/yr</li>`).join('')}
+                    </ul>
+                </div>`;
+            document.getElementById('useRoiPreviewBtn').onclick = () => useRoiExample(id);
+            closeExamplesGallery();
+            document.getElementById('roiPreviewModal').classList.add('active');
+        }
+
+        function useRoiExample(id) {
+            // Check if user has access
+            if (typeof checkToolAccessOrRedirect === 'function') {
+                if (!checkToolAccessOrRedirect('roi-calculator')) {
+                    closeExamplesGallery();
+                    closeRoiPreview();
+                    return;
+                }
+            }
+            
+            const ex = roiExamples[id];
+            const d = ex.data;
+            
+            // Set all fields
+            document.getElementById('projectName').value = d.projectName || '';
+            document.getElementById('description').value = d.description || '';
+            document.getElementById('category').value = d.category || '';
+            document.getElementById('analysisPeriod').value = d.analysisPeriod || '3';
+            document.getElementById('discountRate').value = d.discountRate || '10';
+            document.getElementById('purchaseCost').value = d.purchaseCost || '0';
+            document.getElementById('implementationCost').value = d.implementationCost || '0';
+            document.getElementById('trainingCost').value = d.trainingCost || '0';
+            document.getElementById('otherInitialCost').value = d.otherInitialCost || '0';
+            document.getElementById('licenseCost').value = d.licenseCost || '0';
+            document.getElementById('maintenanceCost').value = d.maintenanceCost || '0';
+            document.getElementById('staffingCost').value = d.staffingCost || '0';
+            document.getElementById('otherAnnualCost').value = d.otherAnnualCost || '0';
+            document.getElementById('benefitGrowthRate').value = d.benefitGrowthRate || '0';
+            document.getElementById('rampUpMonths').value = d.rampUpMonths || '0';
+            document.getElementById('riskLevel').value = d.riskLevel || 'medium';
+            document.getElementById('confidenceLevel').value = d.confidenceLevel || '80';
+            document.getElementById('pessimisticPercent').value = d.pessimisticPercent || '70';
+            document.getElementById('optimisticPercent').value = d.optimisticPercent || '130';
+            document.getElementById('assumptions').value = d.assumptions || '';
+            
+            // Load benefits
+            const tbody = document.getElementById('benefitsTableBody');
+            tbody.innerHTML = '';
+            (d.benefits || []).forEach(b => addBenefitRowWithData(b.description, b.category, b.value));
+            
+            closeExamplesGallery();
+            closeRoiPreview();
+            updateTotals();
+            saveData();
+            alert('Example loaded! Review the data and click "View Results" to see the analysis.');
+            goToStep(1);
+        }
+    </script>
+<script src="/js/access-control.js"></script>
+</body>
+</html>
