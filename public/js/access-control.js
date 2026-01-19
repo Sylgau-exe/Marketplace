@@ -492,7 +492,46 @@
         getUser: getUserData,
         // Check access
         hasAccess: hasToolAccess,
-        isLoggedIn: isLoggedIn
+        isLoggedIn: isLoggedIn,
+        // Check access and redirect if no access (for "Use Example" buttons)
+        checkAccessOrRedirect: function(toolId) {
+            if (!isLoggedIn()) {
+                window.location.href = '/signup';
+                return false;
+            }
+            if (!hasToolAccess(toolId)) {
+                window.location.href = '/pricing';
+                return false;
+            }
+            return true;
+        }
+    };
+
+    // Global function for tools to use
+    window.checkToolAccessOrRedirect = function(toolId) {
+        const user = getUserData();
+        
+        if (!user || !user.email) {
+            window.location.href = '/signup';
+            return false;
+        }
+        
+        const plan = user.plan || 'free';
+        const isTester = user.isTester === true;
+        const selectedTools = user.selectedTools || [];
+        
+        // Check if user has access
+        const hasAccess = isTester || 
+                          plan === 'unlimited' || 
+                          plan === 'enterprise' ||
+                          selectedTools.includes(toolId);
+        
+        if (!hasAccess) {
+            window.location.href = '/pricing';
+            return false;
+        }
+        
+        return true;
     };
 
     // Run on load
