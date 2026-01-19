@@ -1284,9 +1284,51 @@
         let charterData = {};
         let saveTimeout;
 
+        // Check if user has marketplace access to CharterPro
+        function hasMarketplaceAccess() {
+            try {
+                const pmtUser = JSON.parse(localStorage.getItem('pmt_user'));
+                if (!pmtUser) return false;
+                
+                // Testers get full access
+                if (pmtUser.isTester === true) return true;
+                
+                // Unlimited/Enterprise plans get full access
+                if (pmtUser.plan === 'unlimited' || pmtUser.plan === 'enterprise') return true;
+                
+                // Check if charterpro is in selected tools
+                const selectedTools = pmtUser.selectedTools || [];
+                if (selectedTools.includes('charterpro')) return true;
+                
+                return false;
+            } catch (e) {
+                return false;
+            }
+        }
+
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
-            // Check authentication
+            // FIRST: Check marketplace authentication
+            if (hasMarketplaceAccess()) {
+                console.log('CharterPro: Marketplace access granted');
+                // Sync to charterpro_user for internal functions
+                const pmtUser = JSON.parse(localStorage.getItem('pmt_user'));
+                const nameParts = (pmtUser.name || pmtUser.email.split('@')[0]).split(' ');
+                localStorage.setItem('charterpro_user', JSON.stringify({
+                    email: pmtUser.email,
+                    name: pmtUser.name || pmtUser.email.split('@')[0],
+                    firstName: nameParts[0] || 'User',
+                    lastName: nameParts.slice(1).join(' ') || '',
+                    plan: pmtUser.plan,
+                    subscription: { status: 'active', plan: 'marketplace' },
+                    marketplaceUser: true
+                }));
+                // Continue to load the charter
+                initializeCharter();
+                return;
+            }
+            
+            // FALLBACK: Check CharterPro-specific authentication
             const user = JSON.parse(localStorage.getItem('charterpro_user'));
             if (!user) {
                 // Save template data so it's available after login
@@ -1309,6 +1351,11 @@
                 return;
             }
 
+            // User has CharterPro subscription
+            initializeCharter();
+        });
+        
+        function initializeCharter() {
             // Check for template data
             const templateData = localStorage.getItem('charterpro_template');
             if (templateData) {
@@ -1329,7 +1376,7 @@
             }
 
             updatePreview();
-        });
+        }
 
         // Load template from examples
         function loadTemplate(template) {
