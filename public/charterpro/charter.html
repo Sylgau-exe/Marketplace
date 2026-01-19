@@ -2141,6 +2141,15 @@
         }
 
         function useExample(id) {
+            // Check if user has access
+            if (typeof checkToolAccessOrRedirect === 'function') {
+                if (!checkToolAccessOrRedirect('charterpro')) {
+                    closeExamplesGallery();
+                    closePreviewModal();
+                    return;
+                }
+            }
+            
             const ex = charterExamples[id];
             if (!ex) return;
             const d = ex.data;
