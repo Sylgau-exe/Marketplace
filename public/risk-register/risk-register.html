@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Risk Register - ProjectManagerTool</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #991b1b;
+            --primary-light: #dc2626;
+            --accent: #ef4444;
+            --accent-light: #f87171;
+            --accent-glow: rgba(239, 68, 68, 0.3);
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --bg: #0a0f1a;
+            --bg-card: #111827;
+            --bg-card-hover: #1a2332;
+            --text: #f7fafc;
+            --text-muted: #a0aec0;
+            --text-dim: #718096;
+            --border: #2d3748;
+            --gradient-red: linear-gradient(135deg, #ef4444 0%, #f87171 50%, #ef4444 100%);
+
+            --risk-critical: #dc2626;
+            --risk-high: #f59e0b;
+            --risk-medium: #eab308;
+            --risk-low: #22c55e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; min-height: 100vh; }
+
+        .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 1rem 2rem; background: rgba(10, 15, 26, 0.95); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+        .nav-content { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .nav-logo { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; }
+        .nav-logo-icon { width: 40px; height: 40px; background: var(--gradient-red); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
+        .nav-logo-text { font-family: 'Fraunces', serif; font-size: 1.5rem; font-weight: 700; color: var(--text); }
+        .platform-link { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 8px; color: #a5b4fc; text-decoration: none; font-size: 0.85rem; }
+        .nav-actions { display: flex; align-items: center; gap: 1rem; }
+        .save-status { font-size: 0.85rem; color: var(--text-muted); }
+        .save-status.saved { color: var(--success); }
+
+        .btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.5rem; border-radius: 8px; font-family: inherit; font-size: 0.9rem; font-weight: 600; text-decoration: none; cursor: pointer; transition: all 0.2s; border: none; }
+        .btn-primary { background: var(--gradient-red); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 20px var(--accent-glow); }
+        .btn-secondary { background: transparent; color: var(--text); border: 1px solid var(--border); }
+        .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+        .btn-sm { padding: 0.5rem 1rem; font-size: 0.85rem; }
+
+        .main { max-width: 1400px; margin: 0 auto; padding: 5rem 2rem 2rem; }
+
+        .page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
+        .page-title { font-family: 'Fraunces', serif; font-size: 2rem; }
+        .page-subtitle { color: var(--text-muted); }
+
+        .project-info { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; }
+        .project-info-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+        .project-info-item label { display: block; font-size: 0.8rem; color: var(--text-dim); margin-bottom: 0.25rem; }
+        .project-info-item input { width: 100%; padding: 0.5rem; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-family: inherit; }
+
+        .stats-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 2rem; }
+        .stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; text-align: center; }
+        .stat-value { font-family: 'Fraunces', serif; font-size: 2rem; font-weight: 700; }
+        .stat-label { font-size: 0.85rem; color: var(--text-muted); }
+        .stat-critical .stat-value { color: var(--risk-critical); }
+        .stat-high .stat-value { color: var(--risk-high); }
+        .stat-medium .stat-value { color: var(--risk-medium); }
+        .stat-low .stat-value { color: var(--risk-low); }
+
+        .content-grid { display: grid; grid-template-columns: 1fr 300px; gap: 2rem; }
+
+        .risk-matrix { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
+        .matrix-title { font-size: 1rem; font-weight: 600; margin-bottom: 1rem; color: var(--accent); }
+        .matrix-grid { display: grid; grid-template-columns: 40px repeat(5, 1fr); grid-template-rows: repeat(5, 50px) 30px; gap: 2px; }
+        .matrix-cell { display: flex; align-items: center; justify-content: center; border-radius: 4px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .matrix-cell:hover { transform: scale(1.05); }
+        .matrix-cell.critical { background: rgba(220, 38, 38, 0.8); }
+        .matrix-cell.high { background: rgba(245, 158, 11, 0.8); }
+        .matrix-cell.medium { background: rgba(234, 179, 8, 0.6); }
+        .matrix-cell.low { background: rgba(34, 197, 94, 0.6); }
+        .matrix-label { display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: var(--text-dim); }
+        .matrix-y-label { writing-mode: vertical-rl; transform: rotate(180deg); }
+
+        .risk-table-container { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+        .table-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); }
+        .table-title { font-weight: 600; }
+        .risk-table { width: 100%; border-collapse: collapse; }
+        .risk-table th, .risk-table td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--border); }
+        .risk-table th { background: var(--bg); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
+        .risk-table tr:hover { background: var(--bg-card-hover); }
+        .risk-table .risk-id { font-family: monospace; color: var(--text-dim); font-size: 0.85rem; }
+
+        .risk-score { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 8px; font-weight: 700; font-size: 0.9rem; }
+        .risk-score.critical { background: var(--risk-critical); color: white; }
+        .risk-score.high { background: var(--risk-high); color: white; }
+        .risk-score.medium { background: var(--risk-medium); color: #1a1a2e; }
+        .risk-score.low { background: var(--risk-low); color: white; }
+
+        .risk-badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+        .badge-critical { background: rgba(220, 38, 38, 0.2); color: #fca5a5; }
+        .badge-high { background: rgba(245, 158, 11, 0.2); color: #fcd34d; }
+        .badge-medium { background: rgba(234, 179, 8, 0.2); color: #fde047; }
+        .badge-low { background: rgba(34, 197, 94, 0.2); color: #86efac; }
+
+        .status-badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+        .status-open { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+        .status-mitigating { background: rgba(245, 158, 11, 0.2); color: #fcd34d; }
+        .status-closed { background: rgba(34, 197, 94, 0.2); color: #86efac; }
+
+        .actions-cell { display: flex; gap: 0.5rem; }
+        .btn-icon { width: 32px; height: 32px; padding: 0; background: transparent; border: 1px solid var(--border); border-radius: 6px; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
+        .btn-icon:hover { border-color: var(--accent); color: var(--accent); }
+        .btn-icon.delete:hover { border-color: var(--error); color: var(--error); }
+
+        .sidebar-section { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
+        .sidebar-title { font-size: 1rem; font-weight: 600; margin-bottom: 1rem; color: var(--accent); }
+
+        .category-list { display: flex; flex-direction: column; gap: 0.5rem; }
+        .category-item { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0.75rem; background: var(--bg); border-radius: 6px; font-size: 0.9rem; }
+        .category-count { background: var(--border); padding: 0.15rem 0.5rem; border-radius: 10px; font-size: 0.75rem; }
+
+        /* Modal */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 2000; opacity: 0; visibility: hidden; transition: all 0.3s; }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .modal { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; border-bottom: 1px solid var(--border); }
+        .modal-title { font-family: 'Fraunces', serif; font-size: 1.25rem; }
+        .modal-body { padding: 1.5rem; }
+        .modal-footer { display: flex; justify-content: flex-end; gap: 1rem; padding: 1.5rem; border-top: 1px solid var(--border); }
+
+        .form-group { margin-bottom: 1.25rem; }
+        .form-label { display: block; margin-bottom: 0.5rem; font-weight: 500; font-size: 0.9rem; }
+        .form-input, .form-select, .form-textarea { width: 100%; padding: 0.75rem 1rem; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-family: inherit; font-size: 0.95rem; }
+        .form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+        .form-textarea { min-height: 80px; resize: vertical; }
+        .form-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+        .form-row-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+
+        .impact-select { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.5rem; }
+        .impact-option { padding: 0.75rem 0.5rem; text-align: center; border: 2px solid var(--border); border-radius: 8px; cursor: pointer; transition: all 0.2s; font-size: 0.85rem; }
+        .impact-option:hover { border-color: var(--accent); }
+        .impact-option.selected { border-color: var(--accent); background: rgba(239, 68, 68, 0.1); }
+        .impact-option .number { font-size: 1.25rem; font-weight: 700; display: block; }
+
+        .empty-state { text-align: center; padding: 4rem 2rem; }
+        .empty-icon { font-size: 3rem; margin-bottom: 1rem; }
+        .empty-title { font-size: 1.25rem; margin-bottom: 0.5rem; }
+        .empty-text { color: var(--text-muted); margin-bottom: 1.5rem; }
+
+        @media (max-width: 1024px) {
+            .content-grid { grid-template-columns: 1fr; }
+            .stats-row { grid-template-columns: repeat(3, 1fr); }
+            .project-info-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+            .project-info-grid { grid-template-columns: 1fr; }
+            .form-row, .form-row-3 { grid-template-columns: 1fr; }
+            .impact-select { grid-template-columns: repeat(5, 1fr); }
+        }
+
+        /* Print Header */
+        .print-header {
+            display: none;
+            padding: 2rem;
+            border-bottom: 2px solid #ef4444;
+            margin-bottom: 2rem;
+        }
+        .print-logo { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .print-title { font-size: 1.75rem; font-weight: 700; margin-bottom: 1rem; }
+        .print-meta { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; font-size: 0.9rem; }
+
+        /* Help Modal */
+        .help-modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center;
+            z-index: 2000; opacity: 0; visibility: hidden; transition: all 0.3s;
+        }
+        .help-modal-overlay.active { opacity: 1; visibility: visible; }
+        .help-section { margin-bottom: 1.5rem; }
+        .help-section h4 { color: var(--accent); margin-bottom: 0.5rem; font-size: 1rem; }
+        .help-section p, .help-section li { color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; }
+        .help-section ol, .help-section ul { padding-left: 1.25rem; }
+        .help-section li { margin-bottom: 0.5rem; }
+
+        @media print {
+            .nav, .btn, .actions-cell, .modal-overlay, .help-modal-overlay { display: none !important; }
+            .main { padding: 0; }
+            .content-grid { grid-template-columns: 1fr; }
+            .print-header { display: block !important; }
+            body { background: white; color: black; }
+            .stat-card, .risk-matrix, .risk-table-container, .sidebar-section { background: #f9f9f9; border: 1px solid #ddd; }
+            .stat-value { color: #333; }
+        }
+
+        /* Example Gallery Styles */
+        .btn-examples { background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%); color: white; border: none; }
+        .btn-examples:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4); }
+        .example-gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+        .example-card { background: var(--bg-card); border-radius: 16px; overflow: hidden; border: 1px solid var(--border); transition: all 0.3s; }
+        .example-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.3); border-color: var(--accent); }
+        .example-card-header { padding: 1.5rem; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: white; }
+        .example-card-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+        .example-card-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.25rem; }
+        .example-card-subtitle { font-size: 0.875rem; opacity: 0.9; margin-bottom: 1rem; }
+        .example-card-stats { display: flex; gap: 1rem; background: rgba(255,255,255,0.15); border-radius: 8px; padding: 0.75rem; }
+        .example-stat { flex: 1; text-align: center; }
+        .example-stat-value { font-size: 1rem; font-weight: 700; }
+        .example-stat-label { font-size: 0.65rem; text-transform: uppercase; opacity: 0.8; }
+        .example-card-body { padding: 1.25rem; }
+        .example-card-desc { color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; margin-bottom: 1rem; }
+        .example-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+        .example-tag { background: var(--bg); color: var(--text-muted); padding: 0.25rem 0.75rem; border-radius: 100px; font-size: 0.75rem; }
+        .example-card-actions { display: flex; gap: 0.75rem; }
+        .example-card-actions .btn { flex: 1; justify-content: center; }
+        .gallery-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 2000; opacity: 0; visibility: hidden; transition: all 0.3s; padding: 1rem; }
+        .gallery-modal.active { opacity: 1; visibility: visible; }
+        .gallery-modal-content { background: var(--bg-card); border-radius: 16px; width: 100%; max-width: 1100px; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column; border: 1px solid var(--border); }
+        .gallery-modal-header { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); }
+        .gallery-modal-title { font-size: 1.25rem; font-weight: 700; }
+        .gallery-modal-close { background: none; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer; }
+        .gallery-modal-body { padding: 1.5rem; overflow-y: auto; flex: 1; }
+        .gallery-modal-footer { display: flex; gap: 1rem; justify-content: flex-end; padding: 1.25rem 1.5rem; border-top: 1px solid var(--border); }
+        .preview-item-label { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; margin-bottom: 0.25rem; }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-content">
+            <a href="index.html" class="nav-logo">
+                <div class="nav-logo-icon">⚠️</div>
+                <span class="nav-logo-text">Risk Register</span>
+            </a>
+            <a href="/" class="platform-link">← All Tools</a>
+            <div class="nav-actions">
+                <div class="save-status saved" id="saveStatus">● Auto-saved</div>
+                <button class="btn btn-secondary" onclick="openHelpModal()">❓ Guide</button>
+                <button class="btn btn-examples" onclick="openExamplesGallery()">📚 Browse Examples</button>
+                <button class="btn btn-secondary" onclick="exportPDF()">📄 Export PDF</button>
+                <button class="btn btn-primary" onclick="openModal()">+ Add Risk</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Print Header -->
+    <div class="print-header" id="printHeader">
+        <div class="print-logo">⚠️ Risk Register</div>
+        <h1 class="print-title" id="printProjectName">Project Risk Register</h1>
+        <div class="print-meta">
+            <div><strong>Project Manager:</strong> <span id="printManager">-</span></div>
+            <div><strong>Last Updated:</strong> <span id="printDate">-</span></div>
+            <div><strong>Review Frequency:</strong> <span id="printFrequency">-</span></div>
+            <div><strong>Total Risks:</strong> <span id="printTotal">0</span></div>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div class="help-modal-overlay" id="helpModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">📖 How to Use the Risk Register</h3>
+                <button class="btn-icon" onclick="closeHelpModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="help-section">
+                    <h4>What is a Risk Register?</h4>
+                    <p>A risk register is a document used to identify, assess, and track potential risks that could affect your project. It helps teams proactively manage threats before they become issues.</p>
+                </div>
+                <div class="help-section">
+                    <h4>How to Use</h4>
+                    <ol>
+                        <li><strong>Add Risk:</strong> Click "+ Add Risk" to document a new risk with description, category, and owner.</li>
+                        <li><strong>Assess Risk:</strong> Rate probability (1-5) and impact (1-5) to calculate risk score.</li>
+                        <li><strong>Plan Response:</strong> Document mitigation strategies and contingency plans.</li>
+                        <li><strong>Track Status:</strong> Update status as risks are addressed or closed.</li>
+                    </ol>
+                </div>
+                <div class="help-section">
+                    <h4>Risk Score Levels</h4>
+                    <ul>
+                        <li><strong style="color:#dc2626;">Critical (15-25):</strong> Requires immediate attention and escalation</li>
+                        <li><strong style="color:#f59e0b;">High (9-14):</strong> Needs active mitigation plan</li>
+                        <li><strong style="color:#eab308;">Medium (4-8):</strong> Monitor closely, have contingency ready</li>
+                        <li><strong style="color:#22c55e;">Low (1-3):</strong> Accept and monitor periodically</li>
+                    </ul>
+                </div>
+                <div class="help-section">
+                    <h4>Risk Categories</h4>
+                    <ul>
+                        <li><strong>Technical:</strong> Technology failures, complexity issues</li>
+                        <li><strong>Schedule:</strong> Timeline delays, dependency issues</li>
+                        <li><strong>Cost:</strong> Budget overruns, funding changes</li>
+                        <li><strong>Resource:</strong> Staffing, skills, availability</li>
+                        <li><strong>External:</strong> Vendor, regulatory, market factors</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="loadExample()">Load Example Risks</button>
+                <button class="btn btn-primary" onclick="closeHelpModal()">Got It!</button>
+            </div>
+        </div>
+    </div>
+
+    <main class="main">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Risk Register</h1>
+                <p class="page-subtitle">Identify, assess, and manage project risks</p>
+            </div>
+        </div>
+
+        <div class="project-info">
+            <div class="project-info-grid">
+                <div class="project-info-item">
+                    <label>Project Name</label>
+                    <input type="text" id="projectName" placeholder="Enter project name">
+                </div>
+                <div class="project-info-item">
+                    <label>Project Manager</label>
+                    <input type="text" id="projectManager" placeholder="Enter name">
+                </div>
+                <div class="project-info-item">
+                    <label>Last Updated</label>
+                    <input type="date" id="lastUpdated">
+                </div>
+                <div class="project-info-item">
+                    <label>Review Frequency</label>
+                    <input type="text" id="reviewFrequency" placeholder="e.g., Weekly">
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-value" id="totalRisks">0</div>
+                <div class="stat-label">Total Risks</div>
+            </div>
+            <div class="stat-card stat-critical">
+                <div class="stat-value" id="criticalCount">0</div>
+                <div class="stat-label">Critical</div>
+            </div>
+            <div class="stat-card stat-high">
+                <div class="stat-value" id="highCount">0</div>
+                <div class="stat-label">High</div>
+            </div>
+            <div class="stat-card stat-medium">
+                <div class="stat-value" id="mediumCount">0</div>
+                <div class="stat-label">Medium</div>
+            </div>
+            <div class="stat-card stat-low">
+                <div class="stat-value" id="lowCount">0</div>
+                <div class="stat-label">Low</div>
+            </div>
+        </div>
+
+        <div class="content-grid">
+            <div class="main-content">
+                <div class="risk-matrix">
+                    <div class="matrix-title">Risk Heat Map (Probability × Impact)</div>
+                    <div class="matrix-grid">
+                        <div class="matrix-label matrix-y-label">Probability</div>
+                        <div class="matrix-cell critical" data-p="5" data-i="1">5</div>
+                        <div class="matrix-cell critical" data-p="5" data-i="2">10</div>
+                        <div class="matrix-cell critical" data-p="5" data-i="3">15</div>
+                        <div class="matrix-cell critical" data-p="5" data-i="4">20</div>
+                        <div class="matrix-cell critical" data-p="5" data-i="5">25</div>
+                        
+                        <div class="matrix-label"></div>
+                        <div class="matrix-cell medium" data-p="4" data-i="1">4</div>
+                        <div class="matrix-cell high" data-p="4" data-i="2">8</div>
+                        <div class="matrix-cell high" data-p="4" data-i="3">12</div>
+                        <div class="matrix-cell critical" data-p="4" data-i="4">16</div>
+                        <div class="matrix-cell critical" data-p="4" data-i="5">20</div>
+                        
+                        <div class="matrix-label"></div>
+                        <div class="matrix-cell low" data-p="3" data-i="1">3</div>
+                        <div class="matrix-cell medium" data-p="3" data-i="2">6</div>
+                        <div class="matrix-cell high" data-p="3" data-i="3">9</div>
+                        <div class="matrix-cell high" data-p="3" data-i="4">12</div>
+                        <div class="matrix-cell critical" data-p="3" data-i="5">15</div>
+                        
+                        <div class="matrix-label"></div>
+                        <div class="matrix-cell low" data-p="2" data-i="1">2</div>
+                        <div class="matrix-cell medium" data-p="2" data-i="2">4</div>
+                        <div class="matrix-cell medium" data-p="2" data-i="3">6</div>
+                        <div class="matrix-cell high" data-p="2" data-i="4">8</div>
+                        <div class="matrix-cell high" data-p="2" data-i="5">10</div>
+                        
+                        <div class="matrix-label"></div>
+                        <div class="matrix-cell low" data-p="1" data-i="1">1</div>
+                        <div class="matrix-cell low" data-p="1" data-i="2">2</div>
+                        <div class="matrix-cell low" data-p="1" data-i="3">3</div>
+                        <div class="matrix-cell medium" data-p="1" data-i="4">4</div>
+                        <div class="matrix-cell medium" data-p="1" data-i="5">5</div>
+                        
+                        <div class="matrix-label"></div>
+                        <div class="matrix-label">1</div>
+                        <div class="matrix-label">2</div>
+                        <div class="matrix-label">3</div>
+                        <div class="matrix-label">4</div>
+                        <div class="matrix-label">5</div>
+                    </div>
+                    <div style="text-align: center; margin-top: 0.5rem; font-size: 0.8rem; color: var(--text-dim);">Impact →</div>
+                </div>
+
+                <div class="risk-table-container">
+                    <div class="table-header">
+                        <span class="table-title">Risk Register</span>
+                        <span id="riskCount" style="color: var(--text-dim); font-size: 0.9rem;">0 risks</span>
+                    </div>
+                    <div id="riskTableWrapper">
+                        <table class="risk-table" id="riskTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Risk Description</th>
+                                    <th>Category</th>
+                                    <th>P</th>
+                                    <th>I</th>
+                                    <th>Score</th>
+                                    <th>Status</th>
+                                    <th>Owner</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="riskTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="empty-state" id="emptyState">
+                        <div class="empty-icon">⚠️</div>
+                        <h3 class="empty-title">No Risks Identified</h3>
+                        <p class="empty-text">Start by adding your first risk to the register</p>
+                        <button class="btn btn-primary" onclick="openModal()">+ Add Risk</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <div class="sidebar-section">
+                    <div class="sidebar-title">Risk Categories</div>
+                    <div class="category-list" id="categoryList">
+                        <div class="category-item"><span>Technical</span><span class="category-count" id="cat-technical">0</span></div>
+                        <div class="category-item"><span>Schedule</span><span class="category-count" id="cat-schedule">0</span></div>
+                        <div class="category-item"><span>Cost</span><span class="category-count" id="cat-cost">0</span></div>
+                        <div class="category-item"><span>Resource</span><span class="category-count" id="cat-resource">0</span></div>
+                        <div class="category-item"><span>External</span><span class="category-count" id="cat-external">0</span></div>
+                        <div class="category-item"><span>Other</span><span class="category-count" id="cat-other">0</span></div>
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <div class="sidebar-title">Risk Score Legend</div>
+                    <div class="category-list">
+                        <div class="category-item"><span class="risk-badge badge-critical">Critical (15-25)</span></div>
+                        <div class="category-item"><span class="risk-badge badge-high">High (9-14)</span></div>
+                        <div class="category-item"><span class="risk-badge badge-medium">Medium (4-8)</span></div>
+                        <div class="category-item"><span class="risk-badge badge-low">Low (1-3)</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add/Edit Risk Modal -->
+    <div class="modal-overlay" id="riskModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Add New Risk</h3>
+                <button class="btn-icon" onclick="closeModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editRiskId">
+                
+                <div class="form-group">
+                    <label class="form-label">Risk Description *</label>
+                    <textarea class="form-textarea" id="riskDescription" placeholder="Describe the risk event and its potential consequences..."></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <select class="form-select" id="riskCategory">
+                            <option value="technical">Technical</option>
+                            <option value="schedule">Schedule</option>
+                            <option value="cost">Cost</option>
+                            <option value="resource">Resource</option>
+                            <option value="external">External</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Risk Owner</label>
+                        <input type="text" class="form-input" id="riskOwner" placeholder="Responsible person">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Probability (1-5)</label>
+                    <div class="impact-select" id="probabilitySelect">
+                        <div class="impact-option" data-value="1"><span class="number">1</span>Rare</div>
+                        <div class="impact-option" data-value="2"><span class="number">2</span>Unlikely</div>
+                        <div class="impact-option" data-value="3"><span class="number">3</span>Possible</div>
+                        <div class="impact-option" data-value="4"><span class="number">4</span>Likely</div>
+                        <div class="impact-option" data-value="5"><span class="number">5</span>Almost Certain</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Impact (1-5)</label>
+                    <div class="impact-select" id="impactSelect">
+                        <div class="impact-option" data-value="1"><span class="number">1</span>Negligible</div>
+                        <div class="impact-option" data-value="2"><span class="number">2</span>Minor</div>
+                        <div class="impact-option" data-value="3"><span class="number">3</span>Moderate</div>
+                        <div class="impact-option" data-value="4"><span class="number">4</span>Major</div>
+                        <div class="impact-option" data-value="5"><span class="number">5</span>Severe</div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Status</label>
+                        <select class="form-select" id="riskStatus">
+                            <option value="open">Open</option>
+                            <option value="mitigating">Mitigating</option>
+                            <option value="closed">Closed</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Due Date</label>
+                        <input type="date" class="form-input" id="riskDueDate">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Mitigation Strategy</label>
+                    <textarea class="form-textarea" id="mitigation" placeholder="How will this risk be mitigated or managed?"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Contingency Plan</label>
+                    <textarea class="form-textarea" id="contingency" placeholder="What is the backup plan if the risk occurs?"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveRisk()">Save Risk</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let risks = [];
+        let selectedProbability = 3;
+        let selectedImpact = 3;
+        let riskIdCounter = 1;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('lastUpdated').value = new Date().toISOString().split('T')[0];
+            loadData();
+            setupSelectors();
+            renderRisks();
+        });
+
+        function setupSelectors() {
+            document.querySelectorAll('#probabilitySelect .impact-option').forEach(opt => {
+                opt.addEventListener('click', function() {
+                    document.querySelectorAll('#probabilitySelect .impact-option').forEach(o => o.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedProbability = parseInt(this.dataset.value);
+                });
+            });
+
+            document.querySelectorAll('#impactSelect .impact-option').forEach(opt => {
+                opt.addEventListener('click', function() {
+                    document.querySelectorAll('#impactSelect .impact-option').forEach(o => o.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedImpact = parseInt(this.dataset.value);
+                });
+            });
+
+            document.querySelectorAll('.project-info input').forEach(input => {
+                input.addEventListener('change', saveData);
+            });
+        }
+
+        function openModal(riskId = null) {
+            const modal = document.getElementById('riskModal');
+            modal.classList.add('active');
+
+            if (riskId) {
+                const risk = risks.find(r => r.id === riskId);
+                if (risk) {
+                    document.getElementById('modalTitle').textContent = 'Edit Risk';
+                    document.getElementById('editRiskId').value = risk.id;
+                    document.getElementById('riskDescription').value = risk.description;
+                    document.getElementById('riskCategory').value = risk.category;
+                    document.getElementById('riskOwner').value = risk.owner;
+                    document.getElementById('riskStatus').value = risk.status;
+                    document.getElementById('riskDueDate').value = risk.dueDate || '';
+                    document.getElementById('mitigation').value = risk.mitigation || '';
+                    document.getElementById('contingency').value = risk.contingency || '';
+                    
+                    selectedProbability = risk.probability;
+                    selectedImpact = risk.impact;
+                    
+                    document.querySelectorAll('#probabilitySelect .impact-option').forEach(o => {
+                        o.classList.toggle('selected', parseInt(o.dataset.value) === risk.probability);
+                    });
+                    document.querySelectorAll('#impactSelect .impact-option').forEach(o => {
+                        o.classList.toggle('selected', parseInt(o.dataset.value) === risk.impact);
+                    });
+                }
+            } else {
+                document.getElementById('modalTitle').textContent = 'Add New Risk';
+                document.getElementById('editRiskId').value = '';
+                document.getElementById('riskDescription').value = '';
+                document.getElementById('riskCategory').value = 'technical';
+                document.getElementById('riskOwner').value = '';
+                document.getElementById('riskStatus').value = 'open';
+                document.getElementById('riskDueDate').value = '';
+                document.getElementById('mitigation').value = '';
+                document.getElementById('contingency').value = '';
+                
+                selectedProbability = 3;
+                selectedImpact = 3;
+                
+                document.querySelectorAll('#probabilitySelect .impact-option').forEach(o => {
+                    o.classList.toggle('selected', parseInt(o.dataset.value) === 3);
+                });
+                document.querySelectorAll('#impactSelect .impact-option').forEach(o => {
+                    o.classList.toggle('selected', parseInt(o.dataset.value) === 3);
+                });
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('riskModal').classList.remove('active');
+        }
+
+        function saveRisk() {
+            const description = document.getElementById('riskDescription').value.trim();
+            if (!description) {
+                alert('Please enter a risk description');
+                return;
+            }
+
+            const editId = document.getElementById('editRiskId').value;
+            const riskData = {
+                description: description,
+                category: document.getElementById('riskCategory').value,
+                owner: document.getElementById('riskOwner').value,
+                probability: selectedProbability,
+                impact: selectedImpact,
+                score: selectedProbability * selectedImpact,
+                status: document.getElementById('riskStatus').value,
+                dueDate: document.getElementById('riskDueDate').value,
+                mitigation: document.getElementById('mitigation').value,
+                contingency: document.getElementById('contingency').value
+            };
+
+            if (editId) {
+                const index = risks.findIndex(r => r.id === parseInt(editId));
+                if (index !== -1) {
+                    risks[index] = { ...risks[index], ...riskData };
+                }
+            } else {
+                riskData.id = riskIdCounter++;
+                riskData.riskId = 'R-' + String(riskData.id).padStart(3, '0');
+                riskData.dateIdentified = new Date().toISOString().split('T')[0];
+                risks.push(riskData);
+            }
+
+            closeModal();
+            renderRisks();
+            saveData();
+        }
+
+        function deleteRisk(id) {
+            if (confirm('Are you sure you want to delete this risk?')) {
+                risks = risks.filter(r => r.id !== id);
+                renderRisks();
+                saveData();
+            }
+        }
+
+        function getRiskLevel(score) {
+            if (score >= 15) return 'critical';
+            if (score >= 9) return 'high';
+            if (score >= 4) return 'medium';
+            return 'low';
+        }
+
+        function renderRisks() {
+            const tbody = document.getElementById('riskTableBody');
+            const emptyState = document.getElementById('emptyState');
+            const tableWrapper = document.getElementById('riskTableWrapper');
+
+            if (risks.length === 0) {
+                emptyState.style.display = 'block';
+                tableWrapper.style.display = 'none';
+            } else {
+                emptyState.style.display = 'none';
+                tableWrapper.style.display = 'block';
+
+                // Sort by score descending
+                const sortedRisks = [...risks].sort((a, b) => b.score - a.score);
+
+                tbody.innerHTML = sortedRisks.map(risk => {
+                    const level = getRiskLevel(risk.score);
+                    const statusClass = `status-${risk.status}`;
+                    
+                    return `
+                        <tr>
+                            <td class="risk-id">${risk.riskId}</td>
+                            <td>${risk.description.substring(0, 60)}${risk.description.length > 60 ? '...' : ''}</td>
+                            <td><span style="text-transform: capitalize;">${risk.category}</span></td>
+                            <td>${risk.probability}</td>
+                            <td>${risk.impact}</td>
+                            <td><span class="risk-score ${level}">${risk.score}</span></td>
+                            <td><span class="status-badge ${statusClass}">${risk.status}</span></td>
+                            <td>${risk.owner || '-'}</td>
+                            <td class="actions-cell">
+                                <button class="btn-icon" onclick="openModal(${risk.id})" title="Edit">✏️</button>
+                                <button class="btn-icon delete" onclick="deleteRisk(${risk.id})" title="Delete">🗑️</button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            updateStats();
+            updateCategoryCounts();
+            updateHeatMap();
+        }
+
+        function updateStats() {
+            document.getElementById('totalRisks').textContent = risks.length;
+            document.getElementById('riskCount').textContent = `${risks.length} risk${risks.length !== 1 ? 's' : ''}`;
+
+            const counts = { critical: 0, high: 0, medium: 0, low: 0 };
+            risks.forEach(r => {
+                counts[getRiskLevel(r.score)]++;
+            });
+
+            document.getElementById('criticalCount').textContent = counts.critical;
+            document.getElementById('highCount').textContent = counts.high;
+            document.getElementById('mediumCount').textContent = counts.medium;
+            document.getElementById('lowCount').textContent = counts.low;
+        }
+
+        function updateCategoryCounts() {
+            const categories = ['technical', 'schedule', 'cost', 'resource', 'external', 'other'];
+            categories.forEach(cat => {
+                const count = risks.filter(r => r.category === cat).length;
+                document.getElementById(`cat-${cat}`).textContent = count;
+            });
+        }
+
+        function updateHeatMap() {
+            // Clear existing indicators
+            document.querySelectorAll('.matrix-cell').forEach(cell => {
+                cell.style.boxShadow = 'none';
+                const existingCount = cell.querySelector('.risk-count');
+                if (existingCount) existingCount.remove();
+            });
+
+            // Count risks per cell
+            const cellCounts = {};
+            risks.forEach(r => {
+                const key = `${r.probability}-${r.impact}`;
+                cellCounts[key] = (cellCounts[key] || 0) + 1;
+            });
+
+            // Update cells with counts
+            Object.entries(cellCounts).forEach(([key, count]) => {
+                const [p, i] = key.split('-');
+                const cell = document.querySelector(`.matrix-cell[data-p="${p}"][data-i="${i}"]`);
+                if (cell) {
+                    cell.style.boxShadow = '0 0 0 3px white, 0 0 10px rgba(255,255,255,0.5)';
+                    cell.innerHTML = `${cell.textContent.trim()}<span style="display:block;font-size:0.6rem;">(${count})</span>`;
+                }
+            });
+        }
+
+        function saveData() {
+            const data = {
+                projectName: document.getElementById('projectName').value,
+                projectManager: document.getElementById('projectManager').value,
+                lastUpdated: document.getElementById('lastUpdated').value,
+                reviewFrequency: document.getElementById('reviewFrequency').value,
+                risks: risks,
+                riskIdCounter: riskIdCounter
+            };
+            localStorage.setItem('risk_register', JSON.stringify(data));
+            document.getElementById('saveStatus').textContent = '● Auto-saved';
+        }
+
+        function loadData() {
+            const saved = localStorage.getItem('risk_register');
+            if (saved) {
+                const data = JSON.parse(saved);
+                document.getElementById('projectName').value = data.projectName || '';
+                document.getElementById('projectManager').value = data.projectManager || '';
+                document.getElementById('lastUpdated').value = data.lastUpdated || new Date().toISOString().split('T')[0];
+                document.getElementById('reviewFrequency').value = data.reviewFrequency || '';
+                risks = data.risks || [];
+                riskIdCounter = data.riskIdCounter || 1;
+            }
+        }
+
+        // Help Modal
+        function openHelpModal() {
+            document.getElementById('helpModal').classList.add('active');
+        }
+        function closeHelpModal() {
+            document.getElementById('helpModal').classList.remove('active');
+        }
+
+        // Load Example Data
+        function loadExample() {
+            if (!confirm('Load example risks? This will add sample data to your register.')) return;
+            
+            document.getElementById('projectName').value = 'ERP System Implementation';
+            document.getElementById('projectManager').value = 'Michael Chen';
+            document.getElementById('reviewFrequency').value = 'Weekly';
+            
+            const exampleRisks = [
+                {
+                    description: 'Key technical resources may leave during critical implementation phase',
+                    category: 'resource',
+                    owner: 'HR Director',
+                    probability: 3,
+                    impact: 5,
+                    status: 'mitigating',
+                    mitigation: 'Cross-train team members, document all processes, offer retention bonuses',
+                    contingency: 'Engage external consultants on standby contract'
+                },
+                {
+                    description: 'Data migration from legacy system may result in data quality issues',
+                    category: 'technical',
+                    owner: 'Data Architect',
+                    probability: 4,
+                    impact: 4,
+                    status: 'open',
+                    mitigation: 'Implement data cleansing procedures, run parallel systems during transition',
+                    contingency: 'Keep legacy system available for 90 days post go-live'
+                },
+                {
+                    description: 'Vendor may not deliver customizations on schedule',
+                    category: 'external',
+                    owner: 'Project Manager',
+                    probability: 3,
+                    impact: 4,
+                    status: 'mitigating',
+                    mitigation: 'Weekly vendor check-ins, contractual penalties for delays',
+                    contingency: 'Identify alternative vendors, plan for phased rollout'
+                },
+                {
+                    description: 'Project budget may be reduced due to company cost-cutting measures',
+                    category: 'cost',
+                    owner: 'Finance Director',
+                    probability: 2,
+                    impact: 5,
+                    status: 'open',
+                    mitigation: 'Build executive sponsorship, document ROI regularly',
+                    contingency: 'Identify must-have vs nice-to-have features for descope'
+                },
+                {
+                    description: 'User adoption may be lower than expected',
+                    category: 'resource',
+                    owner: 'Change Manager',
+                    probability: 3,
+                    impact: 3,
+                    status: 'mitigating',
+                    mitigation: 'Comprehensive training program, identify champions in each department',
+                    contingency: 'Extended hypercare support, mandatory system usage policy'
+                },
+                {
+                    description: 'Integration with third-party systems may have unexpected issues',
+                    category: 'technical',
+                    owner: 'Integration Lead',
+                    probability: 4,
+                    impact: 3,
+                    status: 'open',
+                    mitigation: 'Early integration testing, API documentation review',
+                    contingency: 'Manual workarounds documented, dedicated support team'
+                }
+            ];
+
+            exampleRisks.forEach(riskData => {
+                riskData.id = riskIdCounter++;
+                riskData.riskId = 'R-' + String(riskData.id).padStart(3, '0');
+                riskData.score = riskData.probability * riskData.impact;
+                riskData.dateIdentified = new Date().toISOString().split('T')[0];
+                risks.push(riskData);
+            });
+
+            renderRisks();
+            saveData();
+            closeHelpModal();
+            alert('Example risks loaded! Review and modify as needed.');
+        }
+
+        // Enhanced PDF Export
+        function exportPDF() {
+            document.getElementById('printProjectName').textContent = 
+                document.getElementById('projectName').value || 'Project Risk Register';
+            document.getElementById('printManager').textContent = 
+                document.getElementById('projectManager').value || '-';
+            document.getElementById('printDate').textContent = 
+                document.getElementById('lastUpdated').value || new Date().toLocaleDateString();
+            document.getElementById('printFrequency').textContent = 
+                document.getElementById('reviewFrequency').value || '-';
+            document.getElementById('printTotal').textContent = risks.length;
+            
+            window.print();
+        }
+
+        // ============================================
+        // RISK REGISTER EXAMPLE GALLERY
+        // ============================================
+        const riskExamples = {
+            softwareProject: {
+                id: 'softwareProject',
+                title: 'Software Development',
+                subtitle: 'E-Commerce Platform Rebuild',
+                icon: '💻',
+                stats: { total: '12 risks', critical: '4 critical', active: '10 active' },
+                tags: ['Software', 'Agile', 'E-Commerce'],
+                description: 'Comprehensive risk register for a 12-month e-commerce platform rebuild project.',
+                data: {
+                    projectName: 'E-Commerce Platform Rebuild',
+                    projectManager: 'Alex Chen',
+                    reviewFrequency: 'Weekly',
+                    risks: [
+                        { description: 'Third-party payment gateway integration complexity', category: 'technical', owner: 'David Kim, Tech Lead', probability: 4, impact: 4, status: 'mitigating', mitigation: 'Engage payment specialist early, create sandbox in Sprint 1', contingency: 'Use proven middleware solution if direct integration fails' },
+                        { description: 'Key developer resignation during critical phase', category: 'resource', owner: 'Sarah Martinez, PM', probability: 3, impact: 4, status: 'mitigating', mitigation: 'Cross-training, documentation, retention bonuses', contingency: 'Pre-vetted contractors on standby' },
+                        { description: 'Data migration causes data loss or corruption', category: 'technical', owner: 'Michael Brown, Data Architect', probability: 3, impact: 5, status: 'mitigating', mitigation: 'Phased migration, validation scripts, parallel running', contingency: 'Full backup with tested restore procedure' },
+                        { description: 'Performance issues under peak load', category: 'technical', owner: 'David Kim, Tech Lead', probability: 3, impact: 5, status: 'open', mitigation: 'Performance testing every sprint, auto-scaling architecture', contingency: 'Emergency scaling procedures, rollback capability' },
+                        { description: 'Scope creep from stakeholder requests', category: 'scope', owner: 'Sarah Martinez, PM', probability: 4, impact: 3, status: 'mitigating', mitigation: 'Strict change control board, MVP definition signed off', contingency: 'Phase 2 backlog for redirected features' },
+                        { description: 'Security vulnerability discovered pre-launch', category: 'technical', owner: 'Lisa Park, Security Lead', probability: 3, impact: 5, status: 'open', mitigation: 'OWASP guidelines, continuous scanning, pen test at Week 20', contingency: 'Security remediation sprint built into schedule' },
+                        { description: 'User adoption issues with new interface', category: 'business', owner: 'Emily Davis, UX Lead', probability: 3, impact: 4, status: 'open', mitigation: 'Extensive user testing, A/B testing, gradual rollout', contingency: 'Quick-revert capability, customer support training' },
+                        { description: 'Integration failure with ERP/inventory system', category: 'technical', owner: 'David Kim, Tech Lead', probability: 3, impact: 4, status: 'mitigating', mitigation: 'Real-time sync with fallback batch, comprehensive testing', contingency: 'Manual inventory management process documented' }
+                    ]
+                }
+            },
+            productLaunch: {
+                id: 'productLaunch',
+                title: 'New Product Launch',
+                subtitle: 'Consumer Electronics GTM',
+                icon: '🚀',
+                stats: { total: '10 risks', critical: '3 critical', active: '8 active' },
+                tags: ['Product', 'Marketing', 'Supply Chain'],
+                description: 'Risk register for launching a new smart home device including supply chain and marketing risks.',
+                data: {
+                    projectName: 'SmartHome Hub 3.0 - Global Launch',
+                    projectManager: 'Michelle Torres',
+                    reviewFrequency: 'Weekly',
+                    risks: [
+                        { description: 'Chip shortage delays manufacturing', category: 'supply-chain', owner: 'Jason Lee, Supply Chain', probability: 4, impact: 5, status: 'mitigating', mitigation: 'Dual-source qualification, 6-month safety stock ordered', contingency: 'Alternative chip design validated, 8-week pivot time' },
+                        { description: 'FCC/CE certification delays', category: 'regulatory', owner: 'Patricia Chen, Regulatory', probability: 3, impact: 4, status: 'open', mitigation: 'Pre-certification testing, engaged preferred lab early', contingency: 'Expedited testing at premium cost' },
+                        { description: 'Competitor launches similar product first', category: 'competitive', owner: 'Karen White, Product Marketing', probability: 3, impact: 4, status: 'monitoring', mitigation: 'Competitive intelligence, differentiated features', contingency: 'Rapid response campaign ready' },
+                        { description: 'Manufacturing quality issues at scale', category: 'quality', owner: 'Tom Baker, Quality Director', probability: 3, impact: 4, status: 'mitigating', mitigation: '100% functional testing, burn-in for first 10K units', contingency: 'Rework station at CM, replacement inventory' },
+                        { description: 'Software stability issues at launch', category: 'technical', owner: 'David Park, Software Lead', probability: 3, impact: 4, status: 'mitigating', mitigation: 'Extended beta (5,000 users), staged rollout', contingency: 'Emergency firmware rollback, hotfix process' },
+                        { description: 'Retail partner allocation disputes', category: 'business', owner: 'Steve Miller, Sales Director', probability: 4, impact: 3, status: 'open', mitigation: 'Clear allocation policy, performance-based tiers', contingency: 'Executive negotiations, alternative channels' }
+                    ]
+                }
+            },
+            maIntegration: {
+                id: 'maIntegration',
+                title: 'M&A Integration',
+                subtitle: 'Acquisition PMI Project',
+                icon: '🤝',
+                stats: { total: '12 risks', critical: '5 critical', active: '11 active' },
+                tags: ['M&A', 'Integration', 'Change'],
+                description: 'Risk register for post-merger integration including people, systems, and customer risks.',
+                data: {
+                    projectName: 'Project Atlas - TechCo Acquisition Integration',
+                    projectManager: 'Richard Thompson',
+                    reviewFrequency: 'Twice Weekly',
+                    risks: [
+                        { description: 'Key talent attrition exceeds plan', category: 'resource', owner: 'Sandra Williams, CHRO', probability: 4, impact: 5, status: 'mitigating', mitigation: 'Retention bonuses for 50 key employees, clear career paths', contingency: 'Accelerated knowledge transfer, external recruiting' },
+                        { description: 'System integration complexity exceeds estimates', category: 'technical', owner: 'Kevin Park, CIO', probability: 4, impact: 4, status: 'mitigating', mitigation: 'Detailed assessment, phased approach, SI partner', contingency: 'Extended parallel operations, manual workarounds' },
+                        { description: 'Customer defection during transition', category: 'business', owner: 'James Mitchell, CRO', probability: 3, impact: 5, status: 'mitigating', mitigation: 'Executive outreach to top 50 customers, service guarantees', contingency: 'Aggressive win-back, pricing flexibility' },
+                        { description: 'Cultural integration challenges', category: 'organizational', owner: 'Sandra Williams, CHRO', probability: 4, impact: 4, status: 'mitigating', mitigation: 'Cultural assessment, joint leadership workshops', contingency: 'External change consultants, org design changes' },
+                        { description: 'Synergy targets not achieved', category: 'financial', owner: 'Michael Torres, CFO', probability: 3, impact: 5, status: 'monitoring', mitigation: 'Detailed tracking with owners, monthly synergy board', contingency: 'Alternative synergy sources, timeline acceleration' },
+                        { description: 'Data privacy compliance gaps discovered', category: 'regulatory', owner: 'David Chen, CISO', probability: 3, impact: 4, status: 'mitigating', mitigation: 'Comprehensive security/privacy assessment, remediation plan', contingency: 'Incident response plan, cyber insurance' },
+                        { description: 'Integration team capacity constraints', category: 'resource', owner: 'Richard Thompson, PMO', probability: 4, impact: 3, status: 'mitigating', mitigation: 'Dedicated team, external consultants for surge', contingency: 'Scope prioritization, timeline extension' }
+                    ]
+                }
+            }
+        };
+
+        function renderRiskGallery() {
+            const gallery = document.getElementById('riskExampleGallery');
+            gallery.innerHTML = '';
+            Object.values(riskExamples).forEach(ex => {
+                gallery.innerHTML += `
+                    <div class="example-card">
+                        <div class="example-card-header">
+                            <div class="example-card-icon">${ex.icon}</div>
+                            <div class="example-card-title">${ex.title}</div>
+                            <div class="example-card-subtitle">${ex.subtitle}</div>
+                            <div class="example-card-stats">
+                                <div class="example-stat"><div class="example-stat-value">${ex.stats.total}</div><div class="example-stat-label">Total</div></div>
+                                <div class="example-stat"><div class="example-stat-value">${ex.stats.critical}</div><div class="example-stat-label">Critical</div></div>
+                                <div class="example-stat"><div class="example-stat-value">${ex.stats.active}</div><div class="example-stat-label">Active</div></div>
+                            </div>
+                        </div>
+                        <div class="example-card-body">
+                            <p class="example-card-desc">${ex.description}</p>
+                            <div class="example-tags">${ex.tags.map(t => `<span class="example-tag">${t}</span>`).join('')}</div>
+                            <div class="example-card-actions">
+                                <button class="btn btn-secondary btn-sm" onclick="previewRiskExample('${ex.id}')">👁️ Preview</button>
+                                <button class="btn btn-primary btn-sm" onclick="useRiskExample('${ex.id}')">✨ Use This</button>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function openExamplesGallery() { renderRiskGallery(); document.getElementById('riskGalleryModal').classList.add('active'); }
+        function closeExamplesGallery() { document.getElementById('riskGalleryModal').classList.remove('active'); }
+        function closeRiskPreview() { document.getElementById('riskPreviewModal').classList.remove('active'); }
+
+        function previewRiskExample(id) {
+            const ex = riskExamples[id];
+            document.getElementById('riskPreviewTitle').textContent = ex.title + ' - Preview';
+            const criticalRisks = ex.data.risks.filter(r => r.probability * r.impact >= 12);
+            document.getElementById('riskPreviewContent').innerHTML = `
+                <div style="margin-bottom:1rem;"><div class="preview-item-label">PROJECT</div><div style="font-weight:600;">${ex.data.projectName}</div></div>
+                <div style="margin-bottom:1rem;"><div class="preview-item-label">TOP RISKS</div>
+                    <ul style="color:var(--text-muted);font-size:0.9rem;padding-left:1.25rem;">
+                        ${criticalRisks.slice(0, 4).map(r => `<li style="margin-bottom:0.5rem;">${r.description} <span style="color:var(--accent);">(${r.probability}×${r.impact}=${r.probability*r.impact})</span></li>`).join('')}
+                    </ul>
+                </div>`;
+            document.getElementById('useRiskPreviewBtn').onclick = () => useRiskExample(id);
+            closeExamplesGallery();
+            document.getElementById('riskPreviewModal').classList.add('active');
+        }
+
+        function useRiskExample(id) {
+            // Check if user has access
+            if (typeof checkToolAccessOrRedirect === 'function') {
+                if (!checkToolAccessOrRedirect('risk-register')) {
+                    closeExamplesGallery();
+                    closeRiskPreview();
+                    return;
+                }
+            }
+            
+            const ex = riskExamples[id];
+            document.getElementById('projectName').value = ex.data.projectName;
+            document.getElementById('projectManager').value = ex.data.projectManager;
+            document.getElementById('reviewFrequency').value = ex.data.reviewFrequency;
+            
+            risks = [];
+            riskIdCounter = 1;
+            ex.data.risks.forEach(r => {
+                const riskData = {...r};
+                riskData.id = riskIdCounter++;
+                riskData.riskId = 'R-' + String(riskData.id).padStart(3, '0');
+                riskData.score = r.probability * r.impact;
+                riskData.dateIdentified = new Date().toISOString().split('T')[0];
+                risks.push(riskData);
+            });
+            
+            closeExamplesGallery();
+            closeRiskPreview();
+            renderRisks();
+            saveData();
+            alert('Example loaded! Review and modify risks as needed.');
+        }
+    </script>
+
+    <!-- Risk Gallery Modal -->
+    <div class="gallery-modal" id="riskGalleryModal">
+        <div class="gallery-modal-content">
+            <div class="gallery-modal-header">
+                <h3 class="gallery-modal-title">📚 Example Risk Registers</h3>
+                <button class="gallery-modal-close" onclick="closeExamplesGallery()">×</button>
+            </div>
+            <div class="gallery-modal-body">
+                <p style="color:var(--text-muted);margin-bottom:1.5rem;">Browse real-world risk register examples. Preview or use as your starting point.</p>
+                <div class="example-gallery" id="riskExampleGallery"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Risk Preview Modal -->
+    <div class="gallery-modal" id="riskPreviewModal">
+        <div class="gallery-modal-content" style="max-width:800px;">
+            <div class="gallery-modal-header">
+                <h3 class="gallery-modal-title" id="riskPreviewTitle">Preview</h3>
+                <button class="gallery-modal-close" onclick="closeRiskPreview()">×</button>
+            </div>
+            <div class="gallery-modal-body" id="riskPreviewContent"></div>
+            <div class="gallery-modal-footer">
+                <button class="btn btn-secondary" onclick="closeRiskPreview()">Close</button>
+                <button class="btn btn-primary" id="useRiskPreviewBtn">✨ Use This Example</button>
+            </div>
+        </div>
+    </div>
+<script src="/js/access-control.js"></script>
+</body>
+</html>
