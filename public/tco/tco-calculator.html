@@ -1,0 +1,1756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCO Calculator - Total Cost of Ownership</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #5b21b6;
+            --primary-light: #7c3aed;
+            --primary-dark: #4c1d95;
+            --accent: #8b5cf6;
+            --accent-light: #a78bfa;
+            --accent-glow: rgba(139, 92, 246, 0.3);
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --bg: #0a0f1a;
+            --bg-card: #111827;
+            --bg-card-hover: #1a2332;
+            --text: #f7fafc;
+            --text-muted: #a0aec0;
+            --text-dim: #718096;
+            --border: #2d3748;
+            --gradient-purple: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 50%, #8b5cf6 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1rem 2rem;
+            background: rgba(10, 15, 26, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+
+        .nav-logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-purple);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .nav-logo-text {
+            font-family: 'Fraunces', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .platform-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 8px;
+            color: #a5b4fc;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .save-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .save-status.saved { color: var(--success); }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--gradient-purple);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px var(--accent-glow);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .main-layout {
+            display: flex;
+            min-height: 100vh;
+            padding-top: 70px;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            padding: 1.5rem 0;
+            position: fixed;
+            top: 70px;
+            bottom: 0;
+            overflow-y: auto;
+        }
+
+        .sidebar-title {
+            padding: 0 1.5rem 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-dim);
+        }
+
+        .step-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .step-item:hover { background: var(--bg-card-hover); }
+
+        .step-item.active {
+            background: var(--bg-card-hover);
+            border-left-color: var(--accent);
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+
+        .step-item.active .step-number {
+            background: var(--accent);
+            color: white;
+        }
+
+        .step-info h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.15rem; }
+        .step-info p { font-size: 0.8rem; color: var(--text-dim); }
+
+        .content-area {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem 3rem;
+            max-width: calc(100% - 280px);
+        }
+
+        .step-content { display: none; max-width: 900px; }
+        .step-content.active { display: block; }
+
+        .step-header { margin-bottom: 2rem; }
+        .step-header h2 { font-family: 'Fraunces', serif; font-size: 1.75rem; margin-bottom: 0.5rem; }
+        .step-header p { color: var(--text-muted); }
+
+        .step-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            background: rgba(139, 92, 246, 0.15);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .form-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
+
+        .form-group { margin-bottom: 1.25rem; }
+        .form-group:last-child { margin-bottom: 0; }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .form-label .required { color: var(--error); }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        .form-textarea { min-height: 100px; resize: vertical; }
+        .form-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+        .form-row-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+        .form-row-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+        .form-hint { font-size: 0.8rem; color: var(--text-dim); margin-top: 0.35rem; }
+
+        .cost-category {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .cost-category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .cost-category-title {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .cost-category-total {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .cost-item {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr auto;
+            gap: 0.75rem;
+            align-items: end;
+            margin-bottom: 0.75rem;
+        }
+
+        .cost-item .form-group { margin-bottom: 0; }
+
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-icon:hover { border-color: var(--error); color: var(--error); }
+
+        .btn-add { margin-top: 0.5rem; width: auto; padding: 0.5rem 1rem; }
+        .btn-add:hover { border-color: var(--accent); color: var(--accent); }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .result-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            text-align: center;
+        }
+
+        .result-card.highlight {
+            border-color: var(--accent);
+            background: rgba(139, 92, 246, 0.05);
+        }
+
+        .result-value {
+            font-family: 'Fraunces', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.25rem;
+        }
+
+        .result-label { font-size: 0.85rem; color: var(--text-muted); }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .comparison-table th, .comparison-table td {
+            padding: 0.75rem;
+            text-align: right;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .comparison-table th {
+            background: var(--bg);
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .comparison-table th:first-child, .comparison-table td:first-child { text-align: left; }
+        .comparison-table tr:hover { background: var(--bg-card-hover); }
+        .comparison-table .total-row { font-weight: 600; background: var(--bg); }
+
+        .chart-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-title { font-size: 1rem; font-weight: 600; margin-bottom: 1rem; color: var(--accent); }
+
+        .stacked-bar {
+            height: 40px;
+            background: var(--bg);
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            margin-bottom: 0.5rem;
+        }
+
+        .stacked-segment {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: white;
+            transition: width 0.5s;
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+
+        .step-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar { width: 240px; }
+            .content-area { margin-left: 240px; max-width: calc(100% - 240px); }
+            .results-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .content-area { margin-left: 0; max-width: 100%; padding: 1.5rem; }
+            .form-row, .form-row-3, .form-row-4 { grid-template-columns: 1fr; }
+            .cost-item { grid-template-columns: 1fr; }
+            .results-grid { grid-template-columns: 1fr 1fr; }
+        }
+
+        /* Print Header */
+        .print-header {
+            display: none;
+            padding: 2rem;
+            border-bottom: 2px solid #8b5cf6;
+            margin-bottom: 2rem;
+        }
+        .print-logo { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .print-title { font-size: 1.75rem; font-weight: 700; margin-bottom: 1rem; }
+        .print-meta { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; margin-bottom: 1rem; font-size: 0.9rem; }
+        .print-description { padding: 1rem; background: #f5f5f5; border-radius: 8px; font-size: 0.9rem; }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center;
+            z-index: 2000; opacity: 0; visibility: hidden; transition: all 0.3s;
+        }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .modal {
+            background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px;
+            width: 90%; max-width: 600px; max-height: 85vh; overflow-y: auto;
+        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; border-bottom: 1px solid var(--border); }
+        .modal-title { font-family: 'Fraunces', serif; font-size: 1.25rem; }
+        .modal-body { padding: 1.5rem; }
+        .modal-footer { display: flex; justify-content: flex-end; gap: 1rem; padding: 1.5rem; border-top: 1px solid var(--border); }
+        .help-section { margin-bottom: 1.5rem; }
+        .help-section h4 { color: var(--accent); margin-bottom: 0.5rem; font-size: 1rem; }
+        .help-section p, .help-section li { color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; }
+        .help-section ol, .help-section ul { padding-left: 1.25rem; }
+        .help-section li { margin-bottom: 0.5rem; }
+
+        @media print {
+            .nav, .sidebar, .step-navigation, .btn, .modal-overlay { display: none !important; }
+            .main-layout { display: block; }
+            .content-area { margin: 0; padding: 0; max-width: 100%; }
+            .step-content { display: none !important; }
+            #step5 { display: block !important; }
+            .print-header { display: block !important; }
+            body { background: white; color: black; }
+            .result-card, .form-section { background: #f9f9f9; border: 1px solid #ddd; }
+            .result-value { color: #333; }
+        }
+
+        /* Example Gallery Styles */
+        .btn-examples { background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%); color: white; border: none; }
+        .btn-examples:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4); }
+        .example-gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+        .example-card { background: var(--bg-card); border-radius: 16px; overflow: hidden; border: 1px solid var(--border); transition: all 0.3s; }
+        .example-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.3); border-color: var(--accent); }
+        .example-card-header { padding: 1.5rem; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: white; }
+        .example-card-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+        .example-card-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.25rem; }
+        .example-card-subtitle { font-size: 0.875rem; opacity: 0.9; margin-bottom: 1rem; }
+        .example-card-stats { display: flex; gap: 1rem; background: rgba(255,255,255,0.15); border-radius: 8px; padding: 0.75rem; }
+        .example-stat { flex: 1; text-align: center; }
+        .example-stat-value { font-size: 1.1rem; font-weight: 700; }
+        .example-stat-label { font-size: 0.7rem; text-transform: uppercase; opacity: 0.8; }
+        .example-card-body { padding: 1.25rem; }
+        .example-card-desc { color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; margin-bottom: 1rem; }
+        .example-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+        .example-tag { background: var(--bg); color: var(--text-muted); padding: 0.25rem 0.75rem; border-radius: 100px; font-size: 0.75rem; }
+        .example-card-actions { display: flex; gap: 0.75rem; }
+        .example-card-actions .btn { flex: 1; justify-content: center; }
+        .gallery-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 2000; opacity: 0; visibility: hidden; transition: all 0.3s; padding: 1rem; }
+        .gallery-modal.active { opacity: 1; visibility: visible; }
+        .gallery-modal-content { background: var(--bg-card); border-radius: 16px; width: 100%; max-width: 1100px; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column; border: 1px solid var(--border); }
+        .gallery-modal-header { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); }
+        .gallery-modal-title { font-size: 1.25rem; font-weight: 700; }
+        .gallery-modal-close { background: none; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer; }
+        .gallery-modal-body { padding: 1.5rem; overflow-y: auto; flex: 1; }
+        .gallery-modal-footer { display: flex; gap: 1rem; justify-content: flex-end; padding: 1.25rem 1.5rem; border-top: 1px solid var(--border); }
+        .preview-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1rem; }
+        .preview-item { background: var(--bg); padding: 0.75rem; border-radius: 8px; }
+        .preview-item-label { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; margin-bottom: 0.25rem; }
+        .preview-item-value { font-weight: 500; }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-content">
+            <a href="index.html" class="nav-logo">
+                <div class="nav-logo-icon">🧮</div>
+                <span class="nav-logo-text">TCO Calculator</span>
+            </a>
+            <a href="/" class="platform-link">← All Tools</a>
+            <div class="nav-actions">
+                <div class="save-status" id="saveStatus"><span>●</span> Auto-saved</div>
+                <button class="btn btn-secondary" onclick="openHelpModal()">❓ Guide</button>
+                <button class="btn btn-examples" onclick="openExamplesGallery()">📚 Browse Examples</button>
+                <button class="btn btn-primary" onclick="goToStep(5)">View Results</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Print Header -->
+    <div class="print-header" id="printHeader">
+        <div class="print-logo">🧮 TCO Calculator</div>
+        <h1 class="print-title" id="printAssetName">TCO Analysis Report</h1>
+        <div class="print-meta">
+            <div><strong>Category:</strong> <span id="printCategory">-</span></div>
+            <div><strong>Vendor:</strong> <span id="printVendor">-</span></div>
+            <div><strong>Date:</strong> <span id="printDate">-</span></div>
+            <div><strong>Lifespan:</strong> <span id="printLifespan">-</span></div>
+        </div>
+        <div class="print-description" id="printDescription"></div>
+    </div>
+
+    <!-- Help Modal -->
+    <div class="modal-overlay" id="helpModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">📖 How to Use the TCO Calculator</h3>
+                <button class="btn-icon" onclick="closeHelpModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="help-section">
+                    <h4>What is Total Cost of Ownership?</h4>
+                    <p>TCO is a financial estimate that helps you understand the complete cost of purchasing and operating an asset over its entire lifecycle, beyond just the initial purchase price.</p>
+                </div>
+                <div class="help-section">
+                    <h4>Step-by-Step Guide</h4>
+                    <ol>
+                        <li><strong>Asset Details:</strong> Enter the asset name, category, vendor, expected lifespan, and quantity.</li>
+                        <li><strong>Acquisition Costs:</strong> Add all one-time purchase costs including hardware, software licenses, implementation, and training.</li>
+                        <li><strong>Operating Costs:</strong> Enter ongoing annual costs like maintenance, labor, power, and subscriptions.</li>
+                        <li><strong>End of Life:</strong> Account for disposal costs, salvage value, and migration expenses.</li>
+                    </ol>
+                </div>
+                <div class="help-section">
+                    <h4>Key Metrics</h4>
+                    <ul>
+                        <li><strong>Total TCO:</strong> Complete cost over the asset's lifetime</li>
+                        <li><strong>Annual TCO:</strong> Average yearly cost</li>
+                        <li><strong>Monthly TCO:</strong> Average monthly cost</li>
+                        <li><strong>TCO per Unit:</strong> Cost per unit for quantity comparisons</li>
+                    </ul>
+                </div>
+                <div class="help-section">
+                    <h4>Common Use Cases</h4>
+                    <ul>
+                        <li>Comparing vendor proposals</li>
+                        <li>Build vs. buy decisions</li>
+                        <li>Equipment replacement planning</li>
+                        <li>Budget forecasting</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="loadExample()">Load Example Data</button>
+                <button class="btn btn-primary" onclick="closeHelpModal()">Got It!</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-layout">
+        <aside class="sidebar">
+            <div class="sidebar-title">Analysis Steps</div>
+            <div class="step-item active" onclick="goToStep(1)" data-step="1">
+                <div class="step-number">1</div>
+                <div class="step-info"><h4>Asset Details</h4><p>Basic information</p></div>
+            </div>
+            <div class="step-item" onclick="goToStep(2)" data-step="2">
+                <div class="step-number">2</div>
+                <div class="step-info"><h4>Acquisition Costs</h4><p>Purchase & setup</p></div>
+            </div>
+            <div class="step-item" onclick="goToStep(3)" data-step="3">
+                <div class="step-number">3</div>
+                <div class="step-info"><h4>Operating Costs</h4><p>Ongoing expenses</p></div>
+            </div>
+            <div class="step-item" onclick="goToStep(4)" data-step="4">
+                <div class="step-number">4</div>
+                <div class="step-info"><h4>End of Life</h4><p>Disposal & replacement</p></div>
+            </div>
+            <div class="step-item" onclick="goToStep(5)" data-step="5">
+                <div class="step-number">📊</div>
+                <div class="step-info"><h4>Results & Export</h4><p>TCO summary</p></div>
+            </div>
+        </aside>
+
+        <main class="content-area">
+            <!-- Step 1: Asset Details -->
+            <div class="step-content active" id="step1">
+                <div class="step-header">
+                    <div class="step-badge">Step 1 of 4</div>
+                    <h2>Asset Details</h2>
+                    <p>Enter basic information about the asset or system being evaluated.</p>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Asset Information</div>
+                    <div class="form-group">
+                        <label class="form-label">Asset/System Name <span class="required">*</span></label>
+                        <input type="text" class="form-input" id="assetName" placeholder="e.g., Dell PowerEdge R750 Server">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Category</label>
+                            <select class="form-select" id="assetCategory">
+                                <option value="">Select category...</option>
+                                <option value="hardware">IT Hardware</option>
+                                <option value="software">Software/SaaS</option>
+                                <option value="equipment">Equipment/Machinery</option>
+                                <option value="vehicle">Vehicle/Fleet</option>
+                                <option value="facility">Facility/Building</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Vendor/Manufacturer</label>
+                            <input type="text" class="form-input" id="vendor" placeholder="e.g., Dell Technologies">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Analysis Date</label>
+                            <input type="date" class="form-input" id="analysisDate">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Prepared By</label>
+                            <input type="text" class="form-input" id="preparedBy" placeholder="e.g., John Smith">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Lifecycle Parameters</div>
+                    <div class="form-row-3">
+                        <div class="form-group">
+                            <label class="form-label">Expected Lifespan (Years) <span class="required">*</span></label>
+                            <select class="form-select" id="lifespan">
+                                <option value="1">1 Year</option>
+                                <option value="2">2 Years</option>
+                                <option value="3" selected>3 Years</option>
+                                <option value="4">4 Years</option>
+                                <option value="5">5 Years</option>
+                                <option value="7">7 Years</option>
+                                <option value="10">10 Years</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Quantity</label>
+                            <input type="number" class="form-input" id="quantity" value="1" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Discount Rate (%)</label>
+                            <input type="number" class="form-input" id="discountRate" value="8" min="0" max="50" step="0.5">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Description & Purpose</div>
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-textarea" id="description" placeholder="Describe the asset and its intended use..."></textarea>
+                    </div>
+                </div>
+
+                <div class="step-navigation">
+                    <div></div>
+                    <button class="btn btn-primary" onclick="goToStep(2)">Next: Acquisition Costs →</button>
+                </div>
+            </div>
+
+            <!-- Step 2: Acquisition Costs -->
+            <div class="step-content" id="step2">
+                <div class="step-header">
+                    <div class="step-badge">Step 2 of 4</div>
+                    <h2>Acquisition Costs</h2>
+                    <p>Enter all one-time costs to acquire and deploy the asset.</p>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Hardware/Equipment Costs</div>
+                    <div class="cost-category" id="hardwareCosts">
+                        <div class="cost-category-header">
+                            <span class="cost-category-title">💻 Hardware & Equipment</span>
+                            <span class="cost-category-total" id="hardwareTotal">$0</span>
+                        </div>
+                        <div class="cost-item">
+                            <div class="form-group">
+                                <label class="form-label">Item</label>
+                                <input type="text" class="form-input hw-item" placeholder="e.g., Server unit">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Qty</label>
+                                <input type="number" class="form-input hw-qty" value="1" min="1">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Unit Cost ($)</label>
+                                <input type="number" class="form-input hw-cost" placeholder="0" min="0">
+                            </div>
+                            <button class="btn-icon" onclick="removeCostItem(this)" style="display:none;">✕</button>
+                        </div>
+                    </div>
+                    <button class="btn-icon btn-add" onclick="addHardwareCost()">+ Add Hardware Item</button>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Software & Licensing</div>
+                    <div class="cost-category" id="softwareCosts">
+                        <div class="cost-category-header">
+                            <span class="cost-category-title">📀 Software & Licenses</span>
+                            <span class="cost-category-total" id="softwareTotal">$0</span>
+                        </div>
+                        <div class="cost-item">
+                            <div class="form-group">
+                                <label class="form-label">Software/License</label>
+                                <input type="text" class="form-input sw-item" placeholder="e.g., Windows Server license">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Qty</label>
+                                <input type="number" class="form-input sw-qty" value="1" min="1">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Cost ($)</label>
+                                <input type="number" class="form-input sw-cost" placeholder="0" min="0">
+                            </div>
+                            <button class="btn-icon" onclick="removeCostItem(this)" style="display:none;">✕</button>
+                        </div>
+                    </div>
+                    <button class="btn-icon btn-add" onclick="addSoftwareCost()">+ Add Software Item</button>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Implementation & Setup</div>
+                    <div class="cost-category" id="implCosts">
+                        <div class="cost-category-header">
+                            <span class="cost-category-title">🔧 Implementation</span>
+                            <span class="cost-category-total" id="implTotal">$0</span>
+                        </div>
+                        <div class="cost-item">
+                            <div class="form-group">
+                                <label class="form-label">Service</label>
+                                <input type="text" class="form-input impl-item" placeholder="e.g., Installation & configuration">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Hours</label>
+                                <input type="number" class="form-input impl-hours" value="0" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Rate ($/hr)</label>
+                                <input type="number" class="form-input impl-rate" placeholder="0" min="0">
+                            </div>
+                            <button class="btn-icon" onclick="removeCostItem(this)" style="display:none;">✕</button>
+                        </div>
+                    </div>
+                    <button class="btn-icon btn-add" onclick="addImplCost()">+ Add Implementation Cost</button>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Training Costs</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Training Program Cost ($)</label>
+                            <input type="number" class="form-input" id="trainingCost" placeholder="0" min="0" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Number of Staff to Train</label>
+                            <input type="number" class="form-input" id="trainingStaff" value="0" min="0">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-navigation">
+                    <button class="btn btn-secondary" onclick="goToStep(1)">← Back</button>
+                    <button class="btn btn-primary" onclick="goToStep(3)">Next: Operating Costs →</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Operating Costs -->
+            <div class="step-content" id="step3">
+                <div class="step-header">
+                    <div class="step-badge">Step 3 of 4</div>
+                    <h2>Operating Costs</h2>
+                    <p>Enter ongoing annual costs to operate and maintain the asset.</p>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Maintenance & Support</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Annual Maintenance Contract ($)</label>
+                            <input type="number" class="form-input" id="maintenanceCost" placeholder="0" min="0" value="0">
+                            <p class="form-hint">Warranty, support agreements, service contracts</p>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Annual Repair/Parts Budget ($)</label>
+                            <input type="number" class="form-input" id="repairCost" placeholder="0" min="0" value="0">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Personnel/Labor Costs</div>
+                    <div class="form-row-3">
+                        <div class="form-group">
+                            <label class="form-label">FTE Required</label>
+                            <input type="number" class="form-input" id="fteRequired" value="0" min="0" step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Annual Salary/FTE ($)</label>
+                            <input type="number" class="form-input" id="fteSalary" placeholder="0" min="0" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Benefits % of Salary</label>
+                            <input type="number" class="form-input" id="benefitsRate" value="30" min="0" max="100">
+                        </div>
+                    </div>
+                    <p class="form-hint">Total annual labor: <strong id="laborTotal">$0</strong></p>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Infrastructure Costs</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Annual Power/Energy ($)</label>
+                            <input type="number" class="form-input" id="powerCost" placeholder="0" min="0" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Annual Facility/Space ($)</label>
+                            <input type="number" class="form-input" id="facilityCost" placeholder="0" min="0" value="0">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Annual Network/Connectivity ($)</label>
+                            <input type="number" class="form-input" id="networkCost" placeholder="0" min="0" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Annual Insurance ($)</label>
+                            <input type="number" class="form-input" id="insuranceCost" placeholder="0" min="0" value="0">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Recurring Software/Subscriptions</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Annual Software Subscriptions ($)</label>
+                            <input type="number" class="form-input" id="subscriptionCost" placeholder="0" min="0" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Annual Cloud/Hosting ($)</label>
+                            <input type="number" class="form-input" id="cloudCost" placeholder="0" min="0" value="0">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Cost Escalation</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Annual Cost Increase (%)</label>
+                            <input type="number" class="form-input" id="escalationRate" value="3" min="0" max="20" step="0.5">
+                            <p class="form-hint">Expected annual inflation of operating costs</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-navigation">
+                    <button class="btn btn-secondary" onclick="goToStep(2)">← Back</button>
+                    <button class="btn btn-primary" onclick="goToStep(4)">Next: End of Life →</button>
+                </div>
+            </div>
+
+            <!-- Step 4: End of Life -->
+            <div class="step-content" id="step4">
+                <div class="step-header">
+                    <div class="step-badge">Step 4 of 4</div>
+                    <h2>End of Life Costs</h2>
+                    <p>Enter costs related to disposal, migration, and replacement.</p>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Residual Value</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Expected Resale/Salvage Value ($)</label>
+                            <input type="number" class="form-input" id="salvageValue" placeholder="0" min="0" value="0">
+                            <p class="form-hint">Estimated value at end of life (reduces TCO)</p>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Salvage as % of Purchase Price</label>
+                            <input type="number" class="form-input" id="salvagePercent" value="10" min="0" max="100" step="5">
+                            <p class="form-hint">Alternative: calculate from percentage</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Disposal & Decommissioning</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Decommissioning Labor ($)</label>
+                            <input type="number" class="form-input" id="decommissionLabor" placeholder="0" min="0" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Disposal/Recycling Fees ($)</label>
+                            <input type="number" class="form-input" id="disposalFees" placeholder="0" min="0" value="0">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Data Migration/Transfer ($)</label>
+                        <input type="number" class="form-input" id="migrationCost" placeholder="0" min="0" value="0">
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Hidden Costs (Often Overlooked)</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Downtime During Transition (hours)</label>
+                            <input type="number" class="form-input" id="downtimeHours" value="0" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Hourly Cost of Downtime ($)</label>
+                            <input type="number" class="form-input" id="downtimeCost" placeholder="0" min="0" value="0">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Other End-of-Life Costs ($)</label>
+                        <input type="number" class="form-input" id="otherEOLCost" placeholder="0" min="0" value="0">
+                    </div>
+                </div>
+
+                <div class="step-navigation">
+                    <button class="btn btn-secondary" onclick="goToStep(3)">← Back</button>
+                    <button class="btn btn-primary" onclick="calculateAndShowResults()">Calculate TCO →</button>
+                </div>
+            </div>
+
+            <!-- Step 5: Results -->
+            <div class="step-content" id="step5">
+                <div class="step-header">
+                    <h2>TCO Analysis Results</h2>
+                    <p>Complete cost breakdown over the asset lifecycle.</p>
+                </div>
+
+                <div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
+                    <button class="btn btn-primary" onclick="window.print()">📄 Export PDF</button>
+                    <button class="btn btn-secondary" onclick="goToStep(1)">✏️ Edit Inputs</button>
+                </div>
+
+                <div class="results-grid" id="summaryMetrics">
+                    <div class="result-card highlight">
+                        <div class="result-value" id="totalTCO">$0</div>
+                        <div class="result-label">Total TCO</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-value" id="annualTCO">$0</div>
+                        <div class="result-label">Annual TCO</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-value" id="monthlyTCO">$0</div>
+                        <div class="result-label">Monthly TCO</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-value" id="tcoPerUnit">$0</div>
+                        <div class="result-label">TCO per Unit</div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">Cost Breakdown by Category</div>
+                    <div class="stacked-bar" id="costBreakdownBar"></div>
+                    <div class="legend" id="costLegend"></div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Detailed Cost Summary</div>
+                    <table class="comparison-table" id="costSummaryTable"></table>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Year-by-Year Cost Projection</div>
+                    <div style="overflow-x: auto;">
+                        <table class="comparison-table" id="yearlyTable"></table>
+                    </div>
+                </div>
+
+                <div class="step-navigation">
+                    <button class="btn btn-secondary" onclick="goToStep(4)">← Back to Inputs</button>
+                    <div></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        let results = {};
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('analysisDate').value = new Date().toISOString().split('T')[0];
+            setupAutoCalc();
+            loadSavedData();
+        });
+
+        function goToStep(step) {
+            document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.step-item').forEach(el => el.classList.remove('active'));
+            document.getElementById('step' + step).classList.add('active');
+            document.querySelector(`.step-item[data-step="${step}"]`).classList.add('active');
+            currentStep = step;
+            if (step === 5) calculateAndShowResults();
+            window.scrollTo(0, 0);
+        }
+
+        function addHardwareCost() {
+            const container = document.getElementById('hardwareCosts');
+            const item = document.createElement('div');
+            item.className = 'cost-item';
+            item.innerHTML = `
+                <div class="form-group"><input type="text" class="form-input hw-item" placeholder="Item description"></div>
+                <div class="form-group"><input type="number" class="form-input hw-qty" value="1" min="1"></div>
+                <div class="form-group"><input type="number" class="form-input hw-cost" placeholder="0" min="0"></div>
+                <button class="btn-icon" onclick="removeCostItem(this)">✕</button>
+            `;
+            container.appendChild(item);
+            setupAutoCalc();
+        }
+
+        function addSoftwareCost() {
+            const container = document.getElementById('softwareCosts');
+            const item = document.createElement('div');
+            item.className = 'cost-item';
+            item.innerHTML = `
+                <div class="form-group"><input type="text" class="form-input sw-item" placeholder="Software/License"></div>
+                <div class="form-group"><input type="number" class="form-input sw-qty" value="1" min="1"></div>
+                <div class="form-group"><input type="number" class="form-input sw-cost" placeholder="0" min="0"></div>
+                <button class="btn-icon" onclick="removeCostItem(this)">✕</button>
+            `;
+            container.appendChild(item);
+            setupAutoCalc();
+        }
+
+        function addImplCost() {
+            const container = document.getElementById('implCosts');
+            const item = document.createElement('div');
+            item.className = 'cost-item';
+            item.innerHTML = `
+                <div class="form-group"><input type="text" class="form-input impl-item" placeholder="Service"></div>
+                <div class="form-group"><input type="number" class="form-input impl-hours" value="0" min="0"></div>
+                <div class="form-group"><input type="number" class="form-input impl-rate" placeholder="0" min="0"></div>
+                <button class="btn-icon" onclick="removeCostItem(this)">✕</button>
+            `;
+            container.appendChild(item);
+            setupAutoCalc();
+        }
+
+        function removeCostItem(btn) {
+            btn.closest('.cost-item').remove();
+            updateTotals();
+        }
+
+        function setupAutoCalc() {
+            document.querySelectorAll('input').forEach(el => {
+                el.removeEventListener('input', updateTotals);
+                el.addEventListener('input', updateTotals);
+            });
+        }
+
+        function updateTotals() {
+            let hwTotal = 0;
+            document.querySelectorAll('#hardwareCosts .cost-item').forEach(item => {
+                const qty = parseFloat(item.querySelector('.hw-qty')?.value) || 1;
+                const cost = parseFloat(item.querySelector('.hw-cost')?.value) || 0;
+                hwTotal += qty * cost;
+            });
+            document.getElementById('hardwareTotal').textContent = formatCurrency(hwTotal);
+
+            let swTotal = 0;
+            document.querySelectorAll('#softwareCosts .cost-item').forEach(item => {
+                const qty = parseFloat(item.querySelector('.sw-qty')?.value) || 1;
+                const cost = parseFloat(item.querySelector('.sw-cost')?.value) || 0;
+                swTotal += qty * cost;
+            });
+            document.getElementById('softwareTotal').textContent = formatCurrency(swTotal);
+
+            let implTotal = 0;
+            document.querySelectorAll('#implCosts .cost-item').forEach(item => {
+                const hours = parseFloat(item.querySelector('.impl-hours')?.value) || 0;
+                const rate = parseFloat(item.querySelector('.impl-rate')?.value) || 0;
+                implTotal += hours * rate;
+            });
+            document.getElementById('implTotal').textContent = formatCurrency(implTotal);
+
+            const fte = parseFloat(document.getElementById('fteRequired')?.value) || 0;
+            const salary = parseFloat(document.getElementById('fteSalary')?.value) || 0;
+            const benefits = parseFloat(document.getElementById('benefitsRate')?.value) || 0;
+            const laborTotal = fte * salary * (1 + benefits/100);
+            document.getElementById('laborTotal').textContent = formatCurrency(laborTotal);
+
+            saveData();
+        }
+
+        function formatCurrency(val) {
+            return '$' + Math.round(val).toLocaleString();
+        }
+
+        function calculateAndShowResults() {
+            const lifespan = parseInt(document.getElementById('lifespan').value);
+            const quantity = parseInt(document.getElementById('quantity').value) || 1;
+            const escalation = (parseFloat(document.getElementById('escalationRate').value) || 0) / 100;
+
+            // Acquisition costs
+            let hwTotal = 0;
+            document.querySelectorAll('#hardwareCosts .cost-item').forEach(item => {
+                hwTotal += (parseFloat(item.querySelector('.hw-qty')?.value) || 1) * (parseFloat(item.querySelector('.hw-cost')?.value) || 0);
+            });
+
+            let swTotal = 0;
+            document.querySelectorAll('#softwareCosts .cost-item').forEach(item => {
+                swTotal += (parseFloat(item.querySelector('.sw-qty')?.value) || 1) * (parseFloat(item.querySelector('.sw-cost')?.value) || 0);
+            });
+
+            let implTotal = 0;
+            document.querySelectorAll('#implCosts .cost-item').forEach(item => {
+                implTotal += (parseFloat(item.querySelector('.impl-hours')?.value) || 0) * (parseFloat(item.querySelector('.impl-rate')?.value) || 0);
+            });
+
+            const trainingCost = (parseFloat(document.getElementById('trainingCost').value) || 0) * (parseInt(document.getElementById('trainingStaff').value) || 1);
+            const acquisitionTotal = hwTotal + swTotal + implTotal + trainingCost;
+
+            // Operating costs (Year 1)
+            const maintenance = parseFloat(document.getElementById('maintenanceCost').value) || 0;
+            const repair = parseFloat(document.getElementById('repairCost').value) || 0;
+            const fte = parseFloat(document.getElementById('fteRequired').value) || 0;
+            const salary = parseFloat(document.getElementById('fteSalary').value) || 0;
+            const benefits = (parseFloat(document.getElementById('benefitsRate').value) || 0) / 100;
+            const labor = fte * salary * (1 + benefits);
+            const power = parseFloat(document.getElementById('powerCost').value) || 0;
+            const facility = parseFloat(document.getElementById('facilityCost').value) || 0;
+            const network = parseFloat(document.getElementById('networkCost').value) || 0;
+            const insurance = parseFloat(document.getElementById('insuranceCost').value) || 0;
+            const subscription = parseFloat(document.getElementById('subscriptionCost').value) || 0;
+            const cloud = parseFloat(document.getElementById('cloudCost').value) || 0;
+
+            const yearOneOps = maintenance + repair + labor + power + facility + network + insurance + subscription + cloud;
+
+            // Calculate total operating over lifespan
+            let totalOps = 0;
+            const yearlyData = [];
+            for (let y = 1; y <= lifespan; y++) {
+                const yearOps = yearOneOps * Math.pow(1 + escalation, y - 1);
+                totalOps += yearOps;
+                yearlyData.push({
+                    year: y,
+                    acquisition: y === 1 ? acquisitionTotal : 0,
+                    operations: yearOps,
+                    total: (y === 1 ? acquisitionTotal : 0) + yearOps
+                });
+            }
+
+            // End of life
+            const salvage = parseFloat(document.getElementById('salvageValue').value) || 0;
+            const decommission = parseFloat(document.getElementById('decommissionLabor').value) || 0;
+            const disposal = parseFloat(document.getElementById('disposalFees').value) || 0;
+            const migration = parseFloat(document.getElementById('migrationCost').value) || 0;
+            const downtime = (parseFloat(document.getElementById('downtimeHours').value) || 0) * (parseFloat(document.getElementById('downtimeCost').value) || 0);
+            const otherEOL = parseFloat(document.getElementById('otherEOLCost').value) || 0;
+            const eolTotal = decommission + disposal + migration + downtime + otherEOL - salvage;
+
+            // Total TCO
+            const totalTCO = acquisitionTotal + totalOps + eolTotal;
+            const annualTCO = totalTCO / lifespan;
+            const monthlyTCO = annualTCO / 12;
+            const tcoPerUnit = totalTCO / quantity;
+
+            results = {
+                totalTCO, annualTCO, monthlyTCO, tcoPerUnit,
+                acquisition: { hardware: hwTotal, software: swTotal, implementation: implTotal, training: trainingCost, total: acquisitionTotal },
+                operations: { maintenance, repair, labor, infrastructure: power + facility + network + insurance, software: subscription + cloud, total: totalOps, yearOne: yearOneOps },
+                endOfLife: { salvage, decommission, disposal, migration, downtime, other: otherEOL, total: eolTotal },
+                yearlyData, lifespan, quantity
+            };
+
+            displayResults();
+        }
+
+        function displayResults() {
+            const { totalTCO, annualTCO, monthlyTCO, tcoPerUnit, acquisition, operations, endOfLife, yearlyData, lifespan } = results;
+
+            document.getElementById('totalTCO').textContent = formatCurrency(totalTCO);
+            document.getElementById('annualTCO').textContent = formatCurrency(annualTCO);
+            document.getElementById('monthlyTCO').textContent = formatCurrency(monthlyTCO);
+            document.getElementById('tcoPerUnit').textContent = formatCurrency(tcoPerUnit);
+
+            // Cost breakdown chart
+            const categories = [
+                { name: 'Hardware', value: acquisition.hardware, color: '#6366f1' },
+                { name: 'Software', value: acquisition.software, color: '#8b5cf6' },
+                { name: 'Implementation', value: acquisition.implementation, color: '#a855f7' },
+                { name: 'Training', value: acquisition.training, color: '#c084fc' },
+                { name: 'Operations', value: operations.total, color: '#22c55e' },
+                { name: 'End of Life', value: Math.max(0, endOfLife.total), color: '#f59e0b' }
+            ].filter(c => c.value > 0);
+
+            const total = categories.reduce((s, c) => s + c.value, 0);
+            const bar = document.getElementById('costBreakdownBar');
+            bar.innerHTML = categories.map(c => {
+                const pct = (c.value / total) * 100;
+                return `<div class="stacked-segment" style="width: ${pct}%; background: ${c.color};">${pct > 8 ? Math.round(pct) + '%' : ''}</div>`;
+            }).join('');
+
+            document.getElementById('costLegend').innerHTML = categories.map(c => `
+                <div class="legend-item">
+                    <div class="legend-color" style="background: ${c.color};"></div>
+                    <span>${c.name}: ${formatCurrency(c.value)}</span>
+                </div>
+            `).join('');
+
+            // Summary table
+            document.getElementById('costSummaryTable').innerHTML = `
+                <thead><tr><th>Category</th><th>Amount</th><th>% of TCO</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>Acquisition Costs</strong></td><td>${formatCurrency(acquisition.total)}</td><td>${((acquisition.total/totalTCO)*100).toFixed(1)}%</td></tr>
+                    <tr><td>  Hardware</td><td>${formatCurrency(acquisition.hardware)}</td><td></td></tr>
+                    <tr><td>  Software</td><td>${formatCurrency(acquisition.software)}</td><td></td></tr>
+                    <tr><td>  Implementation</td><td>${formatCurrency(acquisition.implementation)}</td><td></td></tr>
+                    <tr><td>  Training</td><td>${formatCurrency(acquisition.training)}</td><td></td></tr>
+                    <tr><td><strong>Operating Costs (${lifespan} years)</strong></td><td>${formatCurrency(operations.total)}</td><td>${((operations.total/totalTCO)*100).toFixed(1)}%</td></tr>
+                    <tr><td><strong>End of Life Costs</strong></td><td>${formatCurrency(endOfLife.total)}</td><td>${((Math.max(0,endOfLife.total)/totalTCO)*100).toFixed(1)}%</td></tr>
+                    <tr class="total-row"><td><strong>Total TCO</strong></td><td><strong>${formatCurrency(totalTCO)}</strong></td><td>100%</td></tr>
+                </tbody>
+            `;
+
+            // Yearly table
+            let yearlyHtml = '<thead><tr><th>Year</th><th>Acquisition</th><th>Operations</th><th>Annual Total</th><th>Cumulative</th></tr></thead><tbody>';
+            let cumulative = 0;
+            yearlyData.forEach(y => {
+                cumulative += y.total;
+                yearlyHtml += `<tr><td>Year ${y.year}</td><td>${formatCurrency(y.acquisition)}</td><td>${formatCurrency(y.operations)}</td><td>${formatCurrency(y.total)}</td><td>${formatCurrency(cumulative)}</td></tr>`;
+            });
+            cumulative += endOfLife.total;
+            yearlyHtml += `<tr class="total-row"><td>End of Life</td><td>-</td><td>-</td><td>${formatCurrency(endOfLife.total)}</td><td>${formatCurrency(cumulative)}</td></tr>`;
+            yearlyHtml += '</tbody>';
+            document.getElementById('yearlyTable').innerHTML = yearlyHtml;
+        }
+
+        function saveData() {
+            const data = {
+                assetName: document.getElementById('assetName').value,
+                assetCategory: document.getElementById('assetCategory').value,
+                vendor: document.getElementById('vendor').value,
+                lifespan: document.getElementById('lifespan').value,
+                quantity: document.getElementById('quantity').value,
+                discountRate: document.getElementById('discountRate').value,
+                lastSaved: new Date().toISOString()
+            };
+            localStorage.setItem('tco_current', JSON.stringify(data));
+            document.getElementById('saveStatus').innerHTML = '<span>●</span> Auto-saved';
+            document.getElementById('saveStatus').className = 'save-status saved';
+        }
+
+        function loadSavedData() {
+            const saved = localStorage.getItem('tco_current');
+            if (!saved) return;
+            const data = JSON.parse(saved);
+            ['assetName', 'assetCategory', 'vendor', 'lifespan', 'quantity', 'discountRate'].forEach(f => {
+                if (document.getElementById(f) && data[f]) document.getElementById(f).value = data[f];
+            });
+        }
+
+        // Help Modal
+        function openHelpModal() {
+            document.getElementById('helpModal').classList.add('active');
+        }
+        function closeHelpModal() {
+            document.getElementById('helpModal').classList.remove('active');
+        }
+
+        // Load Example Data
+        function loadExample() {
+            if (!confirm('Load example data? This will replace current entries.')) return;
+            
+            document.getElementById('assetName').value = 'Dell PowerEdge R750 Server';
+            document.getElementById('assetCategory').value = 'hardware';
+            document.getElementById('vendor').value = 'Dell Technologies';
+            document.getElementById('lifespan').value = '5';
+            document.getElementById('quantity').value = '3';
+            document.getElementById('discountRate').value = '8';
+            document.getElementById('description').value = 'Production database servers for enterprise application hosting. Replaces aging HP ProLiant servers that are end-of-support.';
+            
+            // Hardware costs
+            const hwContainer = document.getElementById('hardwareCosts');
+            hwContainer.innerHTML = `
+                <div class="cost-category-header">
+                    <span class="cost-category-title">💻 Hardware & Equipment</span>
+                    <span class="cost-category-total" id="hardwareTotal">$0</span>
+                </div>
+            `;
+            const hwItems = [
+                { item: 'Dell PowerEdge R750 Server', qty: 3, cost: 12500 },
+                { item: 'Additional RAM (128GB per server)', qty: 3, cost: 2400 },
+                { item: 'SSD Storage (1.92TB NVMe)', qty: 6, cost: 850 },
+                { item: 'Rack mounting hardware', qty: 1, cost: 600 }
+            ];
+            hwItems.forEach(hw => {
+                addHardwareCost();
+                const items = hwContainer.querySelectorAll('.cost-item');
+                const item = items[items.length - 1];
+                item.querySelector('.hw-item').value = hw.item;
+                item.querySelector('.hw-qty').value = hw.qty;
+                item.querySelector('.hw-cost').value = hw.cost;
+            });
+
+            // Software costs
+            const swContainer = document.getElementById('softwareCosts');
+            swContainer.innerHTML = `
+                <div class="cost-category-header">
+                    <span class="cost-category-title">📀 Software & Licenses</span>
+                    <span class="cost-category-total" id="softwareTotal">$0</span>
+                </div>
+            `;
+            const swItems = [
+                { item: 'Windows Server 2022 Datacenter', qty: 3, cost: 6155 },
+                { item: 'SQL Server Enterprise License', qty: 2, cost: 15123 },
+                { item: 'Backup software license', qty: 1, cost: 2500 }
+            ];
+            swItems.forEach(sw => {
+                addSoftwareCost();
+                const items = swContainer.querySelectorAll('.cost-item');
+                const item = items[items.length - 1];
+                item.querySelector('.sw-item').value = sw.item;
+                item.querySelector('.sw-qty').value = sw.qty;
+                item.querySelector('.sw-cost').value = sw.cost;
+            });
+
+            // Implementation costs
+            const implContainer = document.getElementById('implCosts');
+            implContainer.innerHTML = `
+                <div class="cost-category-header">
+                    <span class="cost-category-title">🔧 Implementation</span>
+                    <span class="cost-category-total" id="implTotal">$0</span>
+                </div>
+            `;
+            const implItems = [
+                { item: 'Installation & configuration', hours: 40, rate: 175 },
+                { item: 'Data migration', hours: 24, rate: 175 },
+                { item: 'Testing & validation', hours: 16, rate: 150 }
+            ];
+            implItems.forEach(impl => {
+                addImplCost();
+                const items = implContainer.querySelectorAll('.cost-item');
+                const item = items[items.length - 1];
+                item.querySelector('.impl-item').value = impl.item;
+                item.querySelector('.impl-hours').value = impl.hours;
+                item.querySelector('.impl-rate').value = impl.rate;
+            });
+
+            document.getElementById('trainingCost').value = 1500;
+            document.getElementById('trainingStaff').value = 5;
+
+            // Operating costs
+            document.getElementById('maintenanceCost').value = 8500;
+            document.getElementById('repairCost').value = 2000;
+            document.getElementById('fteRequired').value = 0.25;
+            document.getElementById('fteSalary').value = 95000;
+            document.getElementById('benefitsRate').value = 30;
+            document.getElementById('powerCost').value = 4800;
+            document.getElementById('facilityCost').value = 3600;
+            document.getElementById('networkCost').value = 1200;
+            document.getElementById('insuranceCost').value = 500;
+            document.getElementById('subscriptionCost').value = 2400;
+            document.getElementById('cloudCost').value = 0;
+            document.getElementById('escalationRate').value = 3;
+
+            // End of life
+            document.getElementById('salvageValue').value = 3000;
+            document.getElementById('salvagePercent').value = 5;
+            document.getElementById('decommissionLabor').value = 2000;
+            document.getElementById('disposalFees').value = 500;
+            document.getElementById('migrationCost').value = 8000;
+            document.getElementById('downtimeHours').value = 8;
+            document.getElementById('downtimeCost').value = 500;
+
+            setupAutoCalc();
+            updateTotals();
+            saveData();
+            closeHelpModal();
+            alert('Example data loaded! Review each step and click View Results.');
+        }
+
+        // Enhanced PDF Export
+        document.querySelector('button[onclick="window.print()"]').onclick = function() {
+            document.getElementById('printAssetName').textContent = 
+                document.getElementById('assetName').value || 'TCO Analysis Report';
+            document.getElementById('printCategory').textContent = 
+                document.getElementById('assetCategory').options[document.getElementById('assetCategory').selectedIndex]?.text || '-';
+            document.getElementById('printVendor').textContent = 
+                document.getElementById('vendor').value || '-';
+            document.getElementById('printDate').textContent = 
+                document.getElementById('analysisDate').value || new Date().toLocaleDateString();
+            document.getElementById('printLifespan').textContent = 
+                document.getElementById('lifespan').value + ' years';
+            
+            const desc = document.getElementById('description').value;
+            document.getElementById('printDescription').innerHTML = desc ? '<strong>Description:</strong> ' + desc : '';
+            
+            window.print();
+        };
+
+        // ============================================
+        // TCO EXAMPLE GALLERY
+        // ============================================
+        const tcoExamples = {
+            cloudMigration: {
+                id: 'cloudMigration',
+                title: 'Cloud Migration Analysis',
+                subtitle: 'On-Premise vs AWS',
+                icon: '☁️',
+                stats: { savings: '$1.8M', period: '5 years', reduction: '42%' },
+                tags: ['Cloud', 'AWS', 'Data Center'],
+                description: 'TCO comparison between on-premise data center and AWS cloud migration for 120 servers.',
+                data: {
+                    assetName: 'Data Center to AWS Cloud Migration',
+                    assetCategory: 'hardware',
+                    description: 'Comprehensive 5-year TCO comparison: 120 servers, 500TB storage. Comparing current on-premise data center versus AWS cloud infrastructure including all direct, indirect, and hidden costs.',
+                    vendor: 'AWS / Current: Dell/NetApp',
+                    analysisDate: '2026-01-22',
+                    lifespan: '5',
+                    purchasePrice: '450000',
+                    deliveryFees: '5000',
+                    taxesImport: '27000',
+                    installationLabor: '35000',
+                    installationMaterials: '8000',
+                    configSetup: '25000',
+                    training: '15000',
+                    projectManagement: '20000',
+                    lostProductivity: '10000',
+                    maintenanceLaborInternal: '48000',
+                    maintenanceContract: '45000',
+                    repairsAnnual: '15000',
+                    sparePartsAnnual: '8000',
+                    consumablesAnnual: '2000',
+                    softwareLicenses: '125000',
+                    supportContracts: '35000',
+                    fullTimeStaff: '4',
+                    avgSalary: '85000',
+                    benefitsRate: '35',
+                    partTimeHours: '0',
+                    hourlyRate: '0',
+                    trainingAnnual: '8000',
+                    certifications: '5000',
+                    powerCost: '142000',
+                    facilityCost: '185000',
+                    networkCost: '25000',
+                    insuranceCost: '28000',
+                    subscriptionCost: '0',
+                    cloudCost: '0',
+                    escalationRate: '4',
+                    salvageValue: '45000',
+                    salvagePercent: '10',
+                    decommissionLabor: '25000',
+                    disposalFees: '5000',
+                    migrationCost: '50000',
+                    downtimeHours: '24',
+                    downtimeCost: '5000'
+                }
+            },
+            fleetVehicle: {
+                id: 'fleetVehicle',
+                title: 'Fleet Vehicle Comparison',
+                subtitle: 'ICE vs Electric Vehicles',
+                icon: '🚗',
+                stats: { savings: '$485K', period: '7 years', reduction: '18%' },
+                tags: ['EV', 'Fleet', 'Sustainability'],
+                description: 'TCO analysis comparing ICE fleet vehicles with electric vehicles for 50 delivery vans.',
+                data: {
+                    assetName: 'Delivery Fleet: ICE vs Electric',
+                    assetCategory: 'equipment',
+                    description: '7-year TCO for 50 delivery vans. Comparing Ford Transit ICE vs Ford E-Transit electric. 25,000 miles/year per vehicle. Includes fuel, maintenance, charging infrastructure.',
+                    vendor: 'Ford Motor Company',
+                    analysisDate: '2026-01-25',
+                    lifespan: '7',
+                    purchasePrice: '2250000',
+                    deliveryFees: '25000',
+                    taxesImport: '0',
+                    installationLabor: '0',
+                    installationMaterials: '0',
+                    configSetup: '25000',
+                    training: '5000',
+                    projectManagement: '10000',
+                    lostProductivity: '15000',
+                    maintenanceLaborInternal: '25000',
+                    maintenanceContract: '50000',
+                    repairsAnnual: '45000',
+                    sparePartsAnnual: '20000',
+                    consumablesAnnual: '187500',
+                    softwareLicenses: '18000',
+                    supportContracts: '0',
+                    fullTimeStaff: '0',
+                    avgSalary: '0',
+                    benefitsRate: '0',
+                    partTimeHours: '20',
+                    hourlyRate: '25',
+                    trainingAnnual: '3000',
+                    certifications: '0',
+                    powerCost: '0',
+                    facilityCost: '0',
+                    networkCost: '0',
+                    insuranceCost: '125000',
+                    subscriptionCost: '0',
+                    cloudCost: '0',
+                    escalationRate: '4',
+                    salvageValue: '337500',
+                    salvagePercent: '15',
+                    decommissionLabor: '5000',
+                    disposalFees: '2500',
+                    migrationCost: '0',
+                    downtimeHours: '0',
+                    downtimeCost: '0'
+                }
+            },
+            officeSpace: {
+                id: 'officeSpace',
+                title: 'Office Space Strategy',
+                subtitle: 'Traditional vs Hybrid',
+                icon: '🏢',
+                stats: { savings: '$2.4M', period: '5 years', reduction: '35%' },
+                tags: ['Real Estate', 'Hybrid Work', 'Facilities'],
+                description: 'TCO comparison: maintaining 85K sq ft office vs hybrid model with 50K sq ft reduced footprint.',
+                data: {
+                    assetName: 'Office Real Estate: Traditional vs Hybrid',
+                    assetCategory: 'software',
+                    description: '5-year TCO for 400 employees. Comparing current 85,000 sq ft headquarters vs hybrid model with 50,000 sq ft and activity-based working. Includes build-out, technology, and operating costs.',
+                    vendor: 'Current Landlord / WeWork flex',
+                    analysisDate: '2026-01-28',
+                    lifespan: '5',
+                    purchasePrice: '0',
+                    deliveryFees: '0',
+                    taxesImport: '0',
+                    installationLabor: '150000',
+                    installationMaterials: '350000',
+                    configSetup: '85000',
+                    training: '25000',
+                    projectManagement: '75000',
+                    lostProductivity: '100000',
+                    maintenanceLaborInternal: '50000',
+                    maintenanceContract: '100000',
+                    repairsAnnual: '50000',
+                    sparePartsAnnual: '0',
+                    consumablesAnnual: '0',
+                    softwareLicenses: '48000',
+                    supportContracts: '24000',
+                    fullTimeStaff: '3',
+                    avgSalary: '65000',
+                    benefitsRate: '30',
+                    partTimeHours: '0',
+                    hourlyRate: '0',
+                    trainingAnnual: '5000',
+                    certifications: '0',
+                    powerCost: '255000',
+                    facilityCost: '2550000',
+                    networkCost: '50000',
+                    insuranceCost: '85000',
+                    subscriptionCost: '0',
+                    cloudCost: '0',
+                    escalationRate: '3',
+                    salvageValue: '0',
+                    salvagePercent: '0',
+                    decommissionLabor: '50000',
+                    disposalFees: '25000',
+                    migrationCost: '100000',
+                    downtimeHours: '40',
+                    downtimeCost: '200'
+                }
+            }
+        };
+
+        function renderTcoGallery() {
+            const gallery = document.getElementById('tcoExampleGallery');
+            gallery.innerHTML = '';
+            Object.values(tcoExamples).forEach(ex => {
+                gallery.innerHTML += `
+                    <div class="example-card">
+                        <div class="example-card-header">
+                            <div class="example-card-icon">${ex.icon}</div>
+                            <div class="example-card-title">${ex.title}</div>
+                            <div class="example-card-subtitle">${ex.subtitle}</div>
+                            <div class="example-card-stats">
+                                <div class="example-stat"><div class="example-stat-value">${ex.stats.savings}</div><div class="example-stat-label">Savings</div></div>
+                                <div class="example-stat"><div class="example-stat-value">${ex.stats.period}</div><div class="example-stat-label">Period</div></div>
+                                <div class="example-stat"><div class="example-stat-value">${ex.stats.reduction}</div><div class="example-stat-label">Reduction</div></div>
+                            </div>
+                        </div>
+                        <div class="example-card-body">
+                            <p class="example-card-desc">${ex.description}</p>
+                            <div class="example-tags">${ex.tags.map(t => `<span class="example-tag">${t}</span>`).join('')}</div>
+                            <div class="example-card-actions">
+                                <button class="btn btn-secondary btn-sm" onclick="previewTcoExample('${ex.id}')">👁️ Preview</button>
+                                <button class="btn btn-primary btn-sm" onclick="useTcoExample('${ex.id}')">✨ Use This</button>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function openExamplesGallery() { renderTcoGallery(); document.getElementById('tcoGalleryModal').classList.add('active'); }
+        function closeExamplesGallery() { document.getElementById('tcoGalleryModal').classList.remove('active'); }
+        function closeTcoPreview() { document.getElementById('tcoPreviewModal').classList.remove('active'); }
+
+        function previewTcoExample(id) {
+            const ex = tcoExamples[id];
+            document.getElementById('tcoPreviewTitle').textContent = ex.title + ' - Preview';
+            document.getElementById('tcoPreviewContent').innerHTML = `
+                <div class="preview-grid">
+                    <div class="preview-item"><div class="preview-item-label">Analysis</div><div class="preview-item-value">${ex.data.assetName}</div></div>
+                    <div class="preview-item"><div class="preview-item-label">Period</div><div class="preview-item-value">${ex.data.lifespan} years</div></div>
+                </div>
+                <div style="margin-bottom:1rem;"><div class="preview-item-label">DESCRIPTION</div><p style="color:var(--text-muted);font-size:0.9rem;">${ex.data.description}</p></div>
+                <div class="preview-grid">
+                    <div class="preview-item"><div class="preview-item-label">Initial Investment</div><div class="preview-item-value">$${parseInt(ex.data.purchasePrice || 0).toLocaleString()}</div></div>
+                    <div class="preview-item"><div class="preview-item-label">Expected Savings</div><div class="preview-item-value">${ex.stats.savings}</div></div>
+                </div>`;
+            document.getElementById('useTcoPreviewBtn').onclick = () => useTcoExample(id);
+            closeExamplesGallery();
+            document.getElementById('tcoPreviewModal').classList.add('active');
+        }
+
+        function useTcoExample(id) {
+            // Check if user has access
+            if (typeof checkToolAccessOrRedirect === 'function') {
+                if (!checkToolAccessOrRedirect('tco-calculator')) {
+                    closeExamplesGallery();
+                    closeTcoPreview();
+                    return;
+                }
+            }
+            
+            const d = tcoExamples[id].data;
+            Object.keys(d).forEach(key => {
+                const el = document.getElementById(key);
+                if (el) el.value = d[key];
+            });
+            closeExamplesGallery();
+            closeTcoPreview();
+            setupAutoCalc();
+            updateTotals();
+            saveData();
+            alert('Example loaded! Review each step and click View Results.');
+            goToStep(1);
+        }
+    </script>
+
+    <!-- TCO Gallery Modal -->
+    <div class="gallery-modal" id="tcoGalleryModal">
+        <div class="gallery-modal-content">
+            <div class="gallery-modal-header">
+                <h3 class="gallery-modal-title">📚 Example TCO Analyses</h3>
+                <button class="gallery-modal-close" onclick="closeExamplesGallery()">×</button>
+            </div>
+            <div class="gallery-modal-body">
+                <p style="color:var(--text-muted);margin-bottom:1.5rem;">Browse real-world TCO comparison examples. Preview or use as your starting point.</p>
+                <div class="example-gallery" id="tcoExampleGallery"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TCO Preview Modal -->
+    <div class="gallery-modal" id="tcoPreviewModal">
+        <div class="gallery-modal-content" style="max-width:800px;">
+            <div class="gallery-modal-header">
+                <h3 class="gallery-modal-title" id="tcoPreviewTitle">Preview</h3>
+                <button class="gallery-modal-close" onclick="closeTcoPreview()">×</button>
+            </div>
+            <div class="gallery-modal-body" id="tcoPreviewContent"></div>
+            <div class="gallery-modal-footer">
+                <button class="btn btn-secondary" onclick="closeTcoPreview()">Close</button>
+                <button class="btn btn-primary" id="useTcoPreviewBtn">✨ Use This Example</button>
+            </div>
+        </div>
+    </div>
+<script src="/js/access-control.js"></script>
+</body>
+</html>
