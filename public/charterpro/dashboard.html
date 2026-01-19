@@ -893,8 +893,8 @@
             
             const user = JSON.parse(localStorage.getItem('charterpro_user'));
             if (!user) {
-                window.location.href = 'login.html';
-                return;
+                // Let access-control.js handle showing the registration modal
+                // Don't redirect to login.html
             }
 
             // Check for successful checkout from Stripe
@@ -1219,5 +1219,6 @@
             }
         });
     </script>
+<script src="/js/access-control.js"></script>
 </body>
 </html>
