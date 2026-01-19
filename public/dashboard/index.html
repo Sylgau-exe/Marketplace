@@ -56,7 +56,7 @@
         .stat-label { color: var(--text-muted); font-size: 0.9rem; }
 
         /* Quick Actions */
-        .quick-actions { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 2rem; }
+        .quick-actions { display: grid; grid-template-columns: repeat(6, 1fr); gap: 1rem; margin-bottom: 2rem; }
         .quick-action { background: var(--bg-card); border-radius: 12px; padding: 1.25rem; text-align: center; text-decoration: none; color: var(--text); transition: all 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.08); border: 2px solid transparent; }
         .quick-action:hover { border-color: var(--primary); transform: translateY(-2px); }
         .quick-action-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin: 0 auto 0.75rem; }
@@ -99,6 +99,7 @@
         .roi { background: rgba(245, 158, 11, 0.1); border-color: #f59e0b; }
         .tco { background: rgba(139, 92, 246, 0.1); border-color: #8b5cf6; }
         .risk { background: rgba(239, 68, 68, 0.1); border-color: #ef4444; }
+        .feasibility { background: rgba(8, 145, 178, 0.1); border-color: #0891b2; }
 
         @media (max-width: 1200px) {
             .stats-grid { grid-template-columns: repeat(2, 1fr); }
@@ -213,6 +214,11 @@
                 <a href="/risk-register/register.html" class="quick-action">
                     <div class="quick-action-icon risk">⚠️</div>
                     <div class="quick-action-label">Risk Register</div>
+                    <span class="quick-action-status status-beta">Beta</span>
+                </a>
+                <a href="/feasibility-study/study.html" class="quick-action">
+                    <div class="quick-action-icon feasibility">📊</div>
+                    <div class="quick-action-label">Feasibility Study</div>
                     <span class="quick-action-status status-beta">Beta</span>
                 </a>
             </div>
