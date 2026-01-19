@@ -25,7 +25,7 @@
     const PLAN_TOOL_LIMITS = {
         free: 0,        // Can view examples only
         starter: 1,
-        professional: 5,
+        professional: 3,
         unlimited: -1,  // -1 = unlimited
         enterprise: -1
     };
@@ -92,7 +92,13 @@
 
         const plan = user.plan || ACCESS_CONFIG.FREE;
         const selectedTools = user.selectedTools || [];
+        const isTester = user.isTester === true;
         const toolLimit = PLAN_TOOL_LIMITS[plan];
+
+        // Testers have full access to all tools
+        if (isTester) {
+            return true;
+        }
 
         // Free plan = no tool access (examples only)
         if (plan === ACCESS_CONFIG.FREE) {
@@ -452,31 +458,36 @@
     // For testing: Set user data
     window.PMTAccess = {
         // Login as a user with specific plan
-        login: function(email, plan, selectedTools = []) {
+        login: function(email, plan, selectedTools = [], isTester = false) {
             localStorage.setItem('pmt_user', JSON.stringify({
                 email: email || 'test@example.com',
                 plan: plan || 'free',
                 selectedTools: selectedTools,
+                isTester: isTester,
                 createdAt: new Date().toISOString()
             }));
             location.reload();
         },
         // Quick login shortcuts
         loginFree: function() {
-            this.login('free@test.com', 'free', []);
+            this.login('free@test.com', 'free', [], false);
         },
         loginStarter: function(toolId) {
-            this.login('starter@test.com', 'starter', [toolId || 'charterpro']);
+            this.login('starter@test.com', 'starter', [toolId || 'charterpro'], false);
         },
         loginPro: function() {
-            this.login('pro@test.com', 'professional', ['charterpro', 'dmaic-generator', 'roi-calculator', 'tco-calculator', 'risk-register']);
+            this.login('pro@test.com', 'professional', ['charterpro', 'dmaic-generator', 'roi-calculator', 'tco-calculator', 'risk-register'], false);
         },
         loginUnlimited: function() {
-            this.login('unlimited@test.com', 'unlimited', []);
+            this.login('unlimited@test.com', 'unlimited', [], false);
+        },
+        loginTester: function() {
+            this.login('tester@test.com', 'free', [], true);
         },
         // Logout
         logout: function() {
             localStorage.removeItem('pmt_user');
+            localStorage.removeItem('charterpro_user');
             location.reload();
         },
         // Get current user
