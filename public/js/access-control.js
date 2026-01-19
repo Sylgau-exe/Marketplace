@@ -369,16 +369,16 @@
         const banner = document.createElement('div');
         banner.id = 'pmt-free-banner';
         banner.style.cssText = `
-            position: fixed;
+            position: relative;
             top: 0;
             left: 0;
             right: 0;
             background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
             color: white;
-            padding: 12px 24px;
+            padding: 10px 24px;
             text-align: center;
             z-index: 9999;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -398,9 +398,6 @@
             ">Upgrade to Create Projects</a>
         `;
         document.body.prepend(banner);
-
-        // Adjust page content to account for banner
-        document.body.style.paddingTop = '52px';
     }
 
     // Initialize access control
