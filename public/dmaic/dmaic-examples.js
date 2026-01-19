@@ -516,6 +516,34 @@ function previewDmaicExample(exampleId) {
 }
 
 function useDmaicExample(exampleId) {
+    // Check if user has access (not a free user)
+    const userData = localStorage.getItem('pmt_user');
+    if (userData) {
+        const user = JSON.parse(userData);
+        const plan = user.plan || 'free';
+        const isTester = user.isTester === true;
+        const selectedTools = user.selectedTools || [];
+        
+        // Check if user has access to DMAIC
+        const hasAccess = isTester || 
+                          plan === 'unlimited' || 
+                          plan === 'enterprise' ||
+                          selectedTools.includes('dmaic-generator') ||
+                          selectedTools.includes('dmaic');
+        
+        if (!hasAccess) {
+            // Free user - redirect to pricing
+            document.getElementById('examplesGalleryModal')?.classList.remove('active');
+            document.getElementById('examplePreviewModal')?.classList.remove('active');
+            window.location.href = '/pricing';
+            return;
+        }
+    } else {
+        // Not logged in - redirect to signup
+        window.location.href = '/signup';
+        return;
+    }
+    
     const example = dmaicExampleData[exampleId];
     if (!example) return;
     
