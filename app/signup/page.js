@@ -382,9 +382,9 @@ const maxAppsPerPlan = {
 
 // Stripe payment links
 const stripeLinks = {
-  starter: 'https://buy.stripe.com/test_xxx_starter',
-  professional: 'https://buy.stripe.com/test_xxx_professional',
-  unlimited: 'https://buy.stripe.com/test_xxx_unlimited'
+  starter: 'https://buy.stripe.com/7sY3cocWy7tu0Ru4xt3Ru04',
+  professional: 'https://buy.stripe.com/bJe8wI3lY1568jWd3Z3Ru05',
+  unlimited: 'https://buy.stripe.com/aFa00ccWy012cAc1lh3Ru06'
 }
 
 export default function SignupPage() {
