@@ -1,0 +1,83 @@
+{
+  "name": "BizSimHub - Business Simulation Platform",
+  "short_name": "BizSimHub",
+  "description": "Master business skills through immersive simulations. Practice project management, strategy, and leadership in risk-free environments.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0f",
+  "theme_color": "#6366f1",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["education", "business", "productivity"],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any"
+    },
+    {
+      "src": "/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    },
+    {
+      "src": "/icon-192-maskable.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-512-maskable.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/desktop.png",
+      "type": "image/png",
+      "sizes": "1280x720",
+      "form_factor": "wide",
+      "label": "BizSimHub Dashboard"
+    },
+    {
+      "src": "/screenshots/mobile.png",
+      "type": "image/png",
+      "sizes": "750x1334",
+      "form_factor": "narrow",
+      "label": "BizSimHub Mobile"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Play Project Apex",
+      "short_name": "Project Apex",
+      "description": "Jump straight into our flagship PM simulation",
+      "url": "/simulations/project-apex",
+      "icons": [{ "src": "/icons/project-apex.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "My Dashboard",
+      "short_name": "Dashboard",
+      "description": "View your progress and achievements",
+      "url": "/dashboard",
+      "icons": [{ "src": "/icons/dashboard.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Browse Simulations",
+      "short_name": "Catalog",
+      "description": "Explore all available simulations",
+      "url": "/simulations",
+      "icons": [{ "src": "/icons/catalog.png", "sizes": "192x192" }]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+}

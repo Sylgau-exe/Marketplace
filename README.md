@@ -1,229 +1,123 @@
-# ProjectManagerTool Platform
+# 🎓 BizSimHub v1
+#
+Business simulation marketplace - fully deployed on Vercel.   
 
-A SaaS platform integrating multiple project management tools under a single subscription.
+## 🚀 Quick Deploy
 
-## 🏗️ Architecture
+### 1. Push to GitHub
+Upload all files to a new GitHub repository.
+
+### 2. Deploy to Vercel
+1. Go to [vercel.com](https://vercel.com)
+2. Import your GitHub repository
+3. Vercel auto-detects Vite - just click **Deploy**
+
+### 3. Add Vercel Postgres Database
+1. In Vercel Dashboard → Your Project → **Storage**
+2. Click **Create Database** → **Postgres**
+3. Name it `bizsimhub-db` → **Create**
+4. Click **Connect** to link it to your project
+5. Environment variables are auto-added ✅
+
+### 4. Initialize Database Tables
+After deployment, visit:
+```
+https://your-app.vercel.app/api/init-db?secret=setup
+```
+You should see: `{"message":"Database initialized successfully"}`
+
+### 5. Add Environment Variables
+In Vercel Dashboard → Settings → Environment Variables, add:
 
 ```
-projectmanagertool.com/
-├── /                    → Landing page (tool catalog)
-├── /pricing             → Unified pricing page
-├── /dashboard           → User dashboard (after login)
-├── /tools/
-│   ├── /charterpro      → CharterPro (redirects to app)
-│   └── /pmo-hub         → PMO Hub app
-├── /charterpro/         → CharterPro HTML app (static)
-│   ├── dashboard.html   → CharterPro dashboard
-│   ├── project-charter-app.html → Charter creator
-│   └── ...              → Other CharterPro pages
-└── /api/                → Backend APIs (to be implemented)
+JWT_SECRET=your-secret-key-minimum-32-characters-long
+
+# Stripe (from dashboard.stripe.com)
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+STRIPE_PRICE_PRO_MONTHLY=price_...
+STRIPE_PRICE_PRO_ANNUAL=price_...
+STRIPE_PRICE_ENTERPRISE_MONTHLY=price_...
+STRIPE_PRICE_ENTERPRISE_ANNUAL=price_...
+
+# Frontend (optional)
+VITE_STRIPE_PUBLISHABLE_KEY=pk_test_...
 ```
 
-## 🛠️ Tech Stack
+### 6. Set Up Stripe Webhook
+1. Go to Stripe Dashboard → Developers → Webhooks
+2. Add endpoint: `https://your-app.vercel.app/api/stripe/webhook`
+3. Select events:
+   - `checkout.session.completed`
+   - `customer.subscription.updated`
+   - `customer.subscription.deleted`
+   - `invoice.paid`
+   - `invoice.payment_failed`
+4. Copy the webhook signing secret to `STRIPE_WEBHOOK_SECRET`
 
-- **Framework**: Next.js 14 (App Router)
-- **Styling**: CSS-in-JS (inline styles)
-- **Charts**: Recharts
-- **Icons**: Lucide React
-- **Hosting**: Vercel
-- **Data**: localStorage (upgrade to database for production)
+### 7. Create Stripe Products
+In Stripe Dashboard → Products:
+- **Pro Plan**: $29/month and $290/year
+- **Enterprise Plan**: $199/month and $1990/year
+
+Copy each price ID to the environment variables.
+
+---
 
 ## 📁 Project Structure
 
 ```
-projectmanagertool/
-├── app/
-│   ├── globals.css          # Global styles
-│   ├── layout.js            # Root layout
-│   ├── page.js              # Landing page
-│   ├── pricing/
-│   │   └── page.js          # Pricing page
-│   ├── dashboard/
-│   │   ├── layout.js        # Dashboard layout (with sidebar)
-│   │   └── page.js          # User dashboard
-│   └── tools/
-│       ├── layout.js        # Tools layout (with sidebar)
-│       ├── charterpro/
-│       │   └── page.js      # Redirects to /charterpro/dashboard.html
-│       └── pmo-hub/
-│           └── page.js      # PMO Hub tool
+bizsimhub/
+├── api/                    # Vercel Serverless Functions
+│   ├── auth/
+│   │   ├── register.js
+│   │   ├── login.js
+│   │   └── me.js
+│   ├── stripe/
+│   │   ├── create-checkout-session.js
+│   │   ├── create-portal-session.js
+│   │   ├── subscription.js
+│   │   └── webhook.js
+│   ├── simulations/
+│   │   ├── scores.js
+│   │   └── leaderboard.js
+│   └── init-db.js
+├── lib/                    # Shared code
+│   ├── db.js              # Vercel Postgres helpers
+│   └── auth.js            # JWT helpers
+├── src/                    # React frontend
+│   ├── App.jsx
+│   └── main.jsx
 ├── public/
-│   └── charterpro/          # CharterPro HTML app (static files)
-│       ├── dashboard.html
-│       ├── project-charter-app.html
-│       ├── login.html
-│       ├── settings.html
-│       ├── samples/         # Sample PDF charters
-│       └── ...
-├── components/
-│   └── tools/               # Shared tool components
-├── lib/
-│   └── tools-config.js      # Tools catalog & pricing config
-└── package.json
+│   └── favicon.svg
+├── index.html
+├── package.json
+├── vercel.json
+└── vite.config.js
 ```
 
-## 🚀 Getting Started
-
-### 1. Install Dependencies
+## 🔧 Local Development
 
 ```bash
-npm install
+# Install Vercel CLI
+npm i -g vercel
+
+# Link to your Vercel project (pulls env vars)
+vercel link
+
+# Run locally with Vercel functions
+vercel dev
 ```
 
-### 2. Run Development Server
+## 💳 Test Cards
 
-```bash
-npm run dev
-```
+| Card Number | Result |
+|-------------|--------|
+| `4242 4242 4242 4242` | Success |
+| `4000 0000 0000 0002` | Declined |
 
-Open [http://localhost:3000](http://localhost:3000)
+---
 
-### 3. Build for Production
+## 📄 License
 
-```bash
-npm run build
-npm start
-```
-
-## 📤 Deployment to Vercel
-
-### Option A: GitHub Integration (Recommended)
-
-1. Push code to GitHub
-2. Go to [vercel.com](https://vercel.com)
-3. Import your repository
-4. Deploy automatically
-
-### Option B: Vercel CLI
-
-```bash
-npm install -g vercel
-vercel --prod
-```
-
-## 🔧 Configuration
-
-### Adding a New Tool
-
-1. **Add to catalog** (`lib/tools-config.js`):
-
-```javascript
-{
-  id: 'new-tool',
-  name: 'New Tool',
-  tagline: 'Tool description',
-  description: 'Longer description...',
-  icon: '🆕',
-  color: '#6366f1',
-  status: 'coming-soon', // 'live', 'beta', or 'coming-soon'
-  features: ['Feature 1', 'Feature 2'],
-  route: '/tools/new-tool',
-}
-```
-
-2. **Create the page** (`app/tools/new-tool/page.js`):
-
-```javascript
-'use client'
-export default function NewToolPage() {
-  return <div>New Tool Content</div>
-}
-```
-
-### Modifying Pricing Plans
-
-Edit `lib/tools-config.js`:
-
-```javascript
-export const plans = [
-  {
-    id: 'starter',
-    name: 'Starter',
-    price: 0,
-    features: ['...'],
-    // ...
-  },
-  // Add more plans
-]
-```
-
-## 🔐 Adding Authentication (Recommended for Production)
-
-### Option 1: Clerk (Easiest)
-
-```bash
-npm install @clerk/nextjs
-```
-
-### Option 2: NextAuth.js
-
-```bash
-npm install next-auth
-```
-
-### Option 3: Supabase Auth
-
-```bash
-npm install @supabase/supabase-js
-```
-
-## 💾 Adding a Database (Recommended for Production)
-
-### Option 1: Supabase (PostgreSQL)
-
-```bash
-npm install @supabase/supabase-js
-```
-
-### Option 2: PlanetScale (MySQL)
-
-```bash
-npm install @planetscale/database
-```
-
-### Option 3: MongoDB Atlas
-
-```bash
-npm install mongodb
-```
-
-## 💳 Adding Payments (Stripe)
-
-```bash
-npm install stripe @stripe/stripe-js
-```
-
-See `/app/api/stripe/` for webhook examples.
-
-## 🌐 Custom Domain Setup
-
-1. In Vercel Dashboard → Settings → Domains
-2. Add `projectmanagertool.com`
-3. Configure DNS:
-
-```
-Type: A     Name: @    Value: 76.76.21.21
-Type: CNAME Name: www  Value: cname.vercel-dns.com
-```
-
-## 📊 Current Tools
-
-| Tool | Status | Description |
-|------|--------|-------------|
-| CharterPro | ✅ Live | Project charter generator |
-| PMO Hub | 🧪 Beta | Portfolio management office |
-| Roadmap Studio | 🔜 Coming | Visual product roadmaps |
-| Risk Radar | 🔜 Coming | Risk management system |
-
-## 🛣️ Roadmap
-
-- [ ] User authentication
-- [ ] Database integration
-- [ ] Stripe payments
-- [ ] Team collaboration
-- [ ] API for integrations
-- [ ] Mobile apps
-
-## 📝 License
-
-MIT License - feel free to use for personal or commercial projects.
+MIT License - Sylvain Deschamps

@@ -1,0 +1,1698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <!-- SEO Meta Tags -->
+  <title>BizSimHub | Master Project Management Through Simulation | Learn by Doing</title>
+  <meta name="description" content="Transform your project management skills with immersive business simulations. Practice real-world scenarios across Tech, Entertainment, Construction & R&D. PMP-aligned. Start free today!" />
+  <meta name="keywords" content="business simulation, project management training, PMP certification prep, business games, management simulation, executive education, leadership training" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://bizsimhub.com/" />
+  
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://bizsimhub.com/" />
+  <meta property="og:title" content="BizSimHub - Master Business Skills Through Simulation" />
+  <meta property="og:description" content="Transform your project management skills with hands-on business simulations. PMP-aligned scenarios. Start free!" />
+  <meta property="og:image" content="https://bizsimhub.com/og-image.png" />
+  
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="BizSimHub - Learn Business by Doing" />
+  <meta name="twitter:description" content="Master project management through immersive simulations. Start free today!" />
+  <meta name="twitter:image" content="https://bizsimhub.com/twitter-card.png" />
+  
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    /* ============================================
+       CSS VARIABLES & RESET
+       ============================================ */
+    :root {
+      --bg-primary: #05050a;
+      --bg-secondary: #0d0d14;
+      --bg-card: #141420;
+      --bg-card-hover: #1a1a28;
+      --text-primary: #ffffff;
+      --text-secondary: #9ca3af;
+      --text-muted: #6b7280;
+      --accent-primary: #6366f1;
+      --accent-secondary: #8b5cf6;
+      --accent-tertiary: #06b6d4;
+      --accent-success: #10b981;
+      --accent-warning: #f59e0b;
+      --accent-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #06b6d4 100%);
+      --accent-gradient-alt: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+      --border-subtle: rgba(255, 255, 255, 0.06);
+      --border-accent: rgba(99, 102, 241, 0.3);
+      --glow-primary: rgba(99, 102, 241, 0.4);
+      --glow-secondary: rgba(139, 92, 246, 0.3);
+      --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      --radius-sm: 6px;
+      --radius-md: 12px;
+      --radius-lg: 20px;
+      --radius-xl: 28px;
+    }
+    
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+    }
+    
+    body {
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+    
+    img {
+      max-width: 100%;
+      display: block;
+    }
+    
+    /* ============================================
+       UTILITY CLASSES
+       ============================================ */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    
+    .gradient-text {
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .gradient-text-alt {
+      background: var(--accent-gradient-alt);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    /* ============================================
+       NAVIGATION
+       ============================================ */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      padding: 16px 0;
+      background: rgba(5, 5, 10, 0.8);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-subtle);
+      transition: all 0.3s ease;
+    }
+    
+    .nav-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.5rem;
+    }
+    
+    .nav-logo-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--accent-gradient);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+    
+    .nav-logo span:last-child {
+      color: var(--accent-primary);
+    }
+    
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+    
+    .nav-links a {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      transition: color 0.2s;
+    }
+    
+    .nav-links a:hover {
+      color: var(--text-primary);
+    }
+    
+    .nav-cta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 24px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.25s ease;
+      border: none;
+    }
+    
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-secondary);
+    }
+    
+    .btn-ghost:hover {
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.05);
+    }
+    
+    .btn-primary {
+      background: var(--accent-gradient);
+      color: white;
+      box-shadow: 0 4px 20px var(--glow-primary);
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px var(--glow-primary);
+    }
+    
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--border-accent);
+      color: var(--text-primary);
+    }
+    
+    .btn-outline:hover {
+      background: rgba(99, 102, 241, 0.1);
+      border-color: var(--accent-primary);
+    }
+    
+    .btn-lg {
+      padding: 16px 32px;
+      font-size: 1.05rem;
+    }
+    
+    /* Mobile Nav Toggle */
+    .nav-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+    }
+    
+    .nav-toggle span {
+      width: 24px;
+      height: 2px;
+      background: var(--text-primary);
+      transition: all 0.3s;
+    }
+    
+    /* ============================================
+       HERO SECTION
+       ============================================ */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 120px 0 80px;
+      overflow: hidden;
+    }
+    
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background: 
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(99, 102, 241, 0.2) 0%, transparent 50%),
+        radial-gradient(ellipse 60% 40% at 80% 60%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+        radial-gradient(ellipse 50% 30% at 20% 80%, rgba(6, 182, 212, 0.08) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse at center, black 20%, transparent 70%);
+    }
+    
+    .hero-content {
+      position: relative;
+      z-index: 10;
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: rgba(99, 102, 241, 0.1);
+      border: 1px solid var(--border-accent);
+      border-radius: 50px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--accent-primary);
+      margin-bottom: 24px;
+      animation: fadeInDown 0.6s ease;
+    }
+    
+    .hero-badge::before {
+      content: '🚀';
+    }
+    
+    .hero-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 24px;
+      animation: fadeInUp 0.8s ease;
+    }
+    
+    .hero-subtitle {
+      font-size: clamp(1.1rem, 2vw, 1.35rem);
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-bottom: 40px;
+      max-width: 650px;
+      margin-left: auto;
+      margin-right: auto;
+      animation: fadeInUp 0.8s ease 0.1s backwards;
+    }
+    
+    .hero-cta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 60px;
+      animation: fadeInUp 0.8s ease 0.2s backwards;
+    }
+    
+    .hero-stats {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 48px;
+      animation: fadeInUp 0.8s ease 0.3s backwards;
+    }
+    
+    .hero-stat {
+      text-align: center;
+    }
+    
+    .hero-stat-value {
+      display: block;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    
+    .hero-stat-label {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    /* ============================================
+       TRUST BADGES
+       ============================================ */
+    .trust {
+      padding: 60px 0;
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border-subtle);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    
+    .trust-title {
+      text-align: center;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 32px;
+    }
+    
+    .trust-logos {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 48px;
+      opacity: 0.6;
+    }
+    
+    .trust-logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    /* ============================================
+       FEATURES SECTION
+       ============================================ */
+    .features {
+      padding: 120px 0;
+      position: relative;
+    }
+    
+    .section-header {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+    
+    .section-badge {
+      display: inline-block;
+      padding: 6px 14px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 50px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--accent-success);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+    }
+    
+    .section-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+    
+    .section-subtitle {
+      font-size: 1.15rem;
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 24px;
+    }
+    
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--accent-gradient);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    
+    .feature-card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-accent);
+      transform: translateY(-4px);
+    }
+    
+    .feature-card:hover::before {
+      opacity: 1;
+    }
+    
+    .feature-icon {
+      width: 56px;
+      height: 56px;
+      background: rgba(99, 102, 241, 0.1);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+    }
+    
+    .feature-card h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    
+    .feature-card p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+    
+    /* ============================================
+       PROJECT APEX SHOWCASE
+       ============================================ */
+    .showcase {
+      padding: 120px 0;
+      background: var(--bg-secondary);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .showcase-glow {
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+    
+    .showcase-content {
+      position: relative;
+      z-index: 10;
+    }
+    
+    .showcase-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+    }
+    
+    .showcase-info h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2rem, 4vw, 2.75rem);
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+    
+    .showcase-info > p {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      margin-bottom: 32px;
+      line-height: 1.8;
+    }
+    
+    .showcase-features {
+      display: grid;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    
+    .showcase-feature {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    
+    .showcase-feature-icon {
+      width: 24px;
+      height: 24px;
+      background: var(--accent-gradient);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    
+    .showcase-feature span {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
+    
+    .showcase-visual {
+      position: relative;
+    }
+    
+    .showcase-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-xl);
+      padding: 32px;
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .showcase-industries {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    
+    .industry-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+    
+    .industry-card:hover {
+      border-color: var(--border-accent);
+      transform: scale(1.02);
+    }
+    
+    .industry-icon {
+      font-size: 2rem;
+      margin-bottom: 12px;
+    }
+    
+    .industry-name {
+      font-weight: 600;
+      font-size: 0.95rem;
+      margin-bottom: 4px;
+    }
+    
+    .industry-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    
+    /* ============================================
+       HOW IT WORKS
+       ============================================ */
+    .process {
+      padding: 120px 0;
+    }
+    
+    .process-steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 32px;
+      margin-top: 64px;
+    }
+    
+    .process-step {
+      text-align: center;
+      position: relative;
+    }
+    
+    .process-step::after {
+      content: '';
+      position: absolute;
+      top: 40px;
+      right: -16px;
+      width: calc(100% - 80px);
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent-primary) 0%, transparent 100%);
+      opacity: 0.3;
+    }
+    
+    .process-step:last-child::after {
+      display: none;
+    }
+    
+    .process-number {
+      width: 80px;
+      height: 80px;
+      background: var(--bg-card);
+      border: 2px solid var(--border-accent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--accent-primary);
+      position: relative;
+      z-index: 10;
+    }
+    
+    .process-step h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    
+    .process-step p {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+    
+    /* ============================================
+       PRICING SECTION
+       ============================================ */
+    .pricing {
+      padding: 120px 0;
+      background: var(--bg-secondary);
+    }
+    
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 64px;
+    }
+    
+    .pricing-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-xl);
+      padding: 40px 32px;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+    
+    .pricing-card.featured {
+      border-color: var(--accent-primary);
+      transform: scale(1.05);
+      box-shadow: 0 0 60px var(--glow-primary);
+    }
+    
+    .pricing-card.featured::before {
+      content: 'Most Popular';
+      position: absolute;
+      top: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--accent-gradient);
+      padding: 6px 20px;
+      border-radius: 50px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: white;
+    }
+    
+    .pricing-card:hover:not(.featured) {
+      border-color: var(--border-accent);
+      transform: translateY(-4px);
+    }
+    
+    .pricing-name {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    
+    .pricing-desc {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 24px;
+    }
+    
+    .pricing-price {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+      margin-bottom: 32px;
+    }
+    
+    .pricing-currency {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+    
+    .pricing-amount {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 3.5rem;
+      font-weight: 700;
+    }
+    
+    .pricing-period {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+    
+    .pricing-features {
+      list-style: none;
+      margin-bottom: 32px;
+    }
+    
+    .pricing-features li {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    
+    .pricing-features li:last-child {
+      border-bottom: none;
+    }
+    
+    .pricing-features li::before {
+      content: '✓';
+      width: 20px;
+      height: 20px;
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--accent-success);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      flex-shrink: 0;
+    }
+    
+    .pricing-card .btn {
+      width: 100%;
+    }
+    
+    /* ============================================
+       TESTIMONIALS
+       ============================================ */
+    .testimonials {
+      padding: 120px 0;
+    }
+    
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 64px;
+    }
+    
+    .testimonial-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+    }
+    
+    .testimonial-stars {
+      color: var(--accent-warning);
+      font-size: 1.1rem;
+      margin-bottom: 16px;
+    }
+    
+    .testimonial-text {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      line-height: 1.7;
+      margin-bottom: 24px;
+      font-style: italic;
+    }
+    
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .testimonial-avatar {
+      width: 48px;
+      height: 48px;
+      background: var(--accent-gradient);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+    
+    .testimonial-info h4 {
+      font-weight: 600;
+      font-size: 0.95rem;
+      margin-bottom: 2px;
+    }
+    
+    .testimonial-info span {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+    
+    /* ============================================
+       FAQ SECTION
+       ============================================ */
+    .faq {
+      padding: 120px 0;
+      background: var(--bg-secondary);
+    }
+    
+    .faq-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      margin-top: 64px;
+      max-width: 1000px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .faq-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 24px;
+    }
+    
+    .faq-question {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 600;
+      font-size: 1.05rem;
+      margin-bottom: 12px;
+      color: var(--text-primary);
+    }
+    
+    .faq-answer {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      line-height: 1.7;
+    }
+    
+    /* ============================================
+       FINAL CTA
+       ============================================ */
+    .cta-section {
+      padding: 120px 0;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .cta-bg {
+      position: absolute;
+      inset: 0;
+      background: 
+        radial-gradient(ellipse 80% 60% at 50% 100%, rgba(99, 102, 241, 0.2) 0%, transparent 60%);
+    }
+    
+    .cta-content {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    
+    .cta-content h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+    
+    .cta-content p {
+      font-size: 1.15rem;
+      color: var(--text-secondary);
+      margin-bottom: 40px;
+    }
+    
+    .cta-buttons {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    
+    /* ============================================
+       FOOTER
+       ============================================ */
+    .footer {
+      padding: 80px 0 40px;
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border-subtle);
+    }
+    
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 48px;
+      margin-bottom: 60px;
+    }
+    
+    .footer-brand p {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin-top: 16px;
+      max-width: 300px;
+    }
+    
+    .footer-social {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+    }
+    
+    .footer-social a {
+      width: 40px;
+      height: 40px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    
+    .footer-social a:hover {
+      background: var(--accent-primary);
+      border-color: var(--accent-primary);
+    }
+    
+    .footer-col h4 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 600;
+      font-size: 0.95rem;
+      margin-bottom: 20px;
+      color: var(--text-primary);
+    }
+    
+    .footer-col a {
+      display: block;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      padding: 6px 0;
+      transition: color 0.2s;
+    }
+    
+    .footer-col a:hover {
+      color: var(--accent-primary);
+    }
+    
+    .footer-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 32px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    
+    .footer-bottom p {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+    
+    .footer-legal {
+      display: flex;
+      gap: 24px;
+    }
+    
+    .footer-legal a {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      transition: color 0.2s;
+    }
+    
+    .footer-legal a:hover {
+      color: var(--text-secondary);
+    }
+    
+    /* ============================================
+       ANIMATIONS
+       ============================================ */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 20px var(--glow-primary); }
+      50% { box-shadow: 0 0 40px var(--glow-primary); }
+    }
+    
+    /* ============================================
+       RESPONSIVE
+       ============================================ */
+    @media (max-width: 1024px) {
+      .showcase-grid {
+        grid-template-columns: 1fr;
+        gap: 48px;
+      }
+      
+      .pricing-grid {
+        grid-template-columns: 1fr;
+        max-width: 400px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      
+      .pricing-card.featured {
+        transform: none;
+      }
+      
+      .testimonials-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .process-steps {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .process-step::after {
+        display: none;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+      
+      .nav-toggle {
+        display: flex;
+      }
+      
+      .hero-stats {
+        flex-direction: column;
+        gap: 24px;
+      }
+      
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .process-steps {
+        grid-template-columns: 1fr;
+      }
+      
+      .faq-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .footer-grid {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+      
+      .footer-brand p {
+        margin-left: auto;
+        margin-right: auto;
+      }
+      
+      .footer-social {
+        justify-content: center;
+      }
+      
+      .footer-bottom {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+      }
+    }
+    
+    /* Skip link for accessibility */
+    .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: var(--accent-primary);
+      color: white;
+      padding: 8px 16px;
+      z-index: 10000;
+      transition: top 0.3s;
+    }
+    
+    .skip-link:focus {
+      top: 0;
+    }
+  </style>
+</head>
+<body>
+  <!-- Skip Link for Accessibility -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  
+  <!-- Navigation -->
+  <nav class="nav" role="navigation" aria-label="Main navigation">
+    <div class="nav-container">
+      <a href="/" class="nav-logo" aria-label="BizSimHub Home">
+        <div class="nav-logo-icon">🎓</div>
+        <span>BizSim<span>Hub</span></span>
+      </a>
+      
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#showcase">Simulations</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#faq">FAQ</a>
+      </div>
+      
+      <div class="nav-cta">
+        <a href="https://bizsimhub.com/login" class="btn btn-ghost">Sign In</a>
+        <a href="https://bizsimhub.com/signup" class="btn btn-primary">Start Free →</a>
+      </div>
+      
+      <button class="nav-toggle" aria-label="Toggle navigation menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+  
+  <!-- Main Content -->
+  <main id="main-content">
+    
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero-bg"></div>
+      <div class="hero-grid"></div>
+      <div class="container">
+        <div class="hero-content">
+          <span class="hero-badge">Launching February 2026</span>
+          <h1 class="hero-title">
+            Learn Business by <span class="gradient-text">Doing</span>
+          </h1>
+          <p class="hero-subtitle">
+            Master project management, strategy, and leadership through immersive business simulations. Practice real-world decisions in risk-free environments.
+          </p>
+          <div class="hero-cta">
+            <a href="https://bizsimhub.com/signup" class="btn btn-primary btn-lg">Start Free Today →</a>
+            <a href="#showcase" class="btn btn-outline btn-lg">See Simulations</a>
+          </div>
+          <div class="hero-stats">
+            <div class="hero-stat">
+              <span class="hero-stat-value">6+</span>
+              <span class="hero-stat-label">Simulations</span>
+            </div>
+            <div class="hero-stat">
+              <span class="hero-stat-value">25+</span>
+              <span class="hero-stat-label">Scenarios</span>
+            </div>
+            <div class="hero-stat">
+              <span class="hero-stat-value">4</span>
+              <span class="hero-stat-label">Industries</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Trust Badges -->
+    <section class="trust">
+      <div class="container">
+        <p class="trust-title">Built by Industry Experts</p>
+        <div class="trust-logos">
+          <div class="trust-logo">🏆 PMP-Aligned</div>
+          <div class="trust-logo">🎓 McGill Faculty</div>
+          <div class="trust-logo">🌍 $250M+ Contract Experience</div>
+          <div class="trust-logo">🎪 Cirque du Soleil Alumni</div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Features Section -->
+    <section class="features" id="features">
+      <div class="container">
+        <header class="section-header">
+          <span class="section-badge">Features</span>
+          <h2 class="section-title">Why Choose BizSimHub?</h2>
+          <p class="section-subtitle">
+            Experience-based learning that bridges the gap between theory and practice
+          </p>
+        </header>
+        
+        <div class="features-grid">
+          <article class="feature-card">
+            <div class="feature-icon">🎯</div>
+            <h3>Learn by Doing</h3>
+            <p>Make real decisions with real consequences. Our simulations mirror actual business challenges you'll face in your career.</p>
+          </article>
+          
+          <article class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h3>PMBOK-Aligned</h3>
+            <p>Perfect for PMP certification prep. Our scenarios are designed around project management best practices and standards.</p>
+          </article>
+          
+          <article class="feature-card">
+            <div class="feature-icon">🏭</div>
+            <h3>Multiple Industries</h3>
+            <p>From tech startups to construction sites, practice in diverse environments that match your career goals.</p>
+          </article>
+          
+          <article class="feature-card">
+            <div class="feature-icon">📈</div>
+            <h3>Track Progress</h3>
+            <p>Detailed analytics show your improvement over time. Identify strengths and areas for growth.</p>
+          </article>
+          
+          <article class="feature-card">
+            <div class="feature-icon">🏆</div>
+            <h3>Compete & Compare</h3>
+            <p>Leaderboards and achievements add motivation. See how you stack up against peers worldwide.</p>
+          </article>
+          
+          <article class="feature-card">
+            <div class="feature-icon">🔄</div>
+            <h3>Risk-Free Practice</h3>
+            <p>Make mistakes without real-world consequences. Learn from failures and refine your approach.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Project Apex Showcase -->
+    <section class="showcase" id="showcase">
+      <div class="showcase-glow"></div>
+      <div class="container">
+        <div class="showcase-content">
+          <div class="showcase-grid">
+            <div class="showcase-info">
+              <span class="section-badge">Flagship Simulation</span>
+              <h2>Project Apex</h2>
+              <p>
+                Our flagship project management simulation puts you in the driver's seat. Navigate complex projects, manage stakeholders, balance budgets, and lead teams through challenges inspired by real-world scenarios.
+              </p>
+              
+              <div class="showcase-features">
+                <div class="showcase-feature">
+                  <div class="showcase-feature-icon">✓</div>
+                  <span>Harvard Business Publishing-inspired causal model</span>
+                </div>
+                <div class="showcase-feature">
+                  <div class="showcase-feature-icon">✓</div>
+                  <span>Dynamic events that respond to your decisions</span>
+                </div>
+                <div class="showcase-feature">
+                  <div class="showcase-feature-icon">✓</div>
+                  <span>Balance scope, schedule, budget, and team morale</span>
+                </div>
+                <div class="showcase-feature">
+                  <div class="showcase-feature-icon">✓</div>
+                  <span>Real-time feedback on your management style</span>
+                </div>
+              </div>
+              
+              <a href="https://bizsimhub.com/simulations/project-apex" class="btn btn-primary btn-lg">Try Project Apex Free →</a>
+            </div>
+            
+            <div class="showcase-visual">
+              <div class="showcase-card">
+                <h3 style="margin-bottom: 20px; font-family: 'Space Grotesk', sans-serif;">Choose Your Industry</h3>
+                <div class="showcase-industries">
+                  <div class="industry-card">
+                    <div class="industry-icon">💻</div>
+                    <div class="industry-name">Tech Startup</div>
+                    <div class="industry-desc">Software development</div>
+                  </div>
+                  <div class="industry-card">
+                    <div class="industry-icon">🎪</div>
+                    <div class="industry-name">Live Entertainment</div>
+                    <div class="industry-desc">Event production</div>
+                  </div>
+                  <div class="industry-card">
+                    <div class="industry-icon">🏗️</div>
+                    <div class="industry-name">Construction</div>
+                    <div class="industry-desc">Infrastructure projects</div>
+                  </div>
+                  <div class="industry-card">
+                    <div class="industry-icon">🔬</div>
+                    <div class="industry-name">R&D Innovation</div>
+                    <div class="industry-desc">Research & development</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- How It Works -->
+    <section class="process">
+      <div class="container">
+        <header class="section-header">
+          <span class="section-badge">Process</span>
+          <h2 class="section-title">How It Works</h2>
+          <p class="section-subtitle">Start learning in minutes with our streamlined approach</p>
+        </header>
+        
+        <div class="process-steps">
+          <div class="process-step">
+            <div class="process-number">1</div>
+            <h3>Create Account</h3>
+            <p>Sign up free in seconds. No credit card required.</p>
+          </div>
+          <div class="process-step">
+            <div class="process-number">2</div>
+            <h3>Choose Simulation</h3>
+            <p>Select from our library of business scenarios.</p>
+          </div>
+          <div class="process-step">
+            <div class="process-number">3</div>
+            <h3>Make Decisions</h3>
+            <p>Navigate challenges and see results unfold.</p>
+          </div>
+          <div class="process-step">
+            <div class="process-number">4</div>
+            <h3>Learn & Improve</h3>
+            <p>Review analytics and refine your approach.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Pricing Section -->
+    <section class="pricing" id="pricing">
+      <div class="container">
+        <header class="section-header">
+          <span class="section-badge">Pricing</span>
+          <h2 class="section-title">Simple, Transparent Pricing</h2>
+          <p class="section-subtitle">Start free, upgrade when you need more</p>
+        </header>
+        
+        <div class="pricing-grid">
+          <!-- Free Tier -->
+          <div class="pricing-card">
+            <h3 class="pricing-name">Free</h3>
+            <p class="pricing-desc">Perfect for getting started</p>
+            <div class="pricing-price">
+              <span class="pricing-currency">$</span>
+              <span class="pricing-amount">0</span>
+              <span class="pricing-period">/forever</span>
+            </div>
+            <ul class="pricing-features">
+              <li>1 simulation (Project Apex)</li>
+              <li>1 industry scenario</li>
+              <li>Basic analytics</li>
+              <li>Community leaderboard</li>
+              <li>Email support</li>
+            </ul>
+            <a href="https://bizsimhub.com/signup" class="btn btn-outline">Get Started Free</a>
+          </div>
+          
+          <!-- Professional Tier -->
+          <div class="pricing-card featured">
+            <h3 class="pricing-name">Professional</h3>
+            <p class="pricing-desc">For serious learners</p>
+            <div class="pricing-price">
+              <span class="pricing-currency">$</span>
+              <span class="pricing-amount">29</span>
+              <span class="pricing-period">/month</span>
+            </div>
+            <ul class="pricing-features">
+              <li>All simulations included</li>
+              <li>All industry scenarios</li>
+              <li>Advanced analytics</li>
+              <li>Progress certificates</li>
+              <li>Priority support</li>
+              <li>New content early access</li>
+            </ul>
+            <a href="https://bizsimhub.com/signup?plan=pro" class="btn btn-primary">Start 7-Day Trial</a>
+          </div>
+          
+          <!-- Enterprise Tier -->
+          <div class="pricing-card">
+            <h3 class="pricing-name">Enterprise</h3>
+            <p class="pricing-desc">For teams & educators</p>
+            <div class="pricing-price">
+              <span class="pricing-currency">$</span>
+              <span class="pricing-amount">99</span>
+              <span class="pricing-period">/month</span>
+            </div>
+            <ul class="pricing-features">
+              <li>Everything in Professional</li>
+              <li>Team management dashboard</li>
+              <li>Custom scenarios</li>
+              <li>LMS integration</li>
+              <li>Dedicated account manager</li>
+              <li>Volume discounts available</li>
+            </ul>
+            <a href="https://bizsimhub.com/contact" class="btn btn-outline">Contact Sales</a>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Testimonials -->
+    <section class="testimonials">
+      <div class="container">
+        <header class="section-header">
+          <span class="section-badge">Testimonials</span>
+          <h2 class="section-title">What Learners Say</h2>
+          <p class="section-subtitle">Join thousands who've transformed their skills</p>
+        </header>
+        
+        <div class="testimonials-grid">
+          <article class="testimonial-card">
+            <div class="testimonial-stars">★★★★★</div>
+            <p class="testimonial-text">
+              "The Project Apex simulation was incredibly realistic. I applied what I learned directly to managing our product launch at work."
+            </p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">SM</div>
+              <div class="testimonial-info">
+                <h4>Sarah M.</h4>
+                <span>Product Manager, Tech</span>
+              </div>
+            </div>
+          </article>
+          
+          <article class="testimonial-card">
+            <div class="testimonial-stars">★★★★★</div>
+            <p class="testimonial-text">
+              "As a McGill student, having access to HBP-style simulations at this price point is incredible. Perfect PMP prep."
+            </p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">JL</div>
+              <div class="testimonial-info">
+                <h4>James L.</h4>
+                <span>MBA Student</span>
+              </div>
+            </div>
+          </article>
+          
+          <article class="testimonial-card">
+            <div class="testimonial-stars">★★★★★</div>
+            <p class="testimonial-text">
+              "We use BizSimHub for our corporate training program. The team analytics dashboard is exactly what we needed."
+            </p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">RK</div>
+              <div class="testimonial-info">
+                <h4>Rachel K.</h4>
+                <span>L&D Director</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+    
+    <!-- FAQ Section -->
+    <section class="faq" id="faq">
+      <div class="container">
+        <header class="section-header">
+          <span class="section-badge">FAQ</span>
+          <h2 class="section-title">Frequently Asked Questions</h2>
+          <p class="section-subtitle">Everything you need to know about BizSimHub</p>
+        </header>
+        
+        <div class="faq-grid">
+          <article class="faq-item">
+            <h3 class="faq-question">What is BizSimHub?</h3>
+            <p class="faq-answer">BizSimHub is a business simulation platform that helps professionals and students master business skills through immersive, hands-on simulations. Our flagship product, Project Apex, offers PMP-aligned project management training.</p>
+          </article>
+          
+          <article class="faq-item">
+            <h3 class="faq-question">Is it suitable for PMP prep?</h3>
+            <p class="faq-answer">Absolutely! Our simulations are designed with PMBOK-aligned concepts, making them ideal for PMP certification preparation. You'll practice real-world scenarios involving scope, schedule, budget, and team management.</p>
+          </article>
+          
+          <article class="faq-item">
+            <h3 class="faq-question">How long are the simulations?</h3>
+            <p class="faq-answer">Each simulation session typically takes 30-60 minutes. However, you can save progress and return anytime. Complete scenarios can be replayed to try different strategies.</p>
+          </article>
+          
+          <article class="faq-item">
+            <h3 class="faq-question">Can I use it for my team?</h3>
+            <p class="faq-answer">Yes! Our Enterprise plan includes team management features, analytics dashboards, and LMS integration. Contact us for volume pricing and custom scenarios.</p>
+          </article>
+          
+          <article class="faq-item">
+            <h3 class="faq-question">What industries are covered?</h3>
+            <p class="faq-answer">Project Apex covers Tech Startup, Live Entertainment, Construction, and R&D Innovation. Each industry presents unique challenges and learning opportunities.</p>
+          </article>
+          
+          <article class="faq-item">
+            <h3 class="faq-question">Is there a free trial?</h3>
+            <p class="faq-answer">We offer a free tier that includes access to Project Apex with one industry scenario. Professional plans include a 7-day free trial with full access.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Final CTA -->
+    <section class="cta-section">
+      <div class="cta-bg"></div>
+      <div class="container">
+        <div class="cta-content">
+          <h2>Ready to <span class="gradient-text">Level Up</span> Your Skills?</h2>
+          <p>Join thousands of professionals who are mastering business through practice. Start your journey today.</p>
+          <div class="cta-buttons">
+            <a href="https://bizsimhub.com/signup" class="btn btn-primary btn-lg">Start Free Today →</a>
+            <a href="https://bizsimhub.com/contact" class="btn btn-outline btn-lg">Talk to Sales</a>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+  </main>
+  
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="/" class="nav-logo">
+            <div class="nav-logo-icon">🎓</div>
+            <span>BizSim<span>Hub</span></span>
+          </a>
+          <p>Learn business through immersive simulations. Practice project management, strategy, and leadership in risk-free environments.</p>
+          <div class="footer-social">
+            <a href="https://twitter.com/BizSimHub" aria-label="Twitter">𝕏</a>
+            <a href="https://linkedin.com/company/bizsimhub" aria-label="LinkedIn">in</a>
+            <a href="https://facebook.com/BizSimHub" aria-label="Facebook">f</a>
+            <a href="https://instagram.com/bizsimhub" aria-label="Instagram">📷</a>
+          </div>
+        </div>
+        
+        <div class="footer-col">
+          <h4>Product</h4>
+          <a href="#features">Features</a>
+          <a href="#showcase">Simulations</a>
+          <a href="#pricing">Pricing</a>
+          <a href="https://bizsimhub.com/changelog">Changelog</a>
+        </div>
+        
+        <div class="footer-col">
+          <h4>Resources</h4>
+          <a href="https://bizsimhub.com/blog">Blog</a>
+          <a href="https://bizsimhub.com/educators">For Educators</a>
+          <a href="https://bizsimhub.com/enterprise">Enterprise</a>
+          <a href="https://bizsimhub.com/help">Help Center</a>
+        </div>
+        
+        <div class="footer-col">
+          <h4>Company</h4>
+          <a href="https://bizsimhub.com/about">About</a>
+          <a href="https://bizsimhub.com/contact">Contact</a>
+          <a href="https://bizsimhub.com/careers">Careers</a>
+          <a href="https://bizsimhub.com/press">Press</a>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>© 2026 BizSimHub. All rights reserved.</p>
+        <div class="footer-legal">
+          <a href="https://bizsimhub.com/privacy">Privacy Policy</a>
+          <a href="https://bizsimhub.com/terms">Terms of Service</a>
+          <a href="https://bizsimhub.com/cookies">Cookie Policy</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Structured Data for Landing Page -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "BizSimHub - Business Simulation Platform",
+    "description": "Master project management and business skills through immersive simulations. PMP-aligned training across 4 industries.",
+    "url": "https://bizsimhub.com/",
+    "mainEntity": {
+      "@type": "SoftwareApplication",
+      "name": "BizSimHub",
+      "applicationCategory": "EducationalApplication",
+      "offers": {
+        "@type": "AggregateOffer",
+        "lowPrice": "0",
+        "highPrice": "99",
+        "priceCurrency": "USD"
+      }
+    }
+  }
+  </script>
+</body>
+</html>
